@@ -16,3 +16,4 @@ work together inside a Local Area Network (LAN).
 - Provide internal chat between connected users
 
 ---
+<img width="1536" height="1024" alt="ShieldNOC_symbol" src="https://github.com/user-attachments/assets/caa37f45-2b1a-462e-aa0b-d8a701f75f98" />
