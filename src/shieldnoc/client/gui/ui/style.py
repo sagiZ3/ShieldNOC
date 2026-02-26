@@ -1,3 +1,4 @@
+# src/shieldnoc/client/gui/ui/style.py
 STYLE_SHEET = """
 QWidget {
     background-color: #050814;
@@ -5,7 +6,7 @@ QWidget {
     font-family: 'Segoe UI', 'Rubik', sans-serif;
 }
 
-/* כותרות כלליות */
+/* Titles */
 #appTitle {
     font-size: 20px;
     font-weight: 600;
@@ -24,7 +25,7 @@ QWidget {
     margin-bottom: 6px;
 }
 
-/* כרטיסים */
+/* Cards */
 #card {
     background-color: rgba(5, 10, 30, 0.92);
     border-radius: 16px;
@@ -37,34 +38,20 @@ QWidget {
     color: #f7f9ff;
 }
 
-/* שדות טקסט */
+/* Inputs */
 QLineEdit {
     background-color: rgba(3, 6, 18, 0.9);
     border: 1px solid #2a3c5f;
     border-radius: 8px;
     padding: 6px 8px;
+    color: #e7f0ff;
 }
 QLineEdit:focus {
     border: 1px solid #52b6ff;
     box-shadow: 0 0 12px rgba(82, 182, 255, 0.7);
 }
 
-/* צ'קבוקסים – סגנון "Toggle" קטן */
-QCheckBox {
-    spacing: 8px;
-}
-QCheckBox::indicator {
-    width: 18px;
-    height: 18px;
-    border-radius: 9px;
-    border: 2px solid #52b6ff;
-    background-color: transparent;
-}
-QCheckBox::indicator:checked {
-    background-color: #52b6ff;
-}
-
-/* כפתורים */
+/* Buttons */
 #primaryButton {
     background-color: #f7c948;
     color: #1e90ff;
@@ -78,6 +65,27 @@ QCheckBox::indicator:checked {
 #primaryButton:hover {
     background-color: #ffe27a;
 }
+#primaryButton:pressed {
+    background-color: #f1be2a;
+    border: 1px solid #7cc8ff;
+}
+
+#secondaryButton {
+    background-color: transparent;
+    border-radius: 12px;
+    padding: 10px 14px;
+    font-weight: 600;
+    border: 1px solid #52b6ff;
+    color: #52b6ff;
+}
+#secondaryButton:hover {
+    background-color: rgba(16, 48, 96, 0.7);
+}
+#secondaryButton:pressed {
+    background-color: rgba(16, 48, 96, 0.95);
+    border: 1px solid #9ad8ff;
+}
+
 #topBarButton {
     background-color: transparent;
     border: none;
@@ -88,55 +96,91 @@ QCheckBox::indicator:checked {
     background-color: rgba(15, 32, 72, 0.9);
     border-radius: 8px;
 }
-
-/* סטטוס חיבור */
-#statusDisconnected {
-    color: #ff7675;
-    font-weight: 500;
-}
-#statusConnecting {
-    color: #ffeaa7;
-    font-weight: 500;
-}
-#statusConnected {
-    color: #00d1a3;
-    font-weight: 500;
-}
-#statusError {
-    color: #d63031;
-    font-weight: 500;
+#topBarButton:pressed {
+    background-color: rgba(15, 32, 72, 1.0);
+    border-radius: 8px;
 }
 
-/* באדג' חיבור */
+/* Connection badge (Dashboard) */
 #badgeConnected {
     background-color: #00d1a3;
     color: #050814;
     padding: 4px 10px;
     border-radius: 999px;
     font-size: 12px;
-    font-weight: 600;
+    font-weight: 700;
+}
+#badgeConnecting {
+    background-color: #ffeaa7;
+    color: #050814;
+    padding: 4px 10px;
+    border-radius: 999px;
+    font-size: 12px;
+    font-weight: 700;
+}
+#badgeDisconnected {
+    background-color: #ff7675;
+    color: #050814;
+    padding: 4px 10px;
+    border-radius: 999px;
+    font-size: 12px;
+    font-weight: 700;
 }
 
-/* לוג */
+/* Settings: connect status text (requested Hebrew + persistent) */
+#connectStatusDisconnected {
+    color: #ff3b3b;
+    font-weight: 700;
+}
+#connectStatusConnecting {
+    color: #ffeaa7;
+    font-weight: 700;
+}
+#connectStatusConnected {
+    color: #00ff85;
+    font-weight: 800;
+}
+
+/* Feedback badges (settings actions) */
+#badgeInfo {
+    background-color: rgba(82, 182, 255, 0.18);
+    color: #cfe3ff;
+    padding: 4px 10px;
+    border-radius: 999px;
+    font-size: 12px;
+    font-weight: 700;
+    border: 1px solid rgba(82, 182, 255, 0.35);
+}
+#badgeOk {
+    background-color: rgba(0, 209, 163, 0.22);
+    color: #a9ffea;
+    padding: 4px 10px;
+    border-radius: 999px;
+    font-size: 12px;
+    font-weight: 700;
+    border: 1px solid rgba(0, 209, 163, 0.35);
+}
+
+/* Log */
 #logView {
     background-color: rgba(2, 6, 25, 0.85);
     border-radius: 10px;
     border: 1px solid #283458;
 }
 
-/* מדדים */
-#metricLabel {
-    font-size: 13px;
-    color: #cbd4ff;
-}
+/* Metrics */
 #metricValue {
     font-size: 20px;
-    font-weight: 700;
+    font-weight: 800;
     color: #f7c948;
     text-align: center;
 }
+#metricLabel {
+    font-size: 12px;
+    color: #cbd4ff;
+}
 
-/* כפתור החלפת רקע */
+/* Switch background button */
 #switchBgButton {
     background-color: transparent;
     border-radius: 999px;
@@ -148,8 +192,43 @@ QCheckBox::indicator:checked {
 #switchBgButton:hover {
     background-color: rgba(16, 48, 96, 0.7);
 }
+#switchBgButton:pressed {
+    background-color: rgba(16, 48, 96, 0.95);
+    border: 1px solid #9ad8ff;
+}
 
-/* טקסטים כללים בקישוט ניאון קל */
+/* Tables */
+QTableWidget {
+    background-color: rgba(2, 6, 25, 0.75);
+    border: 1px solid #283458;
+    border-radius: 10px;
+    gridline-color: #283458;
+}
+QHeaderView::section {
+    background-color: rgba(10, 20, 50, 0.9);
+    padding: 6px;
+    border: none;
+    color: #cfe3ff;
+    font-weight: 600;
+}
+QTableWidget::item {
+    padding: 6px;
+}
+QTableWidget::item:selected {
+    background-color: rgba(82, 182, 255, 0.25);
+}
+
+/* Chat */
+#chatView {
+    background-color: rgba(2, 6, 25, 0.85);
+    border-radius: 10px;
+    border: 1px solid #283458;
+}
+#chatInputRow QPushButton {
+    padding: 8px 12px;
+}
+
+/* General */
 QLabel {
     font-size: 12px;
 }

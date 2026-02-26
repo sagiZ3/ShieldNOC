@@ -1,101 +1,131 @@
+# src/shieldnoc/client/gui/main.py
 import sys
-from PySide6.QtWidgets import QApplication, QMainWindow, QWidget, QVBoxLayout, QHBoxLayout, QLabel, QPushButton, QStackedWidget
-from PySide6.QtCore import QTimer, Qt
 
-from src.securemesh.client.gui.ui.style import STYLE_SHEET
-from src.securemesh.client.gui.ui.background import BackgroundLayer
+from PySide6.QtWidgets import (
+    QApplication, QMainWindow, QWidget, QVBoxLayout, QHBoxLayout,
+    QLabel, QPushButton, QStackedWidget
+)
+from PySide6.QtCore import Qt, QTimer
 
-from src.securemesh.client.gui.pages.connect_page import ConnectPage
-from src.securemesh.client.gui.pages.dashboard_page import DashboardPage
+from src.shieldnoc.client.gui.ui.style import STYLE_SHEET
+from src.shieldnoc.client.gui.ui.background import BackgroundLayer
+from src.shieldnoc.client.gui.pages.connect_page import ConnectPage
+from src.shieldnoc.client.gui.pages.dashboard_page import DashboardPage
 
 
 class MainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
-        self.setWindowTitle("SecureMesh Client")
+        self.setWindowTitle("ShieldNOC Client")
         self.resize(1200, 720)
 
-        # מרכז – Stack למסכים
+        self._is_connected = False  # שינוי: סטייט חיבור לשמירה לאורך מעבר דפים
+
         central = QWidget()
         self.setCentralWidget(central)
         central.setAttribute(Qt.WA_StyledBackground, False)
         central.setStyleSheet("background: transparent;")
 
-        root_layout = QVBoxLayout(central)
-        root_layout.setContentsMargins(0, 0, 0, 0)
-        root_layout.setSpacing(0)
+        root = QVBoxLayout(central)
+        root.setContentsMargins(0, 0, 0, 0)
+        root.setSpacing(0)
 
-        # טופ־בר
-        top_bar = QHBoxLayout()
-        top_bar.setContentsMargins(12, 8, 12, 8)
-        top_bar.setSpacing(8)
+        # Top bar
+        top = QHBoxLayout()
+        top.setContentsMargins(12, 8, 12, 8)
+        top.setSpacing(8)
 
-        app_label = QLabel("SecureMesh Client")
+        app_label = QLabel("ShieldNOC Client")
         app_label.setObjectName("appTitle")
 
-        top_bar.addWidget(app_label)
-        top_bar.addStretch(1)
+        self.btn_settings = QPushButton("Settings")
+        self.btn_settings.setObjectName("topBarButton")
+        self.btn_dash = QPushButton("Dashboard")
+        self.btn_dash.setObjectName("topBarButton")
 
-        self.home_btn = QPushButton("Settings")
-        self.home_btn.setObjectName("topBarButton")
-        self.dashboard_btn = QPushButton("Dashboard")
-        self.dashboard_btn.setObjectName("topBarButton")
+        top.addWidget(app_label)
+        top.addStretch(1)
+        top.addWidget(self.btn_settings)
+        top.addWidget(self.btn_dash)
 
-        top_bar.addWidget(self.home_btn)
-        top_bar.addWidget(self.dashboard_btn)
+        root.addLayout(top)
 
-        root_layout.addLayout(top_bar)
-
-        # Stack למסכים
+        # Stack
         self.stack = QStackedWidget()
-        root_layout.addWidget(self.stack)
+        root.addWidget(self.stack)
 
-        self.connect_page = ConnectPage()
-        self.dashboard_page = DashboardPage()
+        self.page_settings = ConnectPage()
+        self.page_dash = DashboardPage()
 
-        self.stack.addWidget(self.connect_page)
-        self.stack.addWidget(self.dashboard_page)
+        self.stack.addWidget(self.page_settings)
+        self.stack.addWidget(self.page_dash)
 
-        # כפתורים למעבר מסכים
-        self.home_btn.clicked.connect(
-            lambda: self.stack.setCurrentWidget(self.connect_page)
-        )
-        self.dashboard_btn.clicked.connect(
-            lambda: self.stack.setCurrentWidget(self.dashboard_page)
-        )
+        self.btn_settings.clicked.connect(self._go_settings)
+        self.btn_dash.clicked.connect(self._go_dashboard)
 
-        # חיבור אירוע התחברות – בהמשך תחליף בסוקט אמיתי
-        self.connect_page.connect_requested.connect(self._handle_connect)
-
-        # שכבת רקע מתחלף
+        # Background layer
         self.bg_layer = BackgroundLayer(self)
-        self.bg_layer.lower()  # מתחת לכל
+        self.bg_layer.lower()
 
-        # כפתור Change Background מתוך ה־Dashboard
-        self.dashboard_page.switch_bg_btn.clicked.connect(self.bg_layer.next_background)
+        # Wiring
+        self.page_settings.connect_requested.connect(self._handle_connect)
+        self.page_settings.vpn_ip_changed.connect(self.page_dash.set_vpn_ip)
+        self.page_settings.bg_change_requested.connect(self.bg_layer.next_background)
 
-        # סטייל גלובלי
+        # Logo path placeholder
+        self.page_dash.set_logo_path("assets/ShieldNOC_logo.png")
+
         self.setStyleSheet(STYLE_SHEET)
+        self.stack.setCurrentWidget(self.page_settings)
+
+        # Sync initial status
+        self._sync_connect_status_label()
 
     def resizeEvent(self, event):
         super().resizeEvent(event)
         self.bg_layer.resize(self.size())
 
-    def _handle_connect(self, ip: str, port: int, options: dict):
-        # כאן – חיבור אמיתי לשרת בהמשך.
-        # עכשיו – סימולציה של התחברות מוצלחת אחרי 400 מ״ש.
-        QTimer.singleShot(400, lambda: self._after_connect(True))
+    def _go_settings(self):
+        self.stack.setCurrentWidget(self.page_settings)
+        self._sync_connect_status_label()
 
-    def _after_connect(self, success: bool):
-        self.connect_page.set_connected(success)
-        if success:
-            self.stack.setCurrentWidget(self.dashboard_page)
+    def _go_dashboard(self):
+        self.stack.setCurrentWidget(self.page_dash)
+        self._sync_connect_status_label()
+
+    def _sync_connect_status_label(self):
+        # שינוי: כשהמשתמש חוזר לדף ההגדרות, הסטטוס נשאר נכון בהתאם לסטייט
+        if self._is_connected:
+            self.page_settings.set_connected(True)
+        else:
+            # אם לא מחובר - לא "מתחבר" סתם; תמיד נשאר "לא מחובר"
+            self.page_settings.set_connected(False)
+
+    def _handle_connect(self, ip: str, port: int):
+        # שינוי: סטטוס מתעדכן מיד לדף ההגדרות וגם לדשבורד
+        self.page_settings.set_connecting()
+        self.page_dash.set_connection_state("connecting")
+
+        QTimer.singleShot(450, lambda: self._after_connect(True))
+
+    def _after_connect(self, ok: bool):
+        self._is_connected = ok
+        self.page_settings.set_connected(ok)
+
+        if ok:
+            self.page_dash.set_connection_state("connected")
+            self.stack.setCurrentWidget(self.page_dash)
+        else:
+            self.page_dash.set_connection_state("disconnected")
+
+    def closeEvent(self, event):
+        super().closeEvent(event)
 
 
 def main():
     app = QApplication(sys.argv)
-    window = MainWindow()
-    window.show()
+    w = MainWindow()
+    w.show()
     sys.exit(app.exec())
 
 

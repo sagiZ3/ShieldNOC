@@ -1,3 +1,4 @@
+# src/shieldnoc/client/gui/ui/background.py
 from PySide6.QtWidgets import QWidget
 from PySide6.QtGui import QPainter, QPixmap
 from PySide6.QtCore import Qt
@@ -16,7 +17,6 @@ class BackgroundLayer(QWidget):
         ]
         self.index = 0
         self.opacity = 0.12
-
         self.setAttribute(Qt.WA_TransparentForMouseEvents)
         self.setAutoFillBackground(False)
 
@@ -30,13 +30,14 @@ class BackgroundLayer(QWidget):
                 scaled = pix.scaled(
                     self.size(),
                     Qt.KeepAspectRatioByExpanding,
-                    Qt.SmoothTransformation
+                    Qt.SmoothTransformation,
                 )
                 painter.drawPixmap(0, 0, scaled)
 
         painter.end()
 
     def next_background(self):
-        if self.backgrounds:
-            self.index = (self.index + 1) % len(self.backgrounds)
-            self.update()
+        if not self.backgrounds:
+            return
+        self.index = (self.index + 1) % len(self.backgrounds)
+        self.update()
