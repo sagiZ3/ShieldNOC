@@ -1,3 +1,4 @@
+# TODO: add Hostname column to clients information table
 from __future__ import annotations
 
 from dataclasses import dataclass
