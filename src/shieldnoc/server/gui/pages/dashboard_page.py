@@ -37,7 +37,7 @@ class ServerDashboardPage(QWidget):
         header_row = QHBoxLayout()
         header_row.setSpacing(10)
 
-        title = QLabel("Dashboard — Server")
+        title = QLabel("Dashboard")
         title.setObjectName("pageTitle")
 
         metrics_wrap = QWidget()
