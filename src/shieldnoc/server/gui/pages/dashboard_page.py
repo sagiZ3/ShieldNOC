@@ -14,7 +14,7 @@ from PySide6.QtWidgets import (
 )
 from PySide6.QtCharts import QChart, QChartView, QLineSeries, QValueAxis
 
-from src.shieldnoc.client.gui.widgets.card_frame import CardFrame
+from src.shieldnoc.server.gui.widgets.card_frame import CardFrame
 from src.shieldnoc.server.gui.widgets.topology_view import TopologyView, ClientInfo
 
 
