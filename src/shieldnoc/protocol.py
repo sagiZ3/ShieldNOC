@@ -1,4 +1,3 @@
-import socket
 import select, socket
 
 from logging_config import logger
