@@ -1,4 +1,3 @@
-# src/shieldnoc/server/gui/main.py
 import sys
 
 from PySide6.QtWidgets import (
@@ -7,7 +6,7 @@ from PySide6.QtWidgets import (
 )
 from PySide6.QtCore import Qt
 
-from src.shieldnoc.client.gui.ui.background import BackgroundLayer
+from src.shieldnoc.server.gui.ui.background import BackgroundLayer
 from src.shieldnoc.server.gui.ui.style import SERVER_STYLE_SHEET
 from src.shieldnoc.server.gui.pages.dashboard_page import ServerDashboardPage
 
@@ -20,14 +19,13 @@ class MainWindow(QMainWindow):
 
         central = QWidget()
         self.setCentralWidget(central)
-        central.setAttribute(Qt.WA_StyledBackground, False)
+        central.setAttribute(Qt.WA_StyledBackground, False)  # type: ignore
         central.setStyleSheet("background: transparent;")
 
         root = QVBoxLayout(central)
         root.setContentsMargins(0, 0, 0, 0)
         root.setSpacing(0)
 
-        # סרגל עליון: Top bar
         top = QHBoxLayout()
         top.setContentsMargins(12, 8, 12, 8)
         top.setSpacing(8)
@@ -43,7 +41,7 @@ class MainWindow(QMainWindow):
         top.addWidget(btn_bg)
         root.addLayout(top)
 
-        # עמוד: Page
+        # dashboard page
         self.page = ServerDashboardPage()
         root.addWidget(self.page, 1)
 
