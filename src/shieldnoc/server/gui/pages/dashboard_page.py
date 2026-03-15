@@ -15,8 +15,8 @@ from PySide6.QtWidgets import (
 )
 from PySide6.QtCharts import QChart, QChartView, QLineSeries, QValueAxis
 
-from src.shieldnoc.server.gui.widgets.card_frame import CardFrame
-from src.shieldnoc.server.gui.widgets.topology_view import TopologyView, ClientInfo
+from shieldnoc.server.gui.widgets.card_frame import CardFrame
+from shieldnoc.server.gui.widgets.topology_view import TopologyView, ClientInfo
 
 
 class ServerDashboardPage(QWidget):
@@ -122,7 +122,7 @@ class ServerDashboardPage(QWidget):
         )
         self.topology.setMinimumHeight(240)
         self.topology_card.content_layout.addWidget(self.topology)
-        self.topology.set_icons("assets/server.png", "assets/pc.png")
+        self.topology.set_icons("gui/assets/server.png", "gui/assets/pc.png")
 
         self.brand_card = CardFrame("")
         self.logo_label = QLabel()
@@ -301,7 +301,7 @@ class ServerDashboardPage(QWidget):
     # Demo tick
     # ─────────────────────────────────────────────────────────────
     def _seed_demo_clients(self):
-        self.set_logo_path("assets/ShieldNOC_logo.png")
+        self.set_logo_path("gui/assets/ShieldNOC_logo.png")
         demo = [
             ClientInfo(key="10.0.0.101", label="WIN11"),
             ClientInfo(key="10.0.0.102", label="KALI"),

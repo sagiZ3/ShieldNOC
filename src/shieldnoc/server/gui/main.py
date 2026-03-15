@@ -6,9 +6,9 @@ from PySide6.QtWidgets import (
 )
 from PySide6.QtCore import Qt
 
-from src.shieldnoc.server.gui.ui.background import BackgroundLayer
-from src.shieldnoc.server.gui.ui.style import SERVER_STYLE_SHEET
-from src.shieldnoc.server.gui.pages.dashboard_page import ServerDashboardPage
+from shieldnoc.server.gui.ui.background import BackgroundLayer
+from shieldnoc.server.gui.ui.style import SERVER_STYLE_SHEET
+from shieldnoc.server.gui.pages.dashboard_page import ServerDashboardPage
 
 
 class MainWindow(QMainWindow):
@@ -57,7 +57,7 @@ class MainWindow(QMainWindow):
         self.bg_layer.resize(self.size())
 
 
-def main():
+def gui_main():
     app = QApplication(sys.argv)
     w = MainWindow()
     w.show()
@@ -65,4 +65,4 @@ def main():
 
 
 if __name__ == "__main__":
-    main()
+    gui_main()
