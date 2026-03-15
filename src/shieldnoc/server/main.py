@@ -1,0 +1,8 @@
+from shieldnoc.server.gui.main import gui_main
+
+def main():
+    gui_main()
+
+
+if __name__ == '__main__':
+    main()
