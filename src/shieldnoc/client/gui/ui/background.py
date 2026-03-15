@@ -1,4 +1,3 @@
-# src/shieldnoc/client/gui/ui/background.py
 from PySide6.QtWidgets import QWidget
 from PySide6.QtGui import QPainter, QPixmap
 from PySide6.QtCore import Qt
