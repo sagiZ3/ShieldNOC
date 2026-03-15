@@ -254,8 +254,8 @@ class ServerDashboardPage(QWidget):
     # Chat
     # ─────────────────────────────────────────────────────────────
     def _seed_chat(self):
-        self.chat_view.append(f"[{self._ts()}] System: Server chat ready.")
-        self.chat_view.append(f"[{self._ts()}] Admin: Watching connections…")
+        self.chat_view.append(f"[{self._timestamp()}] System: Server chat ready.")
+        self.chat_view.append(f"[{self._timestamp()}] Admin: Watching connections…")
         self._scroll_chat_bottom()
 
     def _send_chat(self):
@@ -263,14 +263,15 @@ class ServerDashboardPage(QWidget):
         if not msg:
             return
         self.chat_input.clear()
-        self.chat_view.append(f"[{self._ts()}] You: {msg}")
+        self.chat_view.append(f"[{self._timestamp()}] You: {msg}")
         self._scroll_chat_bottom()
 
     def _scroll_chat_bottom(self):
         sb = self.chat_view.verticalScrollBar()
         sb.setValue(sb.maximum())
 
-    def _ts(self) -> str:
+    @staticmethod
+    def _timestamp() -> str:
         return datetime.now().strftime("%H:%M:%S")
 
     # ─────────────────────────────────────────────────────────────
@@ -282,7 +283,7 @@ class ServerDashboardPage(QWidget):
             vpn_ip = c.key
             mac = "AA:BB:CC:00:00:00"
             host = c.label or "CLIENT"
-            last = self._ts()
+            last = self._timestamp()
             status = "OK"
             rows.append((vpn_ip, mac, host, last, status))
 
@@ -338,5 +339,5 @@ class ServerDashboardPage(QWidget):
                 "Latency spike detected.",
                 "New client authenticated.",
             ])
-            self.chat_view.append(f"[{self._ts()}] {who}: {txt}")
+            self.chat_view.append(f"[{self._timestamp()}] {who}: {txt}")
             self._scroll_chat_bottom()
