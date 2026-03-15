@@ -4,7 +4,7 @@ from logging_config import logger
 
 
 LENGTH_FIELD_SIZE = 4
-CONNECTION_PORT = 8888
+CONNECTION_PORT = 9000
 LISTEN_EVERYONE_IP = '0.0.0.0'
 LISTEN_LOOPBACK_IP = '127.0.0.1'
 SERVER_IP = socket.gethostbyname(socket.gethostname())  # when run on the same network interface # delete - in different constants
