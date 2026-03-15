@@ -167,7 +167,70 @@ QLineEdit:focus {
     border: 1px solid #283458;
 }
 
-SERVER_STYLE_SHEET = BASE_STYLE + """
+/* Metrics */
+#metricValue {
+    font-size: 20px;
+    font-weight: 800;
+    color: #f7c948;
+    text-align: center;
+}
+#metricLabel {
+    font-size: 12px;
+    color: #cbd4ff;
+}
+
+/* Switch background button */
+#switchBgButton {
+    background-color: transparent;
+    border-radius: 999px;
+    border: 1px solid #52b6ff;
+    padding: 6px 12px;
+    color: #52b6ff;
+    font-size: 11px;
+}
+#switchBgButton:hover {
+    background-color: rgba(16, 48, 96, 0.7);
+}
+#switchBgButton:pressed {
+    background-color: rgba(16, 48, 96, 0.95);
+    border: 1px solid #9ad8ff;
+}
+
+/* Tables */
+QTableWidget {
+    background-color: rgba(2, 6, 25, 0.75);
+    border: 1px solid #283458;
+    border-radius: 10px;
+    gridline-color: #283458;
+}
+QHeaderView::section {
+    background-color: rgba(10, 20, 50, 0.9);
+    padding: 6px;
+    border: none;
+    color: #cfe3ff;
+    font-weight: 600;
+}
+QTableWidget::item {
+    padding: 6px;
+}
+QTableWidget::item:selected {
+    background-color: rgba(82, 182, 255, 0.25);
+}
+
+/* Chat */
+#chatView {
+    background-color: rgba(2, 6, 25, 0.85);
+    border-radius: 10px;
+    border: 1px solid #283458;
+}
+#chatInputRow QPushButton {
+    padding: 8px 12px;
+}
+
+/* General */
+QLabel {
+    font-size: 12px;
+}
 
 /* Server-specific titles */
 #serverTitle {

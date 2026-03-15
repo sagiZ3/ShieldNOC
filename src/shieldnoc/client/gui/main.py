@@ -1,4 +1,3 @@
-# src/shieldnoc/client/gui/main.py
 import sys
 
 from PySide6.QtWidgets import (
@@ -7,10 +6,10 @@ from PySide6.QtWidgets import (
 )
 from PySide6.QtCore import Qt, QTimer
 
-from src.shieldnoc.client.gui.ui.style import STYLE_SHEET
-from src.shieldnoc.client.gui.ui.background import BackgroundLayer
-from src.shieldnoc.client.gui.pages.connect_page import ConnectPage
-from src.shieldnoc.client.gui.pages.dashboard_page import DashboardPage
+from shieldnoc.client.gui.ui.style import STYLE_SHEET
+from shieldnoc.client.gui.ui.background import BackgroundLayer
+from shieldnoc.client.gui.pages.connect_page import ConnectPage
+from shieldnoc.client.gui.pages.dashboard_page import DashboardPage
 
 
 class MainWindow(QMainWindow):

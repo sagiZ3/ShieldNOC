@@ -1,11 +1,10 @@
-# src/shieldnoc/client/gui/pages/connect_page.py
 from PySide6.QtWidgets import (
     QWidget, QVBoxLayout, QHBoxLayout, QLabel, QPushButton,
     QGridLayout, QLineEdit
 )
 from PySide6.QtCore import Signal, Qt, QTimer
 
-from src.shieldnoc.client.gui.widgets.card_frame import CardFrame
+from shieldnoc.client.gui.widgets.card_frame import CardFrame
 
 
 class ConnectPage(QWidget):

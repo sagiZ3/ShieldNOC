@@ -1,4 +1,3 @@
-# src/shieldnoc/client/gui/ui/style.py
 STYLE_SHEET = """
 QWidget {
     background-color: #050814;
