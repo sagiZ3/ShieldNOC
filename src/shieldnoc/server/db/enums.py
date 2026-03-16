@@ -9,5 +9,5 @@ class ClientField(Enum):
     HOSTNAME = "hostname"
     LAST_SEEN = "last_seen"
     STATUS = "status"
-    IP_PREF = "ip_preference"
-    BG_PREF = "background_preference"
+    # IP_PREF = "ip_preference"          # should be store at the client DB
+    # BG_PREF = "background_preference"  # should be store at the client DB
