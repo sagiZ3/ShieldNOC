@@ -22,11 +22,11 @@ class ChatConnection:
         self._clients: dict[socket.socket: tuple[str, int]] = {}
         # TODO: add cache ?
 
-    def clients_acceptor(self) -> None:
+    def _clients_acceptor(self) -> None:
         while True:
             client_sock, client_addr = self._conn_sock.accept()
             self._clients[client_sock] = client_addr
-            self._broadcast(f"{client_addr} joined the chat!")
+            self._broadcast_msg(f"{client_addr} joined the chat!")
 
             thread = Thread(target=self._handle_client, args=(client_sock,))
             thread.start()
@@ -45,7 +45,7 @@ class ChatConnection:
                 break
 
             if valid_msg:
-                self._broadcast(f"{self._clients[client_socket][0]}: {client_msg}")
+                self._broadcast_msg(f"{self._clients[client_socket][0]}: {client_msg}")
             else:
                 try:
                     logger.error(f"Error with sending the message: {client_msg}")
@@ -64,7 +64,7 @@ class ChatConnection:
         self._clients.pop(client_socket)
         client_socket.close()
 
-    def _broadcast(self, msg):
+    def _broadcast_msg(self, msg):
         self.messages.append(msg)
         for client_sock in self._clients:
             protocol.send_segment(client_sock, msg)
