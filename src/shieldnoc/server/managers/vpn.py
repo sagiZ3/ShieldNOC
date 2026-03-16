@@ -4,10 +4,9 @@ from shieldnoc.logging_config import logger
 
 
 class VPNManager:
-    def __init__(self, wg_interface: str, lan_interface: str, wan_interface: str, config_path: str):
+    def __init__(self, wg_interface: str, lan_interface: str, config_path: str):
         self._wg_interface = wg_interface
         self._lan_interface = lan_interface
-        self._wan_interface = wan_interface
         self._config_path = config_path
 
     def enable_ip_forwarding(self) -> None:
@@ -19,42 +18,42 @@ class VPNManager:
     def enable_nat(self) -> None:
         self._run_terminal_cmd([
             "iptables", "-A", "FORWARD",
-            "-i", self._lan_interface,
-            "-o", self._wan_interface,
+            "-i", self._wg_interface,
+            "-o", self._lan_interface,
             "-j", "ACCEPT"
         ])
         self._run_terminal_cmd([
             "iptables", "-A", "FORWARD",
-            "-i", self._wan_interface,
-            "-o", self._lan_interface,
+            "-i", self._lan_interface,
+            "-o", self._wg_interface,
             "-m", "state",
             "--state", "ESTABLISHED,RELATED",
             "-j", "ACCEPT"
         ])
         self._run_terminal_cmd([
             "iptables", "-t", "nat", "-A", "POSTROUTING",
-            "-o", self._wan_interface,
+            "-o", self._lan_interface,
             "-j", "MASQUERADE"
         ])
 
     def disable_nat(self) -> None:
         self._run_terminal_cmd([
             "iptables", "-D", "FORWARD",
-            "-i", self._lan_interface,
-            "-o", self._wan_interface,
+            "-i", self._wg_interface,
+            "-o", self._lan_interface,
             "-j", "ACCEPT"
         ])
         self._run_terminal_cmd([
             "iptables", "-D", "FORWARD",
-            "-i", self._wan_interface,
-            "-o", self._lan_interface,
+            "-i", self._lan_interface,
+            "-o", self._wg_interface,
             "-m", "state",
             "--state", "ESTABLISHED,RELATED",
             "-j", "ACCEPT"
         ])
         self._run_terminal_cmd([
             "iptables", "-t", "nat", "-D", "POSTROUTING",
-            "-o", self._wan_interface,
+            "-o", self._lan_interface,
             "-j", "MASQUERADE"
         ])
 
@@ -72,7 +71,7 @@ class VPNManager:
             capture_output=True,
             text=True
         )
-        return f"-o {self._wan_interface} -j MASQUERADE" in result.stdout
+        return f"-o {self._lan_interface} -j MASQUERADE" in result.stdout
 
     def setup_server_networking(self) -> bool:
         self.enable_ip_forwarding()
