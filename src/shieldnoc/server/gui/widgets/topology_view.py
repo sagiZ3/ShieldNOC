@@ -1,6 +1,4 @@
 import math
-from dataclasses import dataclass
-from typing import Optional
 
 from PySide6.QtCore import Qt, QPointF
 from PySide6.QtGui import QPen, QColor, QBrush, QPixmap, QPainter
@@ -44,8 +42,8 @@ class TopologyView(QGraphicsView):
         self._line_pen = QPen(QColor("#52b6ff"))
         self._line_pen.setWidth(2)
 
-        self._server_icon: Optional[QPixmap] = None
-        self._client_icon: Optional[QPixmap] = None
+        self._server_icon: QPixmap | None = None
+        self._client_icon: QPixmap | None = None
 
         if server_icon_path:
             pix = QPixmap(server_icon_path)
