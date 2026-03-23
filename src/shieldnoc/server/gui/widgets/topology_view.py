@@ -150,38 +150,3 @@ class TopologyView(QGraphicsView):
             line.setLine(self._server_pos.x(), self._server_pos.y(), x, y)
 
         self._fit()
-
-    def set_icons(self, server_icon_path: str | None, client_icon_path: str | None):
-        # טוען מחדש
-        self._server_icon = None
-        self._client_icon = None
-
-        if server_icon_path:
-            pix = QPixmap(server_icon_path)
-            if not pix.isNull():
-                self._server_icon = pix
-
-        if client_icon_path:
-            pix = QPixmap(client_icon_path)
-            if not pix.isNull():
-                self._client_icon = pix
-
-        # מחליף את השרת
-        if self._server_item is not None:
-            self._scene.removeItem(self._server_item)
-            self._server_item = None
-
-        if self._server_fallback_circle is not None:
-            self._scene.removeItem(self._server_fallback_circle)
-            self._server_fallback_circle = None
-
-        self._init_server()
-
-        # מחליף את כל הלקוחות שכבר קיימים (חשוב!)
-        existing = [ClientInfo(key=k, label="") for k in list(self._client_items.keys())]
-        for k in list(self._client_items.keys()):
-            self.remove_client(k)
-        for c in existing:
-            self.add_client(c)
-
-        self._reflow()
