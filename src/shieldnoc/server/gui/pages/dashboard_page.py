@@ -342,3 +342,13 @@ class ServerDashboardPage(QWidget):
             ])
             self.chat_view.append(f"[{self._timestamp()}] {who}: {txt}")
             self._scroll_chat_bottom()
+
+        self._time += 1
+
+            # concept:
+            # def _refresh_data(self):
+            #     data = self.server_manager.get_snapshot()
+            #
+            #     self.set_clients(data.clients)
+            #     self.add_traffic_point(data.traffic)
+            #     self.append_chat(...)
