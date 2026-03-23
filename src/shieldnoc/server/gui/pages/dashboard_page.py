@@ -71,7 +71,7 @@ class ServerDashboardPage(QWidget):
         left_col.setSpacing(10)
 
         self.traffic_card = CardFrame("Network Traffic (Packets/sec)")
-        self.traffic_chart = self._create_line_chart("Packets/sec")
+        self.traffic_chart = self._create_line_chart("Packets")
         self.traffic_card.content_layout.addWidget(self.traffic_chart)
 
         self.chat_card = CardFrame("Chat")
