@@ -1,7 +1,5 @@
 # TODO: add Hostname column to clients information table
-from __future__ import annotations
-
-from dataclasses import dataclass
+# TODO: add buttons for removing or waring a client with a specific message
 from datetime import datetime
 import random
 
