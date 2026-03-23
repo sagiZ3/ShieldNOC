@@ -26,7 +26,7 @@ class ServerDashboardPage(QWidget):
         self.setLayoutDirection(Qt.LeftToRight)
 
         self._time = 0
-        self._clients: list[ClientInfo] = []
+        self._clients: list[ClientInfo] = []  # TODO: remember import for logic use
 
         root = QVBoxLayout(self)
         root.setContentsMargins(16, 16, 16, 16)
@@ -184,7 +184,7 @@ class ServerDashboardPage(QWidget):
         scaled = pix.scaled(300, 300, Qt.KeepAspectRatio, Qt.SmoothTransformation)
         self.logo_label.setPixmap(scaled)
 
-    def set_clients(self, clients: list[ClientInfo]):
+    def set_clients(self, clients: list[ClientInfo]):  # TODO: remember that's the client logic gateway
         self._clients = clients
 
         self.card_clients.value_label.setText(str(len(clients)))
@@ -277,7 +277,7 @@ class ServerDashboardPage(QWidget):
     # ─────────────────────────────────────────────────────────────
     # Clients table
     # ─────────────────────────────────────────────────────────────
-    def _update_clients_table_from_clients(self, clients: list[ClientInfo]):
+    def _update_clients_table_from_clients(self, clients: list[ClientInfo]):  # TODO: add arguemnets in the real func
         rows = []
         for c in clients:
             vpn_ip = c.key
@@ -294,24 +294,24 @@ class ServerDashboardPage(QWidget):
                 it.setTextAlignment(Qt.AlignLeft | Qt.AlignVCenter)
                 self.clients_table.setItem(r, c, it)
 
-        # Demo CPU/RAM
+        # Demo CPU/RAM - TODO: add set_metrics(cpu, ram)
         self.card_cpu.value_label.setText(str(random.randint(5, 35)))
         self.card_ram.value_label.setText(str(random.randint(20, 70)))
 
     # ─────────────────────────────────────────────────────────────
     # Demo tick
     # ─────────────────────────────────────────────────────────────
-    def _seed_demo_clients(self):
-        self.set_logo_path("gui/assets/ShieldNOC_logo.png")
+    def _seed_demo_clients(self):  # TODO: remove ? use differently
         demo = [
-            ClientInfo(key="10.0.0.101", label="WIN11"),
+            ClientInfo(key="10.0.0.101", label="WIN11"),  # TODO: see if needed ClientInfo & change label name
             ClientInfo(key="10.0.0.102", label="KALI"),
             ClientInfo(key="10.0.0.103", label="DESKTOP"),
         ]
         self.set_clients(demo)
 
-    def _tick_demo(self):
-        self._time += 1
+    def _tick_demo(self):  # TODO: figure what the hell is that
+                           # TODO: OK - add add_traffic_point(ts: int, packets_per_sec: int) (seperate)
+                           # TODO: implement concept shown as below
 
         chart = self.traffic_chart.chart()
         chart.setAnimationOptions(QChart.AnimationOption.NoAnimation)
