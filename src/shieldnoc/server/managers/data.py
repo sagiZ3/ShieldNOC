@@ -1,2 +1,44 @@
+from dataclasses import dataclass
+
+@dataclass(frozen=True)
+class ClientInfo:
+    key: str           # ייחודי, למשל VPN IP או MAC
+    label: str = ""    # אופציונלי (לא חובה כרגע)
+
+
 class DataManager:
-    pass
+    def __init__(self):
+        pass
+
+    def register_client(self):
+        pass
+
+    def get_dashboard_clients(self):
+        pass
+
+    def get_client_details(self):
+        pass
+
+    def update_client_status(self):
+        pass
+
+    def get_system_stats(self):
+        pass
+
+    def get_dashboard_data(self):
+        pass
+
+    def get_connected_clients_amount(self):
+        pass
+
+    def get_cpu_usage(self):
+        pass
+
+    def get_ram_usage(self):
+        pass
+
+    def get_packets_per_second(self):
+        pass
+
+    def get_next_chat_msg(self):
+        pass
