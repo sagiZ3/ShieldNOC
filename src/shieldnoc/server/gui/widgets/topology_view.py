@@ -7,21 +7,15 @@ from PySide6.QtWidgets import (
     QGraphicsPixmapItem, QGraphicsEllipseItem, QGraphicsLineItem
 )
 
-
-@dataclass(frozen=True)
-class ClientInfo:
-    key: str           # ייחודי, למשל VPN IP או MAC
-    label: str = ""    # אופציונלי (לא חובה כרגע)
-
+from shieldnoc.server.gui.enums import ImagesPaths
+from shieldnoc.server.managers.data import ClientInfo
 
 class TopologyView(QGraphicsView):
-    def __init__(
-        self,
-        parent=None,
-        server_icon_path="assets/server.png",
-        client_icon_path="assets/pc.png",
-    ):
+    def __init__(self, parent=None):
         super().__init__(parent)
+        
+        self._server_image_path = ImagesPaths.TOPOLOGY_SERVER.value
+        self._client_image_path = ImagesPaths.TOPOLOGY_CLIENT.value
 
         self.setRenderHint(QPainter.Antialiasing, True)
         self.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
@@ -45,13 +39,13 @@ class TopologyView(QGraphicsView):
         self._server_icon: QPixmap | None = None
         self._client_icon: QPixmap | None = None
 
-        if server_icon_path:
-            pix = QPixmap(server_icon_path)
+        if self._server_image_path:
+            pix = QPixmap(self._server_image_path)
             if not pix.isNull():
                 self._server_icon = pix
 
-        if client_icon_path:
-            pix = QPixmap(client_icon_path)
+        if self._client_image_path:
+            pix = QPixmap(self._client_image_path)
             if not pix.isNull():
                 self._client_icon = pix
 
