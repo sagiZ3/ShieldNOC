@@ -15,6 +15,8 @@ from PySide6.QtCharts import QChart, QChartView, QLineSeries, QValueAxis
 
 from shieldnoc.server.gui.widgets.card_frame import CardFrame
 from shieldnoc.server.gui.widgets.topology_view import TopologyView, ClientInfo
+from shieldnoc.server.gui.enums import ImagesPaths
+from shieldnoc.server.gui.enums import TrafficChart
 
 
 class ServerDashboardPage(QWidget):
@@ -161,6 +163,7 @@ class ServerDashboardPage(QWidget):
         body.addWidget(right_wrap, 2)
 
         root.addLayout(body, 1)
+        self.set_logo_path(ImagesPaths.LOGO.value)
 
         # Demo init
         self._seed_chat()
@@ -215,13 +218,13 @@ class ServerDashboardPage(QWidget):
         chart.legend().hide()
 
         axis_x = QValueAxis()
-        axis_x.setRange(0, 60)
+        axis_x.setRange(0, TrafficChart.TIME_WINDOW_SECONDS.value)
         axis_x.setLabelFormat("%d")
         axis_x.setTitleText("Time (s)")
         axis_x.setTickCount(5)
 
         axis_y = QValueAxis()
-        axis_y.setRange(0, 100)
+        axis_y.setRange(0, TrafficChart.PACKETS_WINDOW.value)
         axis_y.setTitleText(y_title)
         axis_y.setTickCount(5)
 
@@ -313,13 +316,16 @@ class ServerDashboardPage(QWidget):
         chart = self.traffic_chart.chart()
         chart.setAnimationOptions(QChart.AnimationOption.NoAnimation)
         axis_x = chart.axes(Qt.Horizontal)[0]
-        axis_x.setRange(max(0, self._time - 60), self._time if self._time >= 60 else 60)
+        axis_x.setRange(max(0, self._time - TrafficChart.TIME_WINDOW_SECONDS.value),
+                        self._time if self._time >= TrafficChart.TIME_WINDOW_SECONDS.value else
+                        TrafficChart.TIME_WINDOW_SECONDS.value
+                        )
 
         packets = random.randint(50, 1000)  # demo
         chart.setAnimationOptions(QChart.AnimationOption.SeriesAnimations)
         self.series.append(self._time, packets)
-        if self.series.count() > 60:
-            self.series.removePoints(0, self.series.count() - 60)
+        if self.series.count()-1 > TrafficChart.TIME_WINDOW_SECONDS.value:
+            self.series.removePoints(0, self.series.count()-1 - TrafficChart.TIME_WINDOW_SECONDS.value)
 
         cur = list(self._clients)
         if random.random() < 0.35 and len(cur) < 12:
