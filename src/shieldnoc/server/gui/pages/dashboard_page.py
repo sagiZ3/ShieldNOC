@@ -116,13 +116,9 @@ class ServerDashboardPage(QWidget):
         topo_logo_row.setSpacing(10)
 
         self.topology_card = CardFrame("Topology")
-        self.topology = TopologyView(
-            server_icon_path=None,
-            client_icon_path=None,
-        )
+        self.topology = TopologyView()
         self.topology.setMinimumHeight(240)
         self.topology_card.content_layout.addWidget(self.topology)
-        self.topology.set_icons("gui/assets/server.png", "gui/assets/pc.png")
 
         self.brand_card = CardFrame("")
         self.logo_label = QLabel()
