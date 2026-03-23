@@ -120,7 +120,7 @@ class ServerDashboardPage(QWidget):
         self.topology.setMinimumHeight(240)
         self.topology_card.content_layout.addWidget(self.topology)
 
-        self.brand_card = CardFrame("")
+        self.brand_card = CardFrame()
         self.logo_label = QLabel()
         self.logo_label.setAlignment(Qt.AlignCenter)
         self.logo_label.setMinimumHeight(240)
