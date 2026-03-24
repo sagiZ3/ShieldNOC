@@ -233,7 +233,7 @@ class ServerDashboardPage(QWidget):
         return view
 
     @staticmethod
-    def _metric_card_small(self, title: str, value: str) -> QWidget:
+    def _metric_card_small(title: str, value: str) -> QWidget:
         card = CardFrame(title)
         v = QLabel(value)
         v.setObjectName("metricValue")
