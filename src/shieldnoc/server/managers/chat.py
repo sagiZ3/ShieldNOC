@@ -23,6 +23,10 @@ class ChatManager:
         self._clients: dict[socket.socket: tuple[str, int]] = {}  # [socket: (ip, port)]
         # TODO: add cache ?
 
+    def start_chat(self):
+        self._clients_acceptor()
+        logger.info("===== Chat is ready for accepting clients =====")
+
     def _clients_acceptor(self) -> None:
         while True:
             client_sock, client_addr = self._listen_sock.accept()
