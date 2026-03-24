@@ -1,3 +1,4 @@
+# TODO: add exit when admin close the dashboard
 import socket
 from datetime import datetime
 
