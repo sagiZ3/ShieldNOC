@@ -66,7 +66,3 @@ def gui_main(chat_manager: ChatManager):
     w = MainWindow(chat_manager)
     w.show()
     sys.exit(app.exec())
-
-
-if __name__ == "__main__":
-    gui_main()
