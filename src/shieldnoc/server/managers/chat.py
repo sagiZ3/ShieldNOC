@@ -86,7 +86,7 @@ class ChatManager:
     def wrap_server_manager_msg(self, msg) -> str:
         return f"[{self._timestamp()}] <span style='color:#ffe100'>Server Manager:</span> {msg}"
 
-    def _wrap_client_msg(self, msg, client_socket):
+    def _wrap_client_msg(self, msg, client_socket) -> str:
         return f"[{self._timestamp()}] {self._clients[client_socket][0]}: {msg}"
 
     @staticmethod
