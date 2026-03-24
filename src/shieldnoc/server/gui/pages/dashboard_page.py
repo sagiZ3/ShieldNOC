@@ -262,10 +262,6 @@ class ServerDashboardPage(QWidget):
         sb = self.chat_view.verticalScrollBar()
         sb.setValue(sb.maximum())
 
-    @staticmethod
-    def _timestamp() -> str:
-        return datetime.now().strftime("%H:%M:%S")
-
     # ─────────────────────────────────────────────────────────────
     # Clients table
     # ─────────────────────────────────────────────────────────────
@@ -289,6 +285,10 @@ class ServerDashboardPage(QWidget):
         # Demo CPU/RAM - TODO: add set_metrics(cpu, ram)
         self.card_cpu.value_label.setText(str(random.randint(5, 35)))
         self.card_ram.value_label.setText(str(random.randint(20, 70)))
+
+    @staticmethod
+    def _timestamp() -> str:
+        return datetime.now().strftime("%H:%M:%S")
 
     # ─────────────────────────────────────────────────────────────
     # Demo tick
