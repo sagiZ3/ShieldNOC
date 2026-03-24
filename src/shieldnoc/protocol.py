@@ -9,7 +9,6 @@ CONNECTION_PORT = requests.get('https://did.li/get-ShieldNOC-server-ip').text.sp
 SERVER_IP = requests.get('https://did.li/get-ShieldNOC-server-ip').text.split(':')[0]
 LISTEN_EVERYONE_IP = '0.0.0.0'
 LISTEN_LOOPBACK_IP = '127.0.0.1'
-SERVER_IP = requests.get('https://did.li/get-ShieldNOC-server-ip').text.split(':')[0]
 
 
 def garbage_cleaner(my_socket: socket.socket, timeout=0.01) -> None:
