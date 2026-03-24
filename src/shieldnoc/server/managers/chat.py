@@ -10,12 +10,12 @@ class ChatManager:
         self._listen_sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
         try:
-            self._conn_sock.bind((protocol.LISTEN_EVERYONE_IP, protocol.CONNECTION_PORT))
+            self._listen_sock.bind((protocol.LISTEN_EVERYONE_IP, protocol.CONNECTION_PORT))
         except Exception as e:
             logger.error("Failed to bind socket: " + str(e))
             exit()
 
-        self._conn_sock.listen()
+        self._listen_sock.listen()
         logger.info("===== Chat Connection is up and running =====")
 
         self.messages: list = []
@@ -24,7 +24,7 @@ class ChatManager:
 
     def _clients_acceptor(self) -> None:
         while True:
-            client_sock, client_addr = self._conn_sock.accept()
+            client_sock, client_addr = self._listen_sock.accept()
             self._clients[client_sock] = client_addr
             self._broadcast_msg(f"{client_addr} joined the chat!")
 
