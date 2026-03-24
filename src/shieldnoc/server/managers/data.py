@@ -38,6 +38,3 @@ class DataManager:
 
     def get_packets_per_second(self):
         pass
-
-    def get_next_chat_msg(self):
-        pass
