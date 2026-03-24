@@ -27,7 +27,7 @@ class ChatManager:
         while True:
             client_sock, client_addr = self._listen_sock.accept()
             self._clients[client_sock] = client_addr
-            self._broadcast_msg(f"{client_addr} joined the chat!")
+            self._broadcast_msg(f"~{client_addr} joined the ShieldNOC system~")
 
             thread = Thread(target=self._handle_client, args=(client_sock,))
             thread.start()
