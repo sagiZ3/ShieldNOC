@@ -254,7 +254,6 @@ class ServerDashboardPage(QWidget):
         msg = self.chat_manager.wrap_server_manager_msg(msg)
 
         self.chat_input.clear()
-        self.chat_view.append(f"[{self._timestamp()}] You: {msg}")
         self._scroll_chat_bottom()
         self.chat_manager.broadcast_msg(msg)
 
