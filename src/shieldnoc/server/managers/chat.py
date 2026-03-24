@@ -40,10 +40,10 @@ class ChatManager:
             thread = Thread(target=self._handle_client, args=(client_sock,))
             thread.start()
 
-    def _handle_client(self, client_socket) -> None:
+    def _handle_client(self, client_sock) -> None:
         while True:
             try:
-                valid_msg, client_msg = protocol.get_payload(client_socket)
+                valid_msg, client_msg = protocol.get_payload(client_sock)
 
             except ConnectionResetError:
                 logger.warning("Client unexpectedly closed the connection")
@@ -54,15 +54,15 @@ class ChatManager:
                 break
 
             if valid_msg:
-                self.broadcast_msg(self._wrap_client_msg(client_msg, client_socket))
+                self.broadcast_msg(self._wrap_client_msg(client_msg, client_sock))
             else:
                 try:
                     logger.error(f"Error with sending the message: {client_msg}")
                     while True:
-                        readable, _, _ = select([client_socket], [], [], 0)
+                        readable, _, _ = select([client_sock], [], [], 0)
                         if not readable:
                             break
-                        client_socket.recv(1024)  # Attempt to empty the socket from possible garbage
+                        client_sock.recv(1024)  # Attempt to empty the socket from possible garbage
 
                 except ConnectionResetError:
                     logger.warning("Client unexpectedly closed the connection in a middle of reading data")
@@ -72,8 +72,8 @@ class ChatManager:
                     logger.warning(f"Unexpected Error occurred: {e} ")
 
         # broken
-        self._clients.pop(client_socket)
-        client_socket.close()
+        self._clients.pop(client_sock)
+        client_sock.close()
 
     def broadcast_msg(self, msg) -> None:
         self._messages.append(msg)
@@ -86,8 +86,8 @@ class ChatManager:
     def wrap_server_manager_msg(self, msg) -> str:
         return f"[{self._timestamp()}] <span style='color:#ffe100'>Server Manager:</span> {msg}"
 
-    def _wrap_client_msg(self, msg, client_socket) -> str:
-        return f"[{self._timestamp()}] {self._clients[client_socket][0]}: {msg}"
+    def _wrap_client_msg(self, msg, client_sock) -> str:
+        return f"[{self._timestamp()}] {self._clients[client_sock][0]}: {msg}"
 
     def get_next_msg(self) -> str | None:
         if self._messages:
