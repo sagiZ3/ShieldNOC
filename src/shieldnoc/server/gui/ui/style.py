@@ -222,6 +222,7 @@ QTableWidget::item:selected {
     background-color: rgba(2, 6, 25, 0.85);
     border-radius: 10px;
     border: 1px solid #283458;
+    font-size: 14px;
 }
 #chatInputRow QPushButton {
     padding: 8px 12px;
