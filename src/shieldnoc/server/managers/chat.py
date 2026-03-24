@@ -35,7 +35,7 @@ class ChatManager:
         while True:
             client_sock, client_addr = self._listen_sock.accept()
             self._clients[client_sock] = client_addr
-            self._broadcast_msg(self._wrap_system_msg(f"~{client_addr} joined the ShieldNOC system~"))
+            self.broadcast_msg(self._wrap_system_msg(f"~{client_addr[0]} joined the ShieldNOC system~"))
 
             thread = Thread(target=self._handle_client, args=(client_sock,))
             thread.start()
@@ -54,7 +54,7 @@ class ChatManager:
                 break
 
             if valid_msg:
-                self._broadcast_msg(self._wrap_client_msg(client_msg, client_socket))
+                self.broadcast_msg(self._wrap_client_msg(client_msg, client_socket))
             else:
                 try:
                     logger.error(f"Error with sending the message: {client_msg}")
@@ -75,7 +75,7 @@ class ChatManager:
         self._clients.pop(client_socket)
         client_socket.close()
 
-    def _broadcast_msg(self, msg):
+    def broadcast_msg(self, msg) -> None:
         self._messages.append(msg)
         for client_sock in self._clients:
             protocol.send_segment(client_sock, msg)
