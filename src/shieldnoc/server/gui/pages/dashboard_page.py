@@ -246,6 +246,17 @@ class ServerDashboardPage(QWidget):
         view.setContentsMargins(0, 0, 0, 0)
         return view
 
+    @staticmethod
+    def _metric_card_small(self, title: str, value: str) -> QWidget:
+        card = CardFrame(title)
+        v = QLabel(value)
+        v.setObjectName("metricValue")
+        v.setAlignment(Qt.AlignCenter)
+        card.content_layout.addWidget(v)
+        card.value_label = v
+        card.setMinimumHeight(70)
+        card.setMinimumWidth(160)
+        return card
     # ─────────────────────────────────────────────────────────────
     # Chat
     # ─────────────────────────────────────────────────────────────
