@@ -247,11 +247,6 @@ class ServerDashboardPage(QWidget):
     # ─────────────────────────────────────────────────────────────
     # Chat
     # ─────────────────────────────────────────────────────────────
-    def _seed_chat(self):
-        self.chat_view.append(f"[{self._timestamp()}] System: Server chat ready.")
-        self.chat_view.append(f"[{self._timestamp()}] Admin: Watching connections…")
-        self._scroll_chat_bottom()
-
     def _send_chat(self):
         msg = self.chat_input.text().strip()
         if not msg:
