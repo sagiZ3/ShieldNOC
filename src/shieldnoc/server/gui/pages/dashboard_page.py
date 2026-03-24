@@ -100,7 +100,6 @@ class ServerDashboardPage(QWidget):
         self.chat_card.content_layout.addWidget(self.chat_view, 1)
         self.chat_card.content_layout.addWidget(chat_input_row)
 
-        # ✅ חצי-חצי גובה
         left_col.addWidget(self.traffic_card, 1)
         left_col.addWidget(self.chat_card, 1)
 
@@ -134,7 +133,6 @@ class ServerDashboardPage(QWidget):
 
         right_col.addLayout(topo_logo_row)
 
-        # ✅ טבלת Clients נמצאת רק מתחת ל-Topology+Logo, ברוחב של העמודה הימנית
         self.clients_card = CardFrame("Clients")
         self.clients_table = QTableWidget(0, 5)
         self.clients_table.setLayoutDirection(Qt.LeftToRight)
@@ -154,7 +152,6 @@ class ServerDashboardPage(QWidget):
         right_wrap.setLayout(right_col)
         right_wrap.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
 
-        # ✅ חלוקת רוחב: שמאל (Traffic+Chat), ימין (Topology+Logo+Clients table)
         body.addWidget(left_wrap, 2)
         body.addWidget(right_wrap, 2)
 
@@ -190,17 +187,6 @@ class ServerDashboardPage(QWidget):
     # ─────────────────────────────────────────────────────────────
     # Helpers
     # ─────────────────────────────────────────────────────────────
-    def _metric_card_small(self, title: str, value: str) -> QWidget:
-        card = CardFrame(title)
-        v = QLabel(value)
-        v.setObjectName("metricValue")
-        v.setAlignment(Qt.AlignCenter)
-        card.content_layout.addWidget(v)
-        card.value_label = v
-        card.setMinimumHeight(70)
-        card.setMinimumWidth(160)
-        return card
-
     def _create_line_chart(self, y_title: str) -> QChartView:
         self.series = QLineSeries()
         pen = QPen(QColor("#52b6ff"))
