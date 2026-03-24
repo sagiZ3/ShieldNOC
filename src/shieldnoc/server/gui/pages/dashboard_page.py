@@ -270,7 +270,7 @@ class ServerDashboardPage(QWidget):
     # ─────────────────────────────────────────────────────────────
     # Clients table
     # ─────────────────────────────────────────────────────────────
-    def _update_clients_table_from_clients(self, clients: list[ClientInfo]):  # TODO: add arguemnets in the real func
+    def _update_clients_table_from_clients(self, clients: list[ClientInfo]):  # TODO: add arguments in the real func
         rows = []
         for c in clients:
             vpn_ip = c.key
