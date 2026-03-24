@@ -20,7 +20,7 @@ class ChatManager:
         logger.info("===== Chat Connection is up and running =====")
 
         self.messages: list = []
-        self._clients: dict[socket.socket: tuple[str, int]] = {}
+        self._clients: dict[socket.socket: tuple[str, int]] = {}  # [socket: (ip, port)]
         # TODO: add cache ?
 
     def _clients_acceptor(self) -> None:
