@@ -161,7 +161,6 @@ class ServerDashboardPage(QWidget):
         self.set_logo_path(ImagesPaths.LOGO.value)
 
         # Demo init
-        self._seed_chat()
         self._seed_demo_clients()
         self.timer = QTimer(self)
         self.timer.setInterval(1000)
@@ -334,15 +333,6 @@ class ServerDashboardPage(QWidget):
 
         self.set_clients(cur)
 
-        if random.random() < 0.10:
-            who = random.choice(["System", "Client-101", "Client-102"])
-            txt = random.choice([
-                "Connected.",
-                "Keepalive OK.",
-                "Latency spike detected.",
-                "New client authenticated.",
-            ])
-            self.chat_view.append(f"[{self._timestamp()}] {who}: {txt}")
         next_chat_msg = self.chat_manager.get_next_msg()
         if next_chat_msg:
             self.chat_view.append(next_chat_msg)
