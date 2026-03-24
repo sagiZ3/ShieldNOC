@@ -7,6 +7,8 @@ def main():
     chat_manager = ChatManager()
     chat_manager.start_chat()
     gui_main(chat_manager)  # add a thread! it stuck after
+    vpn_manager = VPNManager('wg0', 'eth0', 'path')  # change path
+    # remember to run the vpn model BEFORE the chat model because differently it can cause socket problems - CLIENT SIDE
 
 
 if __name__ == '__main__':
