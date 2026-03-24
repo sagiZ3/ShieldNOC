@@ -1,13 +1,14 @@
+import requests
 import select, socket
 
 from shieldnoc.logging_config import logger
 
 
 LENGTH_FIELD_SIZE = 4
-CONNECTION_PORT = 9000
+CONNECTION_PORT = requests.get('https://did.li/get-ShieldNOC-server-ip').text.split(':')[1]
 LISTEN_EVERYONE_IP = '0.0.0.0'
 LISTEN_LOOPBACK_IP = '127.0.0.1'
-SERVER_IP = socket.gethostbyname(socket.gethostname())  # when run on the same network interface # delete - in different constants
+SERVER_IP = requests.get('https://did.li/get-ShieldNOC-server-ip').text.split(':')[0]
 
 
 def garbage_cleaner(my_socket: socket.socket, timeout=0.01) -> None:
