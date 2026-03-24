@@ -21,7 +21,7 @@ class ChatManager:
         self._listen_sock.listen()
         logger.info("===== Chat Connection is up and running =====")
 
-        self.messages: list = []
+        self._messages: list = []
         self._clients: dict[socket.socket: tuple[str, int]] = {}  # [socket: (ip, port)]
         # TODO: add cache ?
 
@@ -74,7 +74,7 @@ class ChatManager:
         client_socket.close()
 
     def _broadcast_msg(self, msg):
-        self.messages.append(msg)
+        self._messages.append(msg)
         for client_sock in self._clients:
             protocol.send_segment(client_sock, msg)
 
