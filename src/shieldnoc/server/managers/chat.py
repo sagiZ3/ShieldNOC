@@ -1,4 +1,6 @@
 import socket
+from datetime import datetime
+
 import shieldnoc.protocol as protocol
 
 from threading import Thread
@@ -31,7 +33,7 @@ class ChatManager:
         while True:
             client_sock, client_addr = self._listen_sock.accept()
             self._clients[client_sock] = client_addr
-            self._broadcast_msg(f"~{client_addr} joined the ShieldNOC system~")
+            self._broadcast_msg(self._wrap_system_msg(f"~{client_addr} joined the ShieldNOC system~"))
 
             thread = Thread(target=self._handle_client, args=(client_sock,))
             thread.start()
@@ -50,7 +52,7 @@ class ChatManager:
                 break
 
             if valid_msg:
-                self._broadcast_msg(f"{self._clients[client_socket][0]}: {client_msg}")
+                self._broadcast_msg(self._wrap_client_msg(client_msg, client_socket))
             else:
                 try:
                     logger.error(f"Error with sending the message: {client_msg}")
@@ -75,3 +77,20 @@ class ChatManager:
         self.messages.append(msg)
         for client_sock in self._clients:
             protocol.send_segment(client_sock, msg)
+
+    def _wrap_system_msg(self, msg):
+        return f"[{self._timestamp()}]<span style='color:#00e5ff'>\
+        [{self._timestamp()}] System: {msg}.\
+        </span>"
+
+    def _wrap_server_manager_msg(self, msg):
+        return f"[{self._timestamp()}]<span style='color:#ffe100'>\
+        [{self._timestamp()}] Server Manager: {msg}.\
+        </span>"
+
+    def _wrap_client_msg(self, msg, client_socket):
+        return f"[{self._timestamp()}] {self._clients[client_socket][0]}: {msg}"
+
+    @staticmethod
+    def _timestamp() -> str:
+        return datetime.now().strftime("%H:%M:%S")
