@@ -7,7 +7,7 @@ from shieldnoc.logging_config import logger
 
 class ChatManager:
     def __init__(self):
-        self._conn_sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        self._listen_sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
         try:
             self._conn_sock.bind((protocol.LISTEN_EVERYONE_IP, protocol.CONNECTION_PORT))
