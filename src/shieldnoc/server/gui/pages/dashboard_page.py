@@ -336,7 +336,7 @@ class ServerDashboardPage(QWidget):
 
             # concept:
             # def _refresh_data(self):
-            #     data = self.server_manager.get_snapshot()
+            #     data = self.data_manager.get_snapshot()
             #
             #     self.set_clients(data.clients)
             #     self.add_traffic_point(data.traffic)
