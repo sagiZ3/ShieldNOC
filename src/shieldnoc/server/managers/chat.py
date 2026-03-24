@@ -5,7 +5,7 @@ from threading import Thread
 from select import select
 from shieldnoc.logging_config import logger
 
-class ChatConnection:
+class ChatManager:
     def __init__(self):
         self._conn_sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
