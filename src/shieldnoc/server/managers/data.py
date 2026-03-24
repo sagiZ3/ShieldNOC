@@ -2,9 +2,8 @@ from dataclasses import dataclass
 
 @dataclass(frozen=True)
 class ClientInfo:
-    key: str           # ייחודי, למשל VPN IP או MAC
-    label: str = ""    # אופציונלי (לא חובה כרגע)
-
+    key: str  # unike
+    label: str = ""
 
 class DataManager:
     def __init__(self):
