@@ -17,10 +17,11 @@ from shieldnoc.server.gui.widgets.card_frame import CardFrame
 from shieldnoc.server.gui.widgets.topology_view import TopologyView, ClientInfo
 from shieldnoc.server.gui.enums import ImagesPaths
 from shieldnoc.server.gui.enums import TrafficChart
+from shieldnoc.server.managers.chat import ChatManager
 
 
 class ServerDashboardPage(QWidget):
-    def __init__(self, parent=None):
+    def __init__(self, chat_manager: ChatManager, parent=None):
         super().__init__(parent)
 
         self.setLayoutDirection(Qt.LeftToRight)
@@ -93,6 +94,7 @@ class ServerDashboardPage(QWidget):
         self.chat_send = QPushButton("Send")
         self.chat_send.setObjectName("secondaryButton")
         self.chat_send.clicked.connect(self._send_chat)
+        self.chat_manager = chat_manager
 
         cir.addWidget(self.chat_input, 1)
         cir.addWidget(self.chat_send)
@@ -255,9 +257,12 @@ class ServerDashboardPage(QWidget):
         msg = self.chat_input.text().strip()
         if not msg:
             return
+        msg = self.chat_manager.wrap_server_manager_msg(msg)
+
         self.chat_input.clear()
         self.chat_view.append(f"[{self._timestamp()}] You: {msg}")
         self._scroll_chat_bottom()
+        self.chat_manager.broadcast_msg(msg)
 
     def _scroll_chat_bottom(self):
         sb = self.chat_view.verticalScrollBar()
@@ -338,6 +343,9 @@ class ServerDashboardPage(QWidget):
                 "New client authenticated.",
             ])
             self.chat_view.append(f"[{self._timestamp()}] {who}: {txt}")
+        next_chat_msg = self.chat_manager.get_next_msg()
+        if next_chat_msg:
+            self.chat_view.append(next_chat_msg)
             self._scroll_chat_bottom()
 
         self._time += 1
