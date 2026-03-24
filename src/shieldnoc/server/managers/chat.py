@@ -80,15 +80,11 @@ class ChatManager:
         for client_sock in self._clients:
             protocol.send_segment(client_sock, msg)
 
-    def _wrap_system_msg(self, msg):
-        return f"[{self._timestamp()}]<span style='color:#00e5ff'>\
-        [{self._timestamp()}] System: {msg}.\
-        </span>"
+    def _wrap_system_msg(self, msg) -> str:
+        return f"[{self._timestamp()}] <span style='color:#00e5ff'>System:</span> {msg}"
 
-    def _wrap_server_manager_msg(self, msg):
-        return f"[{self._timestamp()}]<span style='color:#ffe100'>\
-        [{self._timestamp()}] Server Manager: {msg}.\
-        </span>"
+    def wrap_server_manager_msg(self, msg) -> str:
+        return f"[{self._timestamp()}] <span style='color:#ffe100'>Server Manager:</span> {msg}"
 
     def _wrap_client_msg(self, msg, client_socket):
         return f"[{self._timestamp()}] {self._clients[client_socket][0]}: {msg}"
