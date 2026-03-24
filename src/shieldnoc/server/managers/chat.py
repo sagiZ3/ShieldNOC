@@ -94,3 +94,6 @@ class ChatManager:
     @staticmethod
     def _timestamp() -> str:
         return datetime.now().strftime("%H:%M:%S")
+
+    def get_messages_list(self):
+        return self._messages
