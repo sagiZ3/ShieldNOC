@@ -55,9 +55,11 @@ class ChatManager:
                         if not readable:
                             break
                         client_socket.recv(1024)  # Attempt to empty the socket from possible garbage
+
                 except ConnectionResetError:
                     logger.warning("Client unexpectedly closed the connection in a middle of reading data")
                     break
+
                 except Exception as e:
                     logger.warning(f"Unexpected Error occurred: {e} ")
 
