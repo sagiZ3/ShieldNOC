@@ -27,7 +27,8 @@ class ChatManager:
         # TODO: add cache ?
 
     def start_chat(self):
-        self._clients_acceptor()
+        thread = Thread(target=self._clients_acceptor)
+        thread.start()
         logger.info("===== Chat is ready for accepting clients =====")
 
     def _clients_acceptor(self) -> None:  # TODO: check if socket is ShieldNOC client
