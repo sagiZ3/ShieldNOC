@@ -1,6 +1,6 @@
 import select, socket
 
-from logging_config import logger
+from shieldnoc.logging_config import logger
 
 
 LENGTH_FIELD_SIZE = 4
