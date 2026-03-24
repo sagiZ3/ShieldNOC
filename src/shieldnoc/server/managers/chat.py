@@ -89,9 +89,11 @@ class ChatManager:
     def _wrap_client_msg(self, msg, client_socket) -> str:
         return f"[{self._timestamp()}] {self._clients[client_socket][0]}: {msg}"
 
+    def get_next_msg(self) -> str | None:
+        if self._messages:
+            return self._messages.pop(0)
+        return None
+
     @staticmethod
     def _timestamp() -> str:
         return datetime.now().strftime("%H:%M:%S")
-
-    def get_messages_list(self):
-        return self._messages
