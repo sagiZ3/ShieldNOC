@@ -297,7 +297,7 @@ class ServerDashboardPage(QWidget):
         return datetime.now().strftime("%H:%M:%S")
 
     # ─────────────────────────────────────────────────────────────
-    # Demo tick
+    # tick - refresh
     # ─────────────────────────────────────────────────────────────
     def _seed_demo_clients(self):  # TODO: remove ? use differently
         demo = [
