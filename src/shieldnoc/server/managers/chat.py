@@ -50,8 +50,8 @@ class ChatManager:
             thread = Thread(target=self._handle_client, args=(client_sock,))
             thread.start()
 
-    def _handle_client(self, client_sock) -> None:
-        while True:
+        logger.info(">>> Chat System Closed <<<")
+
     def _handle_client(self, client_sock: socket.socket) -> None:
         while not self._stop_chat_event.is_set():
             try:
