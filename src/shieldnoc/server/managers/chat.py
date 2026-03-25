@@ -16,7 +16,8 @@ class ChatManager:
         self._stop_chat_event = Event()
 
         try:
-            self._listen_sock.bind((protocol.LISTEN_EVERYONE_IP, protocol.CONNECTION_PORT))
+            self._listen_sock.bind((protocol.LISTEN_LOOPBACK_IP, protocol.LISTEN_PORT))
+            # self._listen_sock.bind((protocol.LISTEN_EVERYONE_IP, protocol.CONNECTION_PORT))
         except Exception as e:
             logger.error("Server encountered with a problem trying to establish connection to chat")
             logger.error("Failed to bind socket: " + str(e))
