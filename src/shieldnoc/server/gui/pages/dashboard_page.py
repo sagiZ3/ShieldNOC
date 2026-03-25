@@ -314,7 +314,7 @@ class ServerDashboardPage(QWidget):
         ]
         self.set_clients(demo)
 
-    def _tick_demo(self):  # TODO: figure what the hell is that
+    def _tick(self):  # TODO: figure what the hell is that
                            # TODO: OK - add add_traffic_point(ts: int, packets_per_sec: int) (seperate)
                            # TODO: implement concept shown as below
 
