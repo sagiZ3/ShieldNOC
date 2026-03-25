@@ -5,6 +5,7 @@ from dataclasses import dataclass
 class ClientInfo:
     key: str  # unike
     label: str = ""
+    third: str = ""
 
 class DataManager:
     def __init__(self):
