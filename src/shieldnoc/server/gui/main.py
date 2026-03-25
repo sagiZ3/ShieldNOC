@@ -65,4 +65,6 @@ def gui_main(chat_manager: ChatManager):
     app = QApplication(sys.argv)
     w = MainWindow(chat_manager)
     w.show()
+
+    app.aboutToQuit.connect(chat_manager.end_chat_session)
     sys.exit(app.exec())

@@ -79,6 +79,9 @@ def get_payload(my_socket: socket.socket) -> tuple[bool, str]:
         garbage_cleaner(my_socket)
         return False, "General Error"
 
+    except socket.timeout:
+        raise socket.timeout  # capture outside for continue in the function use
+
     except ConnectionResetError as e:
         logger.warning("The other side unexpectedly closed the connection; source: get_payload")
         return False, type(e).__name__

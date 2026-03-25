@@ -4,13 +4,16 @@ from datetime import datetime
 
 import shieldnoc.protocol as protocol
 
-from threading import Thread
+from threading import Thread, Event
 from select import select
 from shieldnoc.logging_config import logger
+
 
 class ChatManager:
     def __init__(self):
         self._listen_sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        self._listen_sock.settimeout(1.0)
+        self._stop_chat_event = Event()
 
         try:
             self._listen_sock.bind((protocol.LISTEN_EVERYONE_IP, protocol.CONNECTION_PORT))
@@ -32,8 +35,15 @@ class ChatManager:
         logger.info("===== Chat is ready for accepting clients =====")
 
     def _clients_acceptor(self) -> None:  # TODO: check if socket is ShieldNOC client
-        while True:
-            client_sock, client_addr = self._listen_sock.accept()
+        while not self._stop_chat_event.is_set():
+            try:
+                client_sock, client_addr = self._listen_sock.accept()
+            except socket.timeout:
+                continue
+
+            logger.info(f"{client_addr} has connected to chat socket")
+
+            client_sock.settimeout(1.0)
             self._clients[client_sock] = client_addr
             self.broadcast_msg(self._wrap_system_msg(f"~{client_addr[0]} joined the ShieldNOC system~"))
 
@@ -42,8 +52,12 @@ class ChatManager:
 
     def _handle_client(self, client_sock) -> None:
         while True:
+    def _handle_client(self, client_sock: socket.socket) -> None:
+        while not self._stop_chat_event.is_set():
             try:
                 valid_msg, client_msg = protocol.get_payload(client_sock)
+            except socket.timeout:
+                continue
 
             except ConnectionResetError:
                 logger.warning("Client unexpectedly closed the connection")
@@ -71,7 +85,7 @@ class ChatManager:
                 except Exception as e:
                     logger.warning(f"Unexpected Error occurred: {e} ")
 
-        # broken
+        # broken | Event raised
         self._clients.pop(client_sock)
         client_sock.close()
 
@@ -93,6 +107,9 @@ class ChatManager:
         if self._messages:
             return self._messages.pop(0)
         return None
+
+    def end_chat_session(self):
+        self._stop_chat_event.set()
 
     @staticmethod
     def _timestamp() -> str:
