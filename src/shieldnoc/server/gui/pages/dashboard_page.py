@@ -15,8 +15,7 @@ from PySide6.QtCharts import QChart, QChartView, QLineSeries, QValueAxis
 
 from shieldnoc.server.gui.widgets.card_frame import CardFrame
 from shieldnoc.server.gui.widgets.topology_view import TopologyView, ClientInfo
-from shieldnoc.server.gui.enums import ImagesPaths
-from shieldnoc.server.gui.enums import TrafficChart
+from shieldnoc.server.gui.enums import ImagesPaths, TrafficChart
 from shieldnoc.server.managers.chat import ChatManager
 
 
