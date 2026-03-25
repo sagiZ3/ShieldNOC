@@ -159,12 +159,7 @@ class ServerDashboardPage(QWidget):
         root.addLayout(body, 1)
         self.set_logo_path(ImagesPaths.LOGO.value)
 
-        # Demo init
-        self._seed_demo_clients()
-        self.timer = QTimer(self)
-        self.timer.setInterval(1000)
-        self.timer.timeout.connect(self._tick_demo)
-        self.timer.start()
+        self._start_tick_iterations()
 
     # ─────────────────────────────────────────────────────────────
     # External API
@@ -246,7 +241,16 @@ class ServerDashboardPage(QWidget):
     # ─────────────────────────────────────────────────────────────
     # Chat
     # ─────────────────────────────────────────────────────────────
-    def _send_chat(self):
+    def _pull_to_chat(self):
+        pull = True
+        while pull:
+            next_chat_msg = self.chat_manager.get_next_msg()
+            if next_chat_msg:
+                self._append_chat_msg(next_chat_msg)
+            else:
+                pull = False
+
+    def _send_chat_msg(self):
         msg = self.chat_input.text().strip()
         if not msg:
             return
@@ -255,6 +259,10 @@ class ServerDashboardPage(QWidget):
         self.chat_input.clear()
         self._scroll_chat_bottom()
         self.chat_manager.broadcast_msg(msg)
+
+    def _append_chat_msg(self, msg: str):
+        self.chat_view.append(msg)
+        self._scroll_chat_bottom()
 
     def _scroll_chat_bottom(self):
         sb = self.chat_view.verticalScrollBar()
@@ -326,10 +334,7 @@ class ServerDashboardPage(QWidget):
 
         self.set_clients(cur)
 
-        next_chat_msg = self.chat_manager.get_next_msg()
-        if next_chat_msg:
-            self.chat_view.append(next_chat_msg)
-            self._scroll_chat_bottom()
+        self._pull_to_chat()
 
         self._time += 1
 
