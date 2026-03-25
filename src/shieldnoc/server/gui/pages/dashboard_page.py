@@ -299,6 +299,13 @@ class ServerDashboardPage(QWidget):
     # ─────────────────────────────────────────────────────────────
     # tick - refresh
     # ─────────────────────────────────────────────────────────────
+    def _start_tick_iterations(self):
+        self._seed_demo_clients()
+        self.tick_timer = QTimer(self)
+        self.tick_timer.setInterval(1000)
+        self.tick_timer.timeout.connect(self._tick)
+        self.tick_timer.start()
+
     def _seed_demo_clients(self):  # TODO: remove ? use differently
         demo = [
             ClientInfo(key="10.0.0.101", label="WIN11"),  # TODO: see if needed ClientInfo & change label name
