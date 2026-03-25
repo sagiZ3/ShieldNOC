@@ -7,6 +7,8 @@ from shieldnoc.logging_config import logger
 LENGTH_FIELD_SIZE = 4
 CONNECTION_PORT = requests.get('https://did.li/get-ShieldNOC-server-ip').text.split(':')[1]
 SERVER_IP = requests.get('https://did.li/get-ShieldNOC-server-ip').text.split(':')[0]
+# CONNECTION_PORT = int(requests.get('https://did.li/get-ShieldNOC-server-ip').text.split(':')[1])
+# SERVER_IP = requests.get('https://did.li/get-ShieldNOC-server-ip').text.split(':')[0]
 LISTEN_EVERYONE_IP = '0.0.0.0'
 LISTEN_LOOPBACK_IP = '127.0.0.1'
 
