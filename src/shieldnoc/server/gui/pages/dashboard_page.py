@@ -88,11 +88,11 @@ class ServerDashboardPage(QWidget):
         self.chat_input = QLineEdit()
         self.chat_input.setPlaceholderText("Type a message…")
         self.chat_input.setLayoutDirection(Qt.LeftToRight)
-        self.chat_input.returnPressed.connect(self._send_chat)
+        self.chat_input.returnPressed.connect(self._send_chat_msg)
 
         self.chat_send = QPushButton("Send")
         self.chat_send.setObjectName("secondaryButton")
-        self.chat_send.clicked.connect(self._send_chat)
+        self.chat_send.clicked.connect(self._send_chat_msg)
         self.chat_manager = chat_manager
 
         cir.addWidget(self.chat_input, 1)
