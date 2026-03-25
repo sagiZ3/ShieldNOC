@@ -89,6 +89,7 @@ class ChatManager:
 
         # broken | Event raised
         self._clients.pop(client_sock)
+        logger.info(f"> Chat System End Session with client {client_sock.getpeername()} <")
         client_sock.close()
 
     def broadcast_msg(self, msg) -> None:
