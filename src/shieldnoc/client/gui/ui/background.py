@@ -2,17 +2,19 @@ from PySide6.QtWidgets import QWidget
 from PySide6.QtGui import QPainter, QPixmap
 from PySide6.QtCore import Qt
 
+from shieldnoc.client.gui.enums import ImagesPaths
+
 
 class BackgroundLayer(QWidget):
     def __init__(self, parent=None):
         super().__init__(parent)
         self.backgrounds = [
-            "assets/backgrounds/1.png",
-            "assets/backgrounds/2.png",
-            "assets/backgrounds/3.png",
-            "assets/backgrounds/4.png",
-            "assets/backgrounds/5.png",
-            "assets/backgrounds/6.png",
+            ImagesPaths.BACKGROUND1.value,
+            ImagesPaths.BACKGROUND2.value,
+            ImagesPaths.BACKGROUND3.value,
+            ImagesPaths.BACKGROUND4.value,
+            ImagesPaths.BACKGROUND5.value,
+            ImagesPaths.BACKGROUND6.value,
         ]
         self.index = 0
         self.opacity = 0.12
