@@ -1,10 +1,16 @@
-from PySide6.QtWidgets import (
-    QWidget, QVBoxLayout, QHBoxLayout, QLabel, QPushButton,
-    QGridLayout, QLineEdit
-)
 from PySide6.QtCore import Signal, Qt, QTimer
+from PySide6.QtWidgets import (
+    QWidget,
+    QVBoxLayout,
+    QHBoxLayout,
+    QLabel,
+    QPushButton,
+    QGridLayout,
+    QLineEdit,
+)
 
 from shieldnoc.client.gui.widgets.card_frame import CardFrame
+from shieldnoc import protocol
 
 
 class ConnectPage(QWidget):
@@ -15,13 +21,12 @@ class ConnectPage(QWidget):
     def __init__(self, parent=None):
         super().__init__(parent)
 
-        # ✅ מונע היפוך של גרידים/כפתורים בסביבה RTL
-        self.setLayoutDirection(Qt.LeftToRight)
-
+        # Root layout
         root = QVBoxLayout(self)
         root.setContentsMargins(24, 24, 24, 24)
         root.setSpacing(16)
 
+        # Header
         title = QLabel("Settings — Client")
         title.setObjectName("pageTitle")
 
@@ -31,30 +36,31 @@ class ConnectPage(QWidget):
         root.addWidget(title)
         root.addWidget(subtitle)
 
-        # Server settings
+        # Server settings card
         server_card = CardFrame("Server Settings")
-        form = QGridLayout()
-        form.setHorizontalSpacing(12)
-        form.setVerticalSpacing(10)
+        server_form = QGridLayout()
+        server_form.setHorizontalSpacing(12)
+        server_form.setVerticalSpacing(10)
 
-        self.ip_edit = QLineEdit("127.0.0.1")
-        self.port_edit = QLineEdit("9000")
+        self.ip_edit = QLineEdit(str(protocol.SERVER_IP))
+        self.port_edit = QLineEdit(str(protocol.CONNECTION_PORT))
 
-        form.addWidget(QLabel("Server IP:"), 0, 0)
-        form.addWidget(self.ip_edit, 0, 1)
-        form.addWidget(QLabel("Port:"), 1, 0)
-        form.addWidget(self.port_edit, 1, 1)
+        self.ip_edit.setLayoutDirection(Qt.LeftToRight)
+        self.port_edit.setLayoutDirection(Qt.LeftToRight)
 
-        server_card.content_layout.addLayout(form)
+        server_form.addWidget(QLabel("Server IP:"), 0, 0)
+        server_form.addWidget(self.ip_edit, 0, 1)
+        server_form.addWidget(QLabel("Port:"), 1, 0)
+        server_form.addWidget(self.port_edit, 1, 1)
+
+        server_card.content_layout.addLayout(server_form)
         root.addWidget(server_card)
 
-        # Client settings (VPN IP)
+        # Client settings card
         client_card = CardFrame("Client Settings")
-        client_card.setLayoutDirection(Qt.LeftToRight)  # ✅ גם בתוך הכרטיס
-
-        client_grid = QGridLayout()
-        client_grid.setHorizontalSpacing(12)
-        client_grid.setVerticalSpacing(10)
+        client_form = QGridLayout()
+        client_form.setHorizontalSpacing(12)
+        client_form.setVerticalSpacing(10)
 
         self.vpn_ip_edit = QLineEdit("10.0.0.100")
         self.vpn_ip_edit.setLayoutDirection(Qt.LeftToRight)
@@ -66,22 +72,19 @@ class ConnectPage(QWidget):
         self.client_action_badge = QLabel("Idle")
         self.client_action_badge.setObjectName("badgeInfo")
 
-        # Badge משמאל (עמודה 0), כפתור מימין (עמודה 1) — כמו שרצית
-        client_grid.addWidget(QLabel("Client VPN IP:"), 0, 0)
-        client_grid.addWidget(self.vpn_ip_edit, 0, 1)
-        client_grid.addWidget(self.client_action_badge, 1, 0)
-        client_grid.addWidget(self.btn_apply_vpn, 1, 1)
+        client_form.addWidget(QLabel("Client VPN IP:"), 0, 0)
+        client_form.addWidget(self.vpn_ip_edit, 0, 1)
+        client_form.addWidget(self.client_action_badge, 1, 0)
+        client_form.addWidget(self.btn_apply_vpn, 1, 1)
 
-        client_card.content_layout.addLayout(client_grid)
+        client_card.content_layout.addLayout(client_form)
         root.addWidget(client_card)
 
-        # UI settings (background)
+        # UI settings card
         ui_card = CardFrame("UI Settings")
-        ui_card.setLayoutDirection(Qt.LeftToRight)  # ✅ מונע היפוך
-
-        ui_grid = QGridLayout()
-        ui_grid.setHorizontalSpacing(12)
-        ui_grid.setVerticalSpacing(10)
+        ui_form = QGridLayout()
+        ui_form.setHorizontalSpacing(12)
+        ui_form.setVerticalSpacing(10)
 
         self.btn_bg = QPushButton("Change Background")
         self.btn_bg.setObjectName("switchBgButton")
@@ -90,15 +93,14 @@ class ConnectPage(QWidget):
         self.ui_action_badge = QLabel("Idle")
         self.ui_action_badge.setObjectName("badgeInfo")
 
-        # ✅ אותו מבנה כמו VPN: Badge משמאל, כפתור מימין
-        ui_grid.addWidget(QLabel("Background:"), 0, 0)
-        ui_grid.addWidget(self.btn_bg, 0, 1)
-        ui_grid.addWidget(self.ui_action_badge, 1, 0)
+        ui_form.addWidget(QLabel("Background:"), 0, 0)
+        ui_form.addWidget(self.ui_action_badge, 1, 0)
+        ui_form.addWidget(self.btn_bg, 1, 1)
 
-        ui_card.content_layout.addLayout(ui_grid)
+        ui_card.content_layout.addLayout(ui_form)
         root.addWidget(ui_card)
 
-        # Bottom connect row
+        # Bottom row
         bottom = QHBoxLayout()
         bottom.addStretch(1)
 
@@ -117,6 +119,7 @@ class ConnectPage(QWidget):
 
     def _connect_clicked(self):
         ip = self.ip_edit.text().strip()
+
         try:
             port = int(self.port_edit.text().strip())
         except ValueError:
