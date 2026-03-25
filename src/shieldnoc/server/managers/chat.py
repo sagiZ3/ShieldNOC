@@ -27,6 +27,8 @@ class ChatManager:
 
         self._messages: list = []
         self._clients: dict[socket.socket: tuple[str, int]] = {}  # [socket: (ip, port)]
+
+        self.broadcast_msg(self._wrap_system_msg(f"~ShieldNOC chat system is ready~"))
         # TODO: add cache ?
 
     def start_chat(self):
