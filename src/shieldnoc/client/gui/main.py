@@ -10,12 +10,16 @@ from shieldnoc.client.gui.ui.style import STYLE_SHEET
 from shieldnoc.client.gui.ui.background import BackgroundLayer
 from shieldnoc.client.gui.pages.connect_page import ConnectPage
 from shieldnoc.client.gui.pages.dashboard_page import DashboardPage
+from shieldnoc.client.managers.chat import ChatManager
 from shieldnoc.server.gui.enums import ImagesPaths
 
 
 class MainWindow(QMainWindow):
-    def __init__(self):
+    def __init__(self, chat_manager: ChatManager):
         super().__init__()
+
+        self.chat_manager = chat_manager
+
         self.setWindowTitle("ShieldNOC Client")
         self.resize(1200, 720)
 
@@ -55,7 +59,7 @@ class MainWindow(QMainWindow):
         root.addWidget(self.stack)
 
         self.page_settings = ConnectPage()
-        self.page_dash = DashboardPage()
+        self.page_dash = DashboardPage(self.chat_manager)
 
         self.stack.addWidget(self.page_settings)
         self.stack.addWidget(self.page_dash)
@@ -122,8 +126,10 @@ class MainWindow(QMainWindow):
         super().closeEvent(event)
 
 
-def main():
+def gui_main(chat_manager: ChatManager):
     app = QApplication(sys.argv)
-    w = MainWindow()
+    w = MainWindow(chat_manager)
     w.show()
+
+    app.aboutToQuit.connect(chat_manager.end_chat_session)
     sys.exit(app.exec())
