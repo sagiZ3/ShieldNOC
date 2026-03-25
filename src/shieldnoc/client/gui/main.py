@@ -10,6 +10,7 @@ from shieldnoc.client.gui.ui.style import STYLE_SHEET
 from shieldnoc.client.gui.ui.background import BackgroundLayer
 from shieldnoc.client.gui.pages.connect_page import ConnectPage
 from shieldnoc.client.gui.pages.dashboard_page import DashboardPage
+from shieldnoc.server.gui.enums import ImagesPaths
 
 
 class MainWindow(QMainWindow):
@@ -72,7 +73,7 @@ class MainWindow(QMainWindow):
         self.page_settings.bg_change_requested.connect(self.bg_layer.next_background)
 
         # Logo path placeholder
-        self.page_dash.set_logo_path("assets/ShieldNOC_logo.png")
+        self.page_dash.set_logo_path(ImagesPaths.LOGO.value)
 
         self.setStyleSheet(STYLE_SHEET)
         self.stack.setCurrentWidget(self.page_settings)
