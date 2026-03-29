@@ -9,8 +9,8 @@ LENGTH_FIELD_SIZE = 4
 # CONNECTION_PORT = int(requests.get('https://did.li/get-ShieldNOC-server-ip').text.split(':')[1])
 # SERVER_IP = requests.get('https://did.li/get-ShieldNOC-server-ip').text.split(':')[0]
 LISTEN_PORT = 1234
-CONNECTION_PORT = 18151
-SERVER_IP = subprocess.check_output('nslookup 7.tcp.eu.ngrok.io | findstr Addresses',
+CONNECTION_PORT = 12713
+SERVER_IP = subprocess.check_output('nslookup 5.tcp.eu.ngrok.io | findstr Addresses',
                                     shell=True, text=True).split()[1]
 # SERVER_IP = manually
 LISTEN_EVERYONE_IP = '0.0.0.0'
