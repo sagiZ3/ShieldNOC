@@ -6,13 +6,12 @@ from shieldnoc.logging_config import logger
 
 
 LENGTH_FIELD_SIZE = 4
-CONNECTION_PORT = int(requests.get('https://did.li/get-ShieldNOC-server-ip').text.split(':')[1])
-SERVER_IP = requests.get('https://did.li/get-ShieldNOC-server-ip').text.split(':')[0]
-LISTEN_PORT = 1234
-# CONNECTION_PORT = 12713
-# SERVER_IP = subprocess.check_output('nslookup 5.tcp.eu.ngrok.io | findstr Addresses',
-#                                     shell=True, text=True).split()[1]
-# SERVER_IP = manually
+
+SERVER_ADDRESS = requests.get('https://did.li/get-ShieldNOC-server-ip').text.split(':')
+SERVER_IP = SERVER_ADDRESS[0]
+CONNECTION_PORT = int(SERVER_ADDRESS[1])
+
+LISTEN_PORT = CONNECTION_PORT
 LISTEN_EVERYONE_IP = '0.0.0.0'
 LISTEN_LOOPBACK_IP = '127.0.0.1'
 
