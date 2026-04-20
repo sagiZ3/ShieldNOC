@@ -86,7 +86,7 @@ def get_payload(my_socket: socket.socket) -> tuple[bool, str]:
         return False, "General Error"
 
     except socket.timeout:
-        raise socket.timeout  # capture outside for continue in the function use
+        raise socket.timeout  # the error is capture outside for continue in the function use
 
     except ConnectionResetError as e:
         logger.warning("The other side unexpectedly closed the connection; source: get_payload")
