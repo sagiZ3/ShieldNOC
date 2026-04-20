@@ -67,6 +67,7 @@ def get_payload(my_socket: socket.socket) -> tuple[bool, str]:
     Handles connection reset or unexpected errors gracefully.
 
     :return: Tuple of boolean (True if valid, False otherwise) and string (payload if valid, error msg otherwise).
+    :exception socket.timeout: If recv() exceeds the configured timeout without receiving data.
     """
 
     try:
