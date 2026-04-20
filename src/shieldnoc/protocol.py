@@ -75,7 +75,7 @@ def get_payload(my_socket: socket.socket) -> tuple[bool, str]:
 
         if encode_payload_len == "":  # means that the other side closed the connection
             logger.warning("The other side of the socket is closed!")
-            return False, ConnectionAbortedError.__name__
+            return False, ConnectionResetError.__name__
 
         payload: str = my_socket.recv(int(encode_payload_len)).decode('utf-8')
 
