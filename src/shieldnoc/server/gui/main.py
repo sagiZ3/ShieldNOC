@@ -49,7 +49,7 @@ class MainWindow(QMainWindow):
         self.page = ServerDashboardPage(self.chat_manager)
         root.addWidget(self.page, 1)
 
-        # רקע: Background layer
+        # Background layer
         self.bg_layer = BackgroundLayer(self)
         self.bg_layer.lower()
         btn_bg.clicked.connect(self.bg_layer.next_background)
