@@ -1,6 +1,5 @@
 import requests
 import select, socket
-import subprocess
 
 from shieldnoc.logging_config import logger
 
