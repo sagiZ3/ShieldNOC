@@ -15,17 +15,8 @@ class ChatManager:
         self._listen_sock.settimeout(1.0)
         self._stop_chat_event = Event()
 
-        connection_type_based = "WAN" if input("The current connection is LAN based."
-              "\nIf you interested of using WAN based connection, press: w"
-              "\nIf you interested of keeping the current configuration, press any other key: "
-              "\nYour choice: ") == "w" else "LAN"
-        # can add a gui button later
-
         try:
-            if connection_type_based == "WAN":
-                self._listen_sock.bind((protocol.LISTEN_LOOPBACK_IP, protocol.LISTEN_PORT))
-            else:
-                self._listen_sock.bind((protocol.LISTEN_EVERYONE_IP, protocol.LISTEN_PORT))
+            self._listen_sock.bind((protocol.LISTEN_EVERYONE_IP, protocol.LISTEN_PORT))
 
         except Exception as e:
             logger.error("Server encountered with a problem trying to establish connection to chat")
@@ -33,7 +24,6 @@ class ChatManager:
             exit()
 
         self._listen_sock.listen()
-        logger.info(f"> Chat Connection listen on {connection_type_based} <")
         logger.info("===== Chat Connection is up and running =====")
 
         self._messages: list = []
