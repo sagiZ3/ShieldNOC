@@ -87,7 +87,7 @@ class ChatManager:
                     break
 
                 except Exception as e:
-                    logger.warning(f"Unexpected Error occurred: {e} ")
+                    logger.warning(f"Unexpected Error occurred while trying of empty the socket: {e} ")
 
         # broken | Event raised
         self._clients.pop(client_sock)
