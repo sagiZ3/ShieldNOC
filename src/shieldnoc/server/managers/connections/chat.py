@@ -1,4 +1,3 @@
-# TODO: add exit when admin close the dashboard
 import socket
 from datetime import datetime
 
@@ -44,6 +43,8 @@ class ChatManager:
             except socket.timeout:
                 continue
 
+            # TODO: check if socket is ShieldNOC client
+
             logger.info(f"{client_addr} has connected to chat socket")
 
             client_sock.settimeout(1.0)
@@ -70,7 +71,7 @@ class ChatManager:
                 logger.warning(f"Unexpected Error occurred: {e}")
                 break
 
-            if valid_msg:
+            if valid_msg:  # TODO: suspect the client's message (open for QSS injection)
                 self.broadcast_msg(self._wrap_client_msg(client_msg, client_sock))
             else:
                 try:
