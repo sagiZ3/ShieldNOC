@@ -33,6 +33,7 @@ class ChatManager:
             exit()
 
         self._listen_sock.listen()
+        logger.info(f"> Chat Connection listen on {connection_type_based} <")
         logger.info("===== Chat Connection is up and running =====")
 
         self._messages: list = []
