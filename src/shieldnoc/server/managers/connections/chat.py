@@ -63,10 +63,6 @@ class ChatManager:
             except socket.timeout:
                 continue
 
-            except ConnectionResetError:
-                logger.warning("Client unexpectedly closed the connection")
-                break
-
             except Exception as e:
                 logger.warning(f"Unexpected Error occurred: {e}")
                 break
