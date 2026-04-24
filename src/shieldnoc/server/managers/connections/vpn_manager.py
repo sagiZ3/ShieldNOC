@@ -5,7 +5,7 @@ from random import randint
 
 from shieldnoc.logging_config import logger
 
-
+# TODO: add socket manager module for using the same socket for both vpn and chat modules
 class VPNManager:
     def __init__(self):
         self._wg_interface = "ShieldNOC"
