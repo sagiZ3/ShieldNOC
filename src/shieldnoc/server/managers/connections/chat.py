@@ -70,8 +70,12 @@ class ChatManager:
             if valid_msg:  # TODO: suspect the client's message (open for QSS injection)
                 self.broadcast_msg(self._wrap_client_msg(client_msg, client_sock))
             else:
+                logger.error(f"Error with sending the message: {client_msg}")
+
+                if client_msg in (ConnectionResetError.__name__, ConnectionAbortedError.__name__):
+                    break
+
                 try:
-                    logger.error(f"Error with sending the message: {client_msg}")
                     while True:
                         readable, _, _ = select([client_sock], [], [], 0)
                         if not readable:
