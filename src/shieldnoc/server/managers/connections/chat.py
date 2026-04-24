@@ -36,7 +36,7 @@ class ChatManager:
         thread.start()
         logger.info("===== Chat is ready for accepting clients =====")
 
-    def _clients_acceptor(self) -> None:  # TODO: check if socket is ShieldNOC client
+    def _clients_acceptor(self) -> None:
         while not self._stop_chat_event.is_set():
             try:
                 client_sock, client_addr = self._listen_sock.accept()
