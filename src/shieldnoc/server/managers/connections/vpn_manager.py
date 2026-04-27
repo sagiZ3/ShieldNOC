@@ -154,7 +154,7 @@ class VPNManager:
     def _is_ip_in_use(self, ip: str) -> bool:
         pass  # TODO: db check
 
-    def _add_client_to_db(self, public_key ,ip):
+    def _add_client_to_db(self, public_key ,ip):  # TODO: maybe delete - in import db manager
         pass  # TODO: db add
 
     def _get_random_ip(self) -> str:
