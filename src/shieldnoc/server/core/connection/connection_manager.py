@@ -15,9 +15,9 @@ class ConnectionManager:
     VPN_PREFIX = "3"
 
     def __init__(self):
-        self._chat_manager = ChatManager(self.broadcast_msg)
+        self.chat_manager = ChatManager(self.broadcast_msg)
         self._vpn_manager = VPNManager()
-        self._stop_connection_event = self._chat_manager.stop_connection_event
+        self._stop_connection_event = self.chat_manager.stop_connection_event
 
         self._listen_sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self._listen_sock.settimeout(1.0)
@@ -96,7 +96,7 @@ class ConnectionManager:
         client_addr = client_sock.getpeername()
 
         logger.info(f"{client_addr} has connected to ShieldNOC System")
-        self._chat_manager.handle_system_msg(f"~{client_addr[0]} joined the ShieldNOC System~")
+        self.chat_manager.handle_system_msg(f"~{client_addr[0]} joined the ShieldNOC System~")
 
         while not self._stop_connection_event.is_set():
             try:
@@ -113,7 +113,7 @@ class ConnectionManager:
                 content = client_msg[1:]
 
                 if prefix == self.CHAT_PREFIX:
-                    self._chat_manager.handle_client_msg(client_addr[0], content)
+                    self.chat_manager.handle_client_msg(client_addr[0], content)
                 elif prefix == self.VPN_PREFIX:
                     pass  # TODO: add api_to_vpn_somehow
                 else:
