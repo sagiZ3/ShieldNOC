@@ -29,4 +29,5 @@ def init_schema(conn: sqlite3.Connection) -> None:
     )
     """
     )
+
     conn.commit()
