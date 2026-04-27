@@ -47,7 +47,7 @@ class ConnectionManager:
             except socket.timeout:
                 continue
 
-            if self._vpn_manager.is_ip_in_use(client_addr(0)):
+            if self._vpn_manager.is_ip_in_current_use(client_addr(0)):
                 thread = Thread(target=self._handle_client, args=(client_sock,))
                 client_sock.settimeout(1.0)
                 self._clients[client_sock] = client_addr
