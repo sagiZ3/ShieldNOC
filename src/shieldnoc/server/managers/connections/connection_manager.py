@@ -149,4 +149,4 @@ class ConnectionManager:
 
     def broadcast_msg(self, msg) -> None:
         for client_sock in self._clients:
-            protocol.send_segment(client_sock, "0" + msg)
+            protocol.send_segment(client_sock, self.CHAT_PREFIX + msg)
