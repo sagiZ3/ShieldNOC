@@ -1,4 +1,6 @@
-def init_schema(conn) -> None:
+import sqlite3
+
+def init_schema(conn: sqlite3.Connection) -> None:
     conn.execute(
         """
         CREATE TABLE IF NOT EXISTS clients (
