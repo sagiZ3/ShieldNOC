@@ -1,4 +1,5 @@
 import subprocess
+import base64
 
 from pathlib import Path
 from random import randint
@@ -135,14 +136,18 @@ class VPNManager:
 
         # add to DB
 
-        return key
+        # db condition - client exists?
+        while True:
+            client_ip = self._get_random_ip()
+            if not self.is_ip_in_use(client_ip):
+                self._add_client_to_db(client_public_key, client_ip)
+                break
 
-    def add_peer(self, client_public_key: str) -> None:
-        client_ip = self._get_random_ip()
-        self._run_terminal_cmd(["wg", "set", self._wg_interface, "peer", client_public_key,
+        self._run_terminal_cmd(["wg", "set", self.WG_INTERFACE, "peer", client_public_key,
                                 "allowed-ips", f"{client_ip}/32"])
 
-        self._add_client_to_db(client_public_key, client_ip)
+        # mark client as active in db
+        return self._public_key, client_ip
 
     def change_peer_ip(self, client_public_key: str, requested_ip: str) -> None:
         self._run_terminal_cmd(["wg", "set", self.WG_INTERFACE, "peer", client_public_key,
@@ -171,5 +176,17 @@ class VPNManager:
     def _run_terminal_cmd(cmd: list[str], capture_output=False, **kwargs) -> str | None:
         result = subprocess.run(cmd, check=True, text=True, capture_output=capture_output, **kwargs)
         return result.stdout.strip() if capture_output else None
+
+    @staticmethod
+    def is_valid_wg_public_key(key: str) -> bool:
+        """ Validate WireGuard public key (base64, 32 bytes) """
+        try:
+            if len(key) != 44:
+                return False
+
+            decoded = base64.b64decode(key, validate=True)
+            return len(decoded) == 32
+        except Exception:
+            return False
 
 # add to client (download button): subprocess.run('winget install --id WireGuard.WireGuard -e --source winget', shell=True)
