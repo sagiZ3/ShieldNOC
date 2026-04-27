@@ -77,8 +77,9 @@ class ConnectionManager:
                 vpn_conf_data = {
                     "server_public_key": server_public_key,
                     "assigned_vpn_ip": client_assigned_vpn_ip
-                }  # TODO: add encryption
-                protocol.send_segment(client_sock, self.VPN_PREFIX + json.dumps(vpn_conf_data))
+                }
+                data = self._encrypt_data(json.dumps(vpn_conf_data))  # TODO: add encryption
+                protocol.send_segment(client_sock, self.VPN_PREFIX + data)
 
             else:
                 logger.error(f"Error with sending the content: {client_msg}")
@@ -150,3 +151,7 @@ class ConnectionManager:
     def broadcast_msg(self, msg) -> None:
         for client_sock in self._clients:
             protocol.send_segment(client_sock, self.CHAT_PREFIX + msg)
+
+    @staticmethod
+    def _encrypt_data(data: str):
+        pass
