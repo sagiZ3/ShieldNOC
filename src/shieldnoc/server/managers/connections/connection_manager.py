@@ -3,7 +3,7 @@ import json
 
 import shieldnoc.protocol as protocol
 
-from threading import Thread, Event
+from threading import Thread
 from select import select
 from shieldnoc.logging_config import logger
 from shieldnoc.server.managers.connections.chat_manager import ChatManager
@@ -17,10 +17,10 @@ class ConnectionManager:
     def __init__(self):
         self._chat_manager = ChatManager(self.broadcast_msg)
         self._vpn_manager = VPNManager()
+        self._stop_connection_event = self._chat_manager.stop_connection_event
 
         self._listen_sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self._listen_sock.settimeout(1.0)
-        self._stop_chat_event = Event()
 
         try:
             self._listen_sock.bind((protocol.LISTEN_EVERYONE_IP, protocol.LISTEN_PORT))
@@ -41,7 +41,7 @@ class ConnectionManager:
         logger.info("===== ShieldNOC is ready for accepting clients =====")
 
     def _clients_acceptor(self) -> None:
-        while not self._stop_chat_event.is_set():
+        while not self._stop_connection_event.is_set():
             try:
                 client_sock, client_addr = self._listen_sock.accept()
             except socket.timeout:
@@ -98,7 +98,7 @@ class ConnectionManager:
         logger.info(f"{client_addr} has connected to ShieldNOC System")
         self._chat_manager.handle_system_msg(f"~{client_addr[0]} joined the ShieldNOC System~")
 
-        while not self._stop_chat_event.is_set():
+        while not self._stop_connection_event.is_set():
             try:
                 valid_msg, client_msg = protocol.get_payload(client_sock)
             except socket.timeout:
@@ -146,7 +146,7 @@ class ConnectionManager:
         logger.info(f"> ShieldNOC System End Session With Client {client_addr} <")
 
     def end_chat_session(self):
-        self._stop_chat_event.set()
+        self._stop_connection_event.set()
 
     def broadcast_msg(self, msg) -> None:
         for client_sock in self._clients:
