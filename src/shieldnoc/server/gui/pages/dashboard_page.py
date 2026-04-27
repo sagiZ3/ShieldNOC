@@ -254,11 +254,9 @@ class ServerDashboardPage(QWidget):
         msg = self.chat_input.text().strip()
         if not msg:
             return
-        msg = self.chat_manager.wrap_server_manager_msg(msg)
 
         self.chat_input.clear()
-        self._scroll_chat_bottom()
-        self.chat_manager.broadcast_msg(msg)
+        self.chat_manager.handle_server_msg(msg)
 
     def _append_chat_msg(self, msg: str):
         self.chat_view.append(msg)
