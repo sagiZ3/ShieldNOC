@@ -19,3 +19,8 @@ class ClientInfo:
     hostname: str
     last_seen: str
     status: str
+
+@dataclass(frozen=True)
+class ServerRecord:
+    public_key: str
+    private_key: str
