@@ -127,9 +127,9 @@ class VPNManager:
 
         return private_key, public_key
 
-        key = self._run_terminal_cmd(["wg", "genkey"], capture_output=True)
-
-        # add to DB
+    def add_peer(self, client_public_key: str) -> tuple:  # TODO: fix func
+        # TODO: fix: check if the key already associated with an ip (db use)
+        # TODO: fix: check if the ip in-use before adding it also if exists in db
 
         # db condition - client exists?
         while True:
