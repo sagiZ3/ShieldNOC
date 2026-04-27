@@ -3,6 +3,7 @@ import sqlite3
 from functools import wraps
 
 from shieldnoc.logging_config import logger
+from shieldnoc.server.core.db import initializer
 from shieldnoc.server.core.db.models import ClientRecord
 from shieldnoc.server.core.db.enums import ClientField
 
@@ -22,6 +23,8 @@ class DatabaseQueries:
     def __init__(self, db_path="shieldnoc.db"):
         self._conn = sqlite3.connect(db_path)
         self._conn.row_factory = sqlite3.Row
+
+        initializer.init_schema(self._conn)
 
     @auto_commit
     def add_client(self, client: ClientRecord) -> None:
