@@ -115,7 +115,7 @@ class ConnectionManager:
                 if prefix == self.CHAT_PREFIX:
                     self._chat_manager.handle_client_msg(client_addr[0], content)
                 elif prefix == self.VPN_PREFIX:
-                    pass  # api_to_vpn_somehow
+                    pass  # TODO: add api_to_vpn_somehow
                 else:
                     logger.warning("Got a valid client msg with invalid prefix")
 
@@ -141,7 +141,7 @@ class ConnectionManager:
 
         # broken | Event raised
         self._clients.pop(client_sock)
-        # update what needs in DB
+        # TODO: update what needs in DB
         client_sock.close()
         logger.info(f"> ShieldNOC System End Session With Client {client_addr} <")
 
@@ -153,5 +153,5 @@ class ConnectionManager:
             protocol.send_segment(client_sock, self.CHAT_PREFIX + msg)
 
     @staticmethod
-    def _encrypt_data(data: str):
+    def _encrypt_data(data: str) -> str:
         pass
