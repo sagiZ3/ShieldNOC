@@ -132,11 +132,8 @@ class VPNManager:
         # TODO: fix: check if the ip in-use before adding it also if exists in db
 
         # db condition - client exists?
-        while True:
-            client_ip = self._get_random_ip()
-            if not self.is_ip_in_current_use(client_ip):
-                self._add_client_to_db(client_public_key, client_ip)
-                break
+        client_ip = self._get_random_ip()
+        self._add_client_to_db(client_public_key, client_ip)
 
         self._run_terminal_cmd(["wg", "set", self.WG_INTERFACE, "peer", client_public_key,
                                 "allowed-ips", f"{client_ip}/32"])
