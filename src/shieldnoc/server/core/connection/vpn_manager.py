@@ -131,7 +131,7 @@ class VPNManager:
         # TODO: fix: check if the key already associated with an ip (db use)
         # TODO: fix: check if the ip in-use before adding it also if exists in db
 
-        # db condition - client exists?
+        # TODO: db condition - client exists? - client_ip = IP_PREF
         client_ip = self._get_random_ip()
         self._add_client_to_db(client_public_key, client_ip)
 
@@ -147,6 +147,7 @@ class VPNManager:
 
     def remove_peer(self, client_public_key: str) -> None:
         self._run_terminal_cmd(["wg", "set", self.WG_INTERFACE, "peer", client_public_key, "remove"])
+        # TODO: clear VPN_IP from DB record
 
     def is_ip_in_current_use(self, ip: str) -> bool:
         pass  # TODO: db check
