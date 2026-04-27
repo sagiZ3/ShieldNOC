@@ -14,10 +14,7 @@ class VPNManager:
 
     def __init__(self):
         self._lan_interface = self._get_lan_interface()
-
-        self._vpn_ip_prefix = "10.33.33"
-        self._vpn_listen_port = "12345"
-        self._conf_file_path = self._wg_interface + ".conf"
+        self._private_key, self._public_key = self._get_wg_keys()
 
     def _get_lan_interface(self):
         result = self._run_terminal_cmd(
@@ -118,19 +115,18 @@ class VPNManager:
     def _stop_wg_interface(self):
         self._run_terminal_cmd(["wg-quick", "down", self.WG_INTERFACE])
 
-    def get_public_key(self) -> str:
-        # check if exits in DB: False - gen key, True - return it
+    def _get_wg_keys(self) -> tuple:
+        # TODO: check if exits in DB: False - gen key, True - return it
         if True:
-            return ""
+            return "", ""
 
         key =  self._run_terminal_cmd(["wg", "pubkey"], capture_output=True, input=self.get_private_key())
+        private_key = self._run_terminal_cmd(["wg", "genkey"], capture_output=True)
+        public_key =  self._run_terminal_cmd(["wg", "pubkey"], capture_output=True, input=private_key)
 
-        return key
+        # TODO: add keys to DB
 
-    def get_private_key(self) -> str:
-        # check if exits in DB: False - gen key, True - return it
-        if True:  # change after build the DB
-            return ""
+        return private_key, public_key
 
         key = self._run_terminal_cmd(["wg", "genkey"], capture_output=True)
 
