@@ -134,7 +134,7 @@ class VPNManager:
         # db condition - client exists?
         while True:
             client_ip = self._get_random_ip()
-            if not self.is_ip_in_use(client_ip):
+            if not self.is_ip_in_current_use(client_ip):
                 self._add_client_to_db(client_public_key, client_ip)
                 break
 
@@ -151,7 +151,7 @@ class VPNManager:
     def remove_peer(self, client_public_key: str) -> None:
         self._run_terminal_cmd(["wg", "set", self.WG_INTERFACE, "peer", client_public_key, "remove"])
 
-    def _is_ip_in_use(self, ip: str) -> bool:
+    def is_ip_in_current_use(self, ip: str) -> bool:
         pass  # TODO: db check
 
     def _add_client_to_db(self, public_key ,ip):  # TODO: maybe delete - in import db manager
@@ -162,7 +162,7 @@ class VPNManager:
             random_host_ip = str(randint(2, 254))
             new_ip = f"{self.VPN_IP_PREFIX}.{random_host_ip}"
 
-            if not self._is_ip_in_use(new_ip):
+            if not self.is_ip_in_current_use(new_ip):
                 break
 
         return new_ip
