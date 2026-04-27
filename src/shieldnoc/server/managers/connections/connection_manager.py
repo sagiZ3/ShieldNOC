@@ -1,4 +1,5 @@
 import socket
+import json
 
 import shieldnoc.protocol as protocol
 
@@ -54,10 +55,6 @@ class ConnectionManager:
                 thread = Thread(target=self._initial_connection, args=(client_sock,))
                 client_sock.settimeout(5.0)
             thread.start()
-
-        # TODO: fix
-        client_sock.settimeout(1.0)  # before sending to handle client
-        self._clients[client_sock] = client_sock.getpeername()  # before sending to handle client
 
         logger.info(">>> ShieldNOC System Closed <<<")
 
