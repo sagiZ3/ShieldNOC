@@ -1,7 +1,7 @@
 from dataclasses import dataclass
 
 
-@dataclass(frozen=True)
+@dataclass(frozen=True)  # TODO: understand
 class ClientInfo:
     key: str  # unike
     label: str = ""
