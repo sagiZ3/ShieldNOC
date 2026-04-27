@@ -14,4 +14,4 @@ class ServerField(Enum):
     ID = "id"
     PRIVATE_KEY = "private_key"
     PUBLIC_KEY = "public_key"
-    CREATED_TIME = "created_time"
+    LAST_UPDATED = "last_updated"
