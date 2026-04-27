@@ -25,7 +25,7 @@ def init_schema(conn: sqlite3.Connection) -> None:
             {ServerField.ID.value} INTEGER PRIMARY KEY CHECK (id = 1),
             {ServerField.PRIVATE_KEY.value} TEXT NOT NULL,
             {ServerField.PUBLIC_KEY.value} TEXT NOT NULL,
-            {ServerField.CREATED_TIME.value} TEXT NOT NULL
+            {ServerField.LAST_UPDATED.value} TEXT DEFAULT CURRENT_TIMESTAMP
     )
     """
     )
