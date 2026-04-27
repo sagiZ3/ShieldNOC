@@ -1,28 +1,31 @@
 import sqlite3
 
+from shieldnoc.server.core.db.enums import ClientField, ServerField
+
+
 def init_schema(conn: sqlite3.Connection) -> None:
     conn.execute(
-        """
+        f"""
         CREATE TABLE IF NOT EXISTS clients (
-            public_key TEXT PRIMARY KEY,
-            vpn_ip TEXT NOT NULL UNIQUE,
-            mac TEXT DEFAULT '',
-            host TEXT DEFAULT '',
-            hostname TEXT DEFAULT '',
-            last_seen TEXT DEFAULT '',
-            status TEXT DEFAULT '',
-            ip_preference TEXT DEFAULT ''
+            {ClientField.PUBLIC_KEY.value} TEXT PRIMARY KEY,
+            {ClientField.VPN_IP.value} TEXT NOT NULL UNIQUE,
+            {ClientField.MAC.value} TEXT DEFAULT '',
+            {ClientField.HOST.value} TEXT DEFAULT '',
+            {ClientField.HOSTNAME.value} TEXT DEFAULT '',
+            {ClientField.LAST_SEEN.value} TEXT DEFAULT '',
+            {ClientField.STATUS.value} TEXT DEFAULT '',
+            {ClientField.IP_PREF.value} TEXT DEFAULT ''
         )
         """
     )
 
     conn.execute(
-        """
+        f"""
         CREATE TABLE IF NOT EXISTS server_keys (
-            id INTEGER PRIMARY KEY CHECK (id = 1),
-            private_key TEXT NOT NULL,
-            public_key TEXT NOT NULL,
-            created_time TEXT NOT NULL
+            {ServerField.ID.value} INTEGER PRIMARY KEY CHECK (id = 1),
+            {ServerField.PRIVATE_KEY.value} TEXT NOT NULL,
+            {ServerField.PUBLIC_KEY.value} TEXT NOT NULL,
+            {ServerField.CREATED_TIME.value} TEXT NOT NULL
     )
     """
     )
