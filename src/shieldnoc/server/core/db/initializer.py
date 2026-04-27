@@ -15,4 +15,15 @@ def init_schema(conn: sqlite3.Connection) -> None:
         )
         """
     )
+
+    conn.execute(
+        """
+        CREATE TABLE IF NOT EXISTS server_keys (
+            id INTEGER PRIMARY KEY CHECK (id = 1),
+            private_key TEXT NOT NULL,
+            public_key TEXT NOT NULL,
+            created_time TEXT NOT NULL
+    )
+    """
+    )
     conn.commit()
