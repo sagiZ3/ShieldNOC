@@ -120,7 +120,6 @@ class VPNManager:
         if True:
             return "", ""
 
-        key =  self._run_terminal_cmd(["wg", "pubkey"], capture_output=True, input=self.get_private_key())
         private_key = self._run_terminal_cmd(["wg", "genkey"], capture_output=True)
         public_key =  self._run_terminal_cmd(["wg", "pubkey"], capture_output=True, input=private_key)
 
