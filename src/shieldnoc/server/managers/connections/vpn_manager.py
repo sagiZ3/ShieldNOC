@@ -6,8 +6,12 @@ from random import randint
 from shieldnoc.logging_config import logger
 
 class VPNManager:
+    WG_INTERFACE = "ShieldNOC"
+    CONF_FILE_PATH = WG_INTERFACE + ".conf"
+    VPN_IP_PREFIX = "10.33.33"
+    VPN_LISTEN_PORT = "12345"
+
     def __init__(self):
-        self._wg_interface = "ShieldNOC"
         self._lan_interface = self._get_lan_interface()
 
         self._vpn_ip_prefix = "10.33.33"
@@ -28,10 +32,10 @@ class VPNManager:
         self._run_terminal_cmd(["sysctl", "-w", "net.ipv4.ip_forward=0"])
 
     def _set_forwarding_and_nat_rules(self, action: str) -> None:
-        self._run_terminal_cmd(["iptables", action, "FORWARD", "-i", self._wg_interface, "-o", self._lan_interface,
+        self._run_terminal_cmd(["iptables", action, "FORWARD", "-i", self.WG_INTERFACE, "-o", self._lan_interface,
                                 "-j", "ACCEPT"])  # firewall level
 
-        self._run_terminal_cmd(["iptables", action, "FORWARD", "-i", self._lan_interface, "-o", self._wg_interface,
+        self._run_terminal_cmd(["iptables", action, "FORWARD", "-i", self._lan_interface, "-o", self.WG_INTERFACE,
                                 "-m", "state", "--state", "ESTABLISHED,RELATED", "-j", "ACCEPT"]),  # firewall level
 
         self._run_terminal_cmd(["iptables", "-t", "nat", action, "POSTROUTING", "-o",
@@ -96,22 +100,22 @@ class VPNManager:
 
     def _create_config(self) -> None:
         config_content = f"""[Interface]
-        PrivateKey = {self.get_private_key()}
-        Address = {self._vpn_ip_prefix}.1/24
-        ListenPort = {self._vpn_listen_port}
+        PrivateKey = {self._private_key}
+        Address = {self.VPN_IP_PREFIX}.1/24
+        ListenPort = {self.VPN_LISTEN_PORT}
         """
 
-        with open(self._conf_file_path, "w") as conf_file:
+        with open(self.CONF_FILE_PATH, "w") as conf_file:
             conf_file.write(config_content)
 
     def _start_wg_interface(self) -> None:
-        if not Path(self._conf_file_path).exists():
+        if not Path(self.CONF_FILE_PATH).exists():
             self._create_config()
 
-        self._run_terminal_cmd(["wg-quick", "up", self._conf_file_path])
+        self._run_terminal_cmd(["wg-quick", "up", self.CONF_FILE_PATH])
 
     def _stop_wg_interface(self):
-        self._run_terminal_cmd(["wg-quick", "down", self._wg_interface])
+        self._run_terminal_cmd(["wg-quick", "down", self.WG_INTERFACE])
 
     def get_public_key(self) -> str:
         # check if exits in DB: False - gen key, True - return it
@@ -141,11 +145,11 @@ class VPNManager:
         self._add_client_to_db(client_public_key, client_ip)
 
     def change_peer_ip(self, client_public_key: str, requested_ip: str) -> None:
-        self._run_terminal_cmd(["wg", "set", self._wg_interface, "peer", client_public_key,
+        self._run_terminal_cmd(["wg", "set", self.WG_INTERFACE, "peer", client_public_key,
                                 "allowed-ips", f"{requested_ip}/32"])
 
     def remove_peer(self, client_public_key: str) -> None:
-        self._run_terminal_cmd(["wg", "set", self._wg_interface, "peer", client_public_key, "remove"])
+        self._run_terminal_cmd(["wg", "set", self.WG_INTERFACE, "peer", client_public_key, "remove"])
 
     def _is_ip_in_use(self, ip: str) -> bool:
         pass  # TODO: db check
@@ -156,7 +160,7 @@ class VPNManager:
     def _get_random_ip(self) -> str:
         while True:
             random_host_ip = str(randint(2, 254))
-            new_ip = f"{self._vpn_ip_prefix}.{random_host_ip}"
+            new_ip = f"{self.VPN_IP_PREFIX}.{random_host_ip}"
 
             if not self._is_ip_in_use(new_ip):
                 break
