@@ -6,8 +6,8 @@ import shieldnoc.protocol as protocol
 from threading import Thread
 from select import select
 from shieldnoc.logging_config import logger
-from shieldnoc.server.managers.connections.chat_manager import ChatManager
-from shieldnoc.server.managers.connections.vpn_manager import VPNManager
+from shieldnoc.server.core.connection.chat_manager import ChatManager
+from shieldnoc.server.core.connection.vpn_manager import VPNManager
 
 
 class ConnectionManager:

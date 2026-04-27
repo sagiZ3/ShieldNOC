@@ -9,7 +9,7 @@ from PySide6.QtCore import Qt
 from shieldnoc.server.gui.ui.background import BackgroundLayer
 from shieldnoc.server.gui.ui.style import SERVER_STYLE_SHEET
 from shieldnoc.server.gui.pages.dashboard_page import ServerDashboardPage
-from shieldnoc.server.managers.chat import ChatManager
+from shieldnoc.server.core.connection.chat_manager import ChatManager
 
 
 class MainWindow(QMainWindow):

@@ -8,7 +8,7 @@ from PySide6.QtWidgets import (
 )
 
 from shieldnoc.server.gui.enums import ImagesPaths
-from shieldnoc.server.managers.data import ClientInfo
+from shieldnoc.server.core.db.api import ClientInfo
 
 class TopologyView(QGraphicsView):
     def __init__(self, parent=None):

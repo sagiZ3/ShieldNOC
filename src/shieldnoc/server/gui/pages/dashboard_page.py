@@ -16,7 +16,7 @@ from PySide6.QtCharts import QChart, QChartView, QLineSeries, QValueAxis
 from shieldnoc.server.gui.widgets.card_frame import CardFrame
 from shieldnoc.server.gui.widgets.topology_view import TopologyView, ClientInfo
 from shieldnoc.server.gui.enums import ImagesPaths, TrafficChart
-from shieldnoc.server.managers.chat import ChatManager
+from shieldnoc.server.core.connection.chat_manager import ChatManager
 
 
 class ServerDashboardPage(QWidget):

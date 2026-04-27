@@ -1,4 +1,4 @@
-from shieldnoc.server.db.enums import ClientField
+from shieldnoc.server.core.db.enums import ClientField
 
 
 def update_client(conn, client_id: int, fields: dict[ClientField, str]) -> int:

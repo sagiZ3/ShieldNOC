@@ -1,5 +1,5 @@
 from shieldnoc.server.gui.main import gui_main
-from shieldnoc.server.managers.connections.connection_manager import ConnectionManager
+from shieldnoc.server.core.connection.connection_manager import ConnectionManager
 
 
 def main():
