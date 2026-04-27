@@ -6,6 +6,7 @@ from threading import Thread, Event
 from select import select
 from shieldnoc.logging_config import logger
 from shieldnoc.server.managers.connections.chat_manager import ChatManager
+from shieldnoc.server.managers.connections.vpn_manager import VPNManager
 
 
 class ConnectionManager:
@@ -14,7 +15,7 @@ class ConnectionManager:
 
     def __init__(self):
         self._chat_manager = ChatManager(self.broadcast_msg)
-        # self.vpn_manager = VPNManager()
+        self._vpn_manager = VPNManager()
 
         self._listen_sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self._listen_sock.settimeout(1.0)
@@ -45,9 +46,13 @@ class ConnectionManager:
             except socket.timeout:
                 continue
 
-            logger.info(f"{client_addr} starts the connection process to ShieldNOC System")
-
-            thread = Thread(target=self._initial_connection, args=(client_sock,))
+            if self._vpn_manager.is_ip_in_use(client_addr(0)):
+                thread = Thread(target=self._handle_client, args=(client_sock,))
+                client_sock.settimeout(1.0)
+                self._clients[client_sock] = client_addr
+            else:
+                thread = Thread(target=self._initial_connection, args=(client_sock,))
+                client_sock.settimeout(5.0)
             thread.start()
 
         # TODO: fix
@@ -57,6 +62,9 @@ class ConnectionManager:
         logger.info(">>> ShieldNOC System Closed <<<")
 
     def _initial_connection(self, client_sock: socket.socket) -> None:
+        client_addr = client_sock.getpeername()
+        logger.info(f"{client_addr} starts the connection process to ShieldNOC System")
+
         try:
             valid_msg, client_msg = protocol.get_payload(client_sock)
 
@@ -67,8 +75,13 @@ class ConnectionManager:
                     protocol.send_segment(client_sock, "Initial connection must start with VPN request")
                     return
 
-                content = client_msg[1:]
-                # send PUB KEY to vpn_manager -> create there handle initial connection
+                content = client_msg[1:]  # client public key
+                server_public_key, client_assigned_vpn_ip = self._vpn_manager.add_peer(content)
+                vpn_conf_data = {
+                    "server_public_key": server_public_key,
+                    "assigned_vpn_ip": client_assigned_vpn_ip
+                }  # TODO: add encryption
+                protocol.send_segment(client_sock, self.VPN_PREFIX + json.dumps(vpn_conf_data))
 
             else:
                 logger.error(f"Error with sending the content: {client_msg}")
