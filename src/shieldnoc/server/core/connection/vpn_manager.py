@@ -135,6 +135,8 @@ class VPNManager:
         return private_key, public_key
 
     def add_peer(self, client_public_key: str, client_pc_data: dict[str, str]) -> tuple:  # TODO: check validation of public key
+    def add_peer(self, client_initial_data: dict[ClientField, str]) -> tuple:
+        client_public_key = client_initial_data[ClientField.PUBLIC_KEY.value]
         if self._db.is_client_exists_by_public_key(client_public_key):
             client_data = self._db.get_client_by_public_key(client_public_key)
             client_vpn_ip = client_data[ClientField.IP_PREF.value]
