@@ -30,13 +30,12 @@ class DatabaseQueries:
     def add_client(self, client: ClientRecord) -> None:
         self._conn.execute(
             f"""
-            INSERT INTO clients (
+            INSERT INTO {ClientField.TABLE_NAME.value} (
                 {ClientField.PUBLIC_KEY.value},
                 {ClientField.VPN_IP.value},
                 {ClientField.MAC.value},
                 {ClientField.HOST.value},
                 {ClientField.HOSTNAME.value},
-                {ClientField.LAST_SEEN.value},
                 {ClientField.STATUS.value},
                 {ClientField.IP_PREF.value}
             )
@@ -48,7 +47,6 @@ class DatabaseQueries:
                 client.mac,
                 client.host,
                 client.hostname,
-                client.last_seen,
                 client.status,
                 client.ip_preference
             )
@@ -56,9 +54,9 @@ class DatabaseQueries:
 
     def get_all_clients(self) -> list[sqlite3.Row]:
         return self._conn.execute(
-            """
+            f"""
             SELECT *
-            FROM clients
+            FROM {ClientField.TABLE_NAME.value}
             """
         ).fetchall()
 
@@ -66,7 +64,7 @@ class DatabaseQueries:
         return self._conn.execute(
             f"""
             SELECT *
-            FROM clients
+            FROM {ClientField.TABLE_NAME.value}
             WHERE {ClientField.PUBLIC_KEY.value} = ?
             """,
             (public_key,)
@@ -76,7 +74,7 @@ class DatabaseQueries:
         return self._conn.execute(
             f"""
             SELECT *
-            FROM clients
+            FROM {ClientField.TABLE_NAME.value}
             WHERE {ClientField.VPN_IP.value} = ?
             """,
             (vpn_ip,)
@@ -96,7 +94,7 @@ class DatabaseQueries:
 
         self._conn.execute(
             f"""
-            UPDATE clients
+            UPDATE {ClientField.TABLE_NAME.value}
             SET {set_phrase}
             WHERE {identifier_field.value} = ?
             """,
@@ -113,7 +111,7 @@ class DatabaseQueries:
         row = self._conn.execute(
             f"""
             SELECT 1
-            FROM clients
+            FROM {ClientField.TABLE_NAME.value}
             WHERE {ClientField.PUBLIC_KEY.value} = ?
             LIMIT 1
             """,
@@ -126,7 +124,7 @@ class DatabaseQueries:
         row = self._conn.execute(
             f"""
             SELECT 1
-            FROM clients
+            FROM {ClientField.TABLE_NAME.value}
             WHERE {ClientField.VPN_IP.value} = ?
             LIMIT 1
             """,
@@ -139,7 +137,7 @@ class DatabaseQueries:
     def delete_client_by_public_key(self, public_key: str) -> None:
         self._conn.execute(
             f"""
-            DELETE FROM clients
+            DELETE FROM {ClientField.TABLE_NAME.value}
             WHERE {ClientField.PUBLIC_KEY.value} = ?
             """,
             (public_key,)
@@ -149,7 +147,7 @@ class DatabaseQueries:
     def delete_client_by_vpn_ip(self, vpn_ip: str) -> None:
         self._conn.execute(
             f"""
-            DELETE FROM clients
+            DELETE FROM {ClientField.TABLE_NAME.value}
             WHERE {ClientField.VPN_IP.value} = ?
             """,
             (vpn_ip,)
@@ -163,7 +161,7 @@ class DatabaseQueries:
     def set_server_keys(self, server: ServerRecord):
         self._conn.execute(
             f"""
-            INSERT INTO clients (
+            INSERT INTO {ServerField.TABLE_NAME.value} (
                 {ServerField.PRIVATE_KEY.value},
                 {ServerField.PUBLIC_KEY.value}
             )
@@ -179,7 +177,7 @@ class DatabaseQueries:
         return self._conn.execute(
             f"""
             SELECT {ServerField.PRIVATE_KEY.value}, {ServerField.PUBLIC_KEY.value}
-            FROM server_keys
+            FROM {ServerField.TABLE_NAME.value}
             WHERE {ServerField.ID.value} = 1
             """
         ).fetchone()
