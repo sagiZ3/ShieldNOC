@@ -8,6 +8,8 @@ from select import select
 from shieldnoc.logging_config import logger
 from shieldnoc.server.core.connection.chat_manager import ChatManager
 from shieldnoc.server.core.connection.vpn_manager import VPNManager
+from shieldnoc.server.core.db.enums import ClientField
+from shieldnoc.server.core.db.queries import DatabaseQueries
 
 
 class ConnectionManager:
@@ -15,8 +17,12 @@ class ConnectionManager:
     VPN_PREFIX = "3"
 
     def __init__(self):
+        self._db = DatabaseQueries()
         self.chat_manager = ChatManager(self.broadcast_msg)
-        self._vpn_manager = VPNManager()
+        self._vpn_manager = VPNManager(self._db)
+
+        self._vpn_manager.start_vpn()
+
         self._stop_connection_event = self.chat_manager.stop_connection_event
 
         self._listen_sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -47,7 +53,7 @@ class ConnectionManager:
             except socket.timeout:
                 continue
 
-            if self._vpn_manager.is_ip_in_current_use(client_addr(0)):
+            if self._vpn_manager.is_valid_vpn_ip(client_addr(0)):
                 thread = Thread(target=self._handle_client, args=(client_sock,))
                 client_sock.settimeout(1.0)
                 self._clients[client_sock] = client_addr
@@ -56,6 +62,7 @@ class ConnectionManager:
                 client_sock.settimeout(5.0)
             thread.start()
 
+        self._vpn_manager.stop_vpn()
         logger.info(">>> ShieldNOC System Closed <<<")
 
     def _initial_connection(self, client_sock: socket.socket) -> None:
@@ -72,13 +79,25 @@ class ConnectionManager:
                     protocol.send_segment(client_sock, "Initial connection must start with VPN request")
                     return
 
-                content = client_msg[1:]  # client public key
-                server_public_key, client_assigned_vpn_ip = self._vpn_manager.add_peer(content)
+                # client side implement:
+                #  data = {field.value: value for field, value in fields.items()}
+                #  json_str = json.dumps(data) -> send socket
+                content = json.loads(client_msg[1:])  # ClientField
+                initial_data = {ClientField(key): value for key, value in content}  # convert ClientField values back
+
+                server_public_key, client_assigned_vpn_ip = self._vpn_manager.add_peer(initial_data)
+
+                if server_public_key is None:
+                    logger.warning(f"client {client_addr} tries to connect ShieldNOC using invalid pubic key")
+                    response = "Invalid Public Key!\nPlease try again later."
+                    protocol.send_segment(client_sock, self.VPN_PREFIX + response)
+                    return
+
                 vpn_conf_data = {
                     "server_public_key": server_public_key,
                     "assigned_vpn_ip": client_assigned_vpn_ip
                 }
-                data = self._encrypt_data(json.dumps(vpn_conf_data))  # TODO: add encryption
+                data = self._encrypt_data(json.dumps(vpn_conf_data))
                 protocol.send_segment(client_sock, self.VPN_PREFIX + data)
 
             else:
@@ -94,9 +113,10 @@ class ConnectionManager:
 
     def _handle_client(self, client_sock: socket.socket) -> None:
         client_addr = client_sock.getpeername()
+        client_ip = client_addr[0]
 
         logger.info(f"{client_addr} has connected to ShieldNOC System")
-        self.chat_manager.handle_system_msg(f"~{client_addr[0]} joined the ShieldNOC System~")
+        self.chat_manager.handle_system_msg(f"~{client_ip} joined the ShieldNOC System~")
 
         while not self._stop_connection_event.is_set():
             try:
@@ -113,9 +133,9 @@ class ConnectionManager:
                 content = client_msg[1:]
 
                 if prefix == self.CHAT_PREFIX:
-                    self.chat_manager.handle_client_msg(client_addr[0], content)
+                    self.chat_manager.handle_client_msg(client_ip, content)
                 elif prefix == self.VPN_PREFIX:
-                    pass  # TODO: add api_to_vpn_somehow
+                    self._vpn_manager.change_peer_ip(client_ip, content)
                 else:
                     logger.warning("Got a valid client msg with invalid prefix")
 
@@ -141,7 +161,8 @@ class ConnectionManager:
 
         # broken | Event raised
         self._clients.pop(client_sock)
-        # TODO: update what needs in DB
+        self._vpn_manager.remove_peer(client_ip)
+
         client_sock.close()
         logger.info(f"> ShieldNOC System End Session With Client {client_addr} <")
 
@@ -154,4 +175,8 @@ class ConnectionManager:
 
     @staticmethod
     def _encrypt_data(data: str) -> str:  # TODO: revive func
+        pass
+
+    @staticmethod
+    def _decrypt_data(data: str) -> str:  # TODO: revive func
         pass
