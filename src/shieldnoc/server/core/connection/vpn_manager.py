@@ -182,4 +182,6 @@ class VPNManager:
         except Exception:
             return False
 
-# add to client (download button): subprocess.run('winget install --id WireGuard.WireGuard -e --source winget', shell=True)
+
+# TODO: add to client (download button): subprocess.run('winget install --id WireGuard.WireGuard -e --source winget', shell=True)
+#  prefer not for a button but just do a background download
