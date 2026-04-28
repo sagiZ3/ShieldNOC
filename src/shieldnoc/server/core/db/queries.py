@@ -4,8 +4,8 @@ from functools import wraps
 
 from shieldnoc.logging_config import logger
 from shieldnoc.server.core.db import initializer
-from shieldnoc.server.core.db.models import ClientRecord
-from shieldnoc.server.core.db.enums import ClientField
+from shieldnoc.server.core.db.models import ClientRecord, ServerRecord
+from shieldnoc.server.core.db.enums import ClientField, ServerField
 
 
 def auto_commit(func):
@@ -158,6 +158,31 @@ class DatabaseQueries:
     @auto_commit
     def delete_all_clients(self) -> None:
         self._conn.execute("DELETE FROM clients")
+
+    @auto_commit
+    def set_server_keys(self, server: ServerRecord):
+        self._conn.execute(
+            f"""
+            INSERT INTO clients (
+                {ServerField.PRIVATE_KEY.value},
+                {ServerField.PUBLIC_KEY.value}
+            )
+            VALUES (?, ?)
+            """,
+            (
+                server.private_key,
+                server.private_key
+            )
+        )
+
+    def get_server_keys(self) -> sqlite3.Row | None:
+        return self._conn.execute(
+            f"""
+            SELECT {ServerField.PRIVATE_KEY.value}, {ServerField.PUBLIC_KEY.value}
+            FROM server_keys
+            WHERE {ServerField.ID.value} = 1
+            """
+        ).fetchone()
 
     def close(self) -> None:
         self._conn.close()
