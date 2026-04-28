@@ -6,7 +6,7 @@ from shieldnoc.server.core.db.enums import ClientField, ServerField
 def init_schema(conn: sqlite3.Connection) -> None:
     conn.execute(
         f"""
-        CREATE TABLE IF NOT EXISTS clients (
+        CREATE TABLE IF NOT EXISTS {ServerField.TABLE_NAME.value} (
             {ClientField.PUBLIC_KEY.value} TEXT PRIMARY KEY,
             {ClientField.VPN_IP.value} TEXT NOT NULL UNIQUE,
             {ClientField.MAC.value} TEXT DEFAULT '',
@@ -21,7 +21,7 @@ def init_schema(conn: sqlite3.Connection) -> None:
 
     conn.execute(
         f"""
-        CREATE TABLE IF NOT EXISTS server_keys (
+        CREATE TABLE IF NOT EXISTS {ServerField.TABLE_NAME.value} (
             {ServerField.ID.value} INTEGER PRIMARY KEY CHECK (id = 1),
             {ServerField.PRIVATE_KEY.value} TEXT NOT NULL,
             {ServerField.PUBLIC_KEY.value} TEXT NOT NULL,
