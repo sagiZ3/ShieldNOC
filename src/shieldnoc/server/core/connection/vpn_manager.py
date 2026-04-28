@@ -181,7 +181,7 @@ class VPNManager:
     def change_peer_ip(self, client_vpn_ip: str, requested_ip: str) -> tuple[bool, str]:
         client_public_key = self._db.get_client_by_vpn_ip(client_vpn_ip)[ClientField.PUBLIC_KEY.value]
 
-        if not self._is_valid_vpn_ip(requested_ip):
+        if not self.is_valid_vpn_ip(requested_ip):
             return False, "IP is not valid!\nvalid host octet range: 2-254"  # TODO: remember to integrate in client side as pop message
 
         if self._db.is_vpn_ip_in_current_use(requested_ip):
@@ -222,7 +222,7 @@ class VPNManager:
         return result.stdout.strip() if capture_output else None
 
     @staticmethod
-    def is_valid_wg_public_key(key: str) -> bool:
+    def _is_valid_wg_public_key(key: str) -> bool:
         """ Validate WireGuard public key (base64, 32 bytes) """
         try:
             if len(key) != 44:
