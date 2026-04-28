@@ -216,6 +216,20 @@ class VPNManager:
 
         return new_ip
 
+    def is_valid_vpn_ip(self, vpn_ip: str) -> bool:
+        if not vpn_ip:
+            return False
+
+        octets = vpn_ip.split('.')
+
+        if len(octets) != 4:
+            return False
+
+        prefix = ".".join(octets[:-1])
+        host: str = octets[3]
+
+        return prefix == self.VPN_IP_PREFIX and host.isdigit() and  2 < int(host) < 255
+
     @staticmethod
     def _run_terminal_cmd(cmd: list[str], capture_output=False, **kwargs) -> str | None:
         result = subprocess.run(cmd, check=True, text=True, capture_output=capture_output, **kwargs)
@@ -232,10 +246,6 @@ class VPNManager:
             return len(decoded) == 32
         except Exception:
             return False
-
-    @staticmethod
-    def _is_valid_vpn_ip(vpn_ip: str) -> bool:
-        pass
 
     @staticmethod
     def _encrypt_data(data: str) -> str:
