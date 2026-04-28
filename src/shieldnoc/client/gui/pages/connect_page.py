@@ -129,6 +129,22 @@ class ConnectPage(QWidget):
         self._set_connect_status("מתחבר...", "connectStatusConnecting")
         self.connect_requested.emit(ip, port)
 
+    def _pop_msg(self):  # TODO: edit and integrate
+        label = QLabel("Error!\nYou can't do that", self)
+        label.setStyleSheet("""
+            background-color: #1f2933;      /* dark modern background */
+            color: #f9fafb;                 /* soft white text */
+            padding: 20px;
+            border-radius: 10px;
+            border: 1px solid #ef4444;      /* red accent */
+            font-size: 14px;
+        """)
+        label.adjustSize()
+        label.move(self.width() - label.width() - 500, 200)
+        label.show()
+
+        QTimer.singleShot(1500, label.deleteLater)
+
     def _apply_vpn_ip(self):
         ip = self.vpn_ip_edit.text().strip()
         if not ip:
