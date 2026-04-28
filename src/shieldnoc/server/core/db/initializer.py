@@ -8,7 +8,7 @@ def init_schema(conn: sqlite3.Connection) -> None:
         f"""
         CREATE TABLE IF NOT EXISTS {ServerField.TABLE_NAME.value} (
             {ClientField.PUBLIC_KEY.value} TEXT PRIMARY KEY,
-            {ClientField.VPN_IP.value} TEXT NOT NULL UNIQUE,
+            {ClientField.VPN_IP.value} TEXT NULL UNIQUE,
             {ClientField.MAC.value} TEXT DEFAULT '',
             {ClientField.HOST.value} TEXT DEFAULT '',
             {ClientField.HOSTNAME.value} TEXT DEFAULT '',
