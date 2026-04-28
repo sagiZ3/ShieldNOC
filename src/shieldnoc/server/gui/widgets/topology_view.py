@@ -70,20 +70,20 @@ class TopologyView(QGraphicsView):
         self._server_fallback_circle = circle
 
     def set_clients(self, clients: list[ClientInfo]):
-        wanted = {c.key for c in clients}
+        wanted = {c.vpn_ip for c in clients}
         existing = set(self._client_items.keys())
 
         for key in list(existing - wanted):
             self.remove_client(key)
 
         for c in clients:
-            if c.key not in self._client_items:
+            if c.vpn_ip not in self._client_items:
                 self.add_client(c)
 
         self._reflow()
 
     def add_client(self, client: ClientInfo):
-        if client.key in self._client_items:
+        if client.vpn_ip in self._client_items:
             return
 
         if self._client_icon is not None:
@@ -92,18 +92,18 @@ class TopologyView(QGraphicsView):
             ))
             node.setOffset(-22, -22)
             self._scene.addItem(node)
-            self._client_items[client.key] = node
+            self._client_items[client.vpn_ip] = node
         else:
             node = QGraphicsEllipseItem(-18, -18, 36, 36)
             node.setBrush(QBrush(QColor("#1e90ff")))
             node.setPen(QPen(Qt.NoPen))
             self._scene.addItem(node)
-            self._client_items[client.key] = node
+            self._client_items[client.vpn_ip] = node
 
         line = QGraphicsLineItem()
         line.setPen(self._line_pen)
         self._scene.addItem(line)
-        self._lines[client.key] = line
+        self._lines[client.vpn_ip] = line
 
         self._reflow()
 
