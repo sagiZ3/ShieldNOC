@@ -90,7 +90,7 @@ class VPNManager:
     def stop_vpn(self) -> bool:
         self._disable_forwarding_and_nat_rules()
         self._disable_ip_forwarding()
-        self._stop_wg_interface()  # TODO: check that close
+        self._stop_wg_interface()
 
         if self.is_ip_forwarding_enabled():
             logger.error("Problem with disable IP forwarding!")
@@ -136,21 +136,24 @@ class VPNManager:
 
     def add_peer(self, client_public_key: str, client_pc_data: dict[str, str]) -> tuple:  # TODO: check validation of public key
         if self._db.is_client_exists_by_public_key(client_public_key):
-            client_data = self._db.get_client_by_public_key(client_public_key)[ClientField.IP_PREF.value]
+            client_data = self._db.get_client_by_public_key(client_public_key)
             client_vpn_ip = client_data[ClientField.IP_PREF.value]
+
+            if self._db.is_vpn_ip_in_current_use(client_vpn_ip):
+                client_vpn_ip = self._get_random_vpn_ip()
 
             self._db.update_client_fields_by_public_key(client_public_key,
                 {
-                    ClientField.VPN_IP: client_data[ClientField.VPN_IP.value],
-                    ClientField.MAC: client_data[ClientField.MAC.value],
-                    ClientField.HOST: client_data[ClientField.HOST.value],
-                    ClientField.HOSTNAME: client_data[ClientField.HOSTNAME.value],
+                    ClientField.VPN_IP: client_pc_data[ClientField.VPN_IP.value],
+                    ClientField.MAC: client_pc_data[ClientField.MAC.value],
+                    ClientField.HOST: client_pc_data[ClientField.HOST.value],
+                    ClientField.HOSTNAME: client_pc_data[ClientField.HOSTNAME.value],
                     ClientField.STATUS: "CONNECTED",
                     ClientField.IP_PREF: client_vpn_ip
                 })
 
-            if self._db.is_vpn_ip_in_current_use(client_vpn_ip):
-                client_vpn_ip = self._get_random_vpn_ip()
+            return self._public_key, client_vpn_ip
+
         else:
             client_vpn_ip = self._get_random_vpn_ip()
 
