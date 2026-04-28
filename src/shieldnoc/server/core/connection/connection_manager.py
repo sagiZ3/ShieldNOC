@@ -153,5 +153,5 @@ class ConnectionManager:
             protocol.send_segment(client_sock, self.CHAT_PREFIX + msg)
 
     @staticmethod
-    def _encrypt_data(data: str) -> str:
+    def _encrypt_data(data: str) -> str:  # TODO: revive func
         pass
