@@ -84,7 +84,7 @@ class DatabaseQueries:
 
     @auto_commit
     def _update_client_fields(self, identifier_field: ClientField, identifier_value: str,
-                              fields: dict[ClientField, str]) -> None:
+                              fields: dict[ClientField, str | None]) -> None:
         if not fields:
             return
 
@@ -100,13 +100,13 @@ class DatabaseQueries:
             SET {set_phrase}
             WHERE {identifier_field.value} = ?
             """,
-            (values,)
+            values
         )
 
-    def update_client_fields_by_public_key(self, public_key: str, fields: dict[ClientField, str]) -> None:
+    def update_client_fields_by_public_key(self, public_key: str, fields: dict[ClientField, str | None]) -> None:
         self._update_client_fields(ClientField.PUBLIC_KEY, public_key, fields)
 
-    def update_client_fields_by_vpn_ip(self, vpn_ip: str, fields: dict[ClientField, str]) -> None:
+    def update_client_fields_by_vpn_ip(self, vpn_ip: str, fields: dict[ClientField, str | None]) -> None:
         self._update_client_fields(ClientField.VPN_IP, vpn_ip, fields)
 
     def is_client_exists_by_public_key(self, public_key: str) -> bool:
