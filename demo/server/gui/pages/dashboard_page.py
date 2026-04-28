@@ -277,7 +277,7 @@ class ServerDashboardPage(QWidget):
     def _update_clients_table_from_clients(self, clients: list[ClientInfo]):
         rows = []
         for c in clients:
-            vpn_ip = c.key
+            vpn_ip = c.vpn_ip
             mac = "AA:BB:CC:00:00:00"
             host = c.host or "CLIENT"
             last = self._timestamp()
@@ -300,9 +300,9 @@ class ServerDashboardPage(QWidget):
     # ─────────────────────────────────────────────────────────────
     def _seed_demo_clients(self):  # TODO: remove ? use differently
         demo = [
-            ClientInfo(key="10.0.0.101", host="WIN11"),
-            ClientInfo(key="10.0.0.102", host="KALI"),
-            ClientInfo(key="10.0.0.103", host="DESKTOP"),
+            ClientInfo(vpn_ip="10.0.0.101", host="WIN11"),
+            ClientInfo(vpn_ip="10.0.0.102", host="KALI"),
+            ClientInfo(vpn_ip="10.0.0.103", host="DESKTOP"),
         ]
         self.set_clients(demo)
 
@@ -327,7 +327,7 @@ class ServerDashboardPage(QWidget):
         cur = list(self._clients)
         if random.random() < 0.35 and len(cur) < 12:
             last_octet = 100 + len(cur) + 1
-            cur.append(ClientInfo(key=f"10.0.0.{last_octet}", host="CLIENT"))
+            cur.append(ClientInfo(vpn_ip=f"10.0.0.{last_octet}", host="CLIENT"))
         elif random.random() < 0.25 and len(cur) > 1:
             cur.pop(random.randrange(0, len(cur)))
 
