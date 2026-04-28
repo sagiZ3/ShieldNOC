@@ -5,6 +5,10 @@ from pathlib import Path
 from random import randint
 
 from shieldnoc.logging_config import logger
+from shieldnoc.server.core.db.enums import ServerField, ClientField
+from shieldnoc.server.core.db.models import ServerRecord, ClientRecord
+from shieldnoc.server.core.db.queries import DatabaseQueries
+
 
 class VPNManager:
     WG_INTERFACE = "ShieldNOC"
@@ -13,6 +17,8 @@ class VPNManager:
     VPN_LISTEN_PORT = "12345"
 
     def __init__(self):
+        self._db = DatabaseQueries()
+
         self._lan_interface = self._get_lan_interface()
         self._private_key, self._public_key = self._get_wg_keys()
 
@@ -84,6 +90,7 @@ class VPNManager:
     def stop_vpn(self) -> bool:
         self._disable_forwarding_and_nat_rules()
         self._disable_ip_forwarding()
+        self._stop_wg_interface()  # TODO: check that close
 
         if self.is_ip_forwarding_enabled():
             logger.error("Problem with disable IP forwarding!")
@@ -116,51 +123,87 @@ class VPNManager:
         self._run_terminal_cmd(["wg-quick", "down", self.WG_INTERFACE])
 
     def _get_wg_keys(self) -> tuple:
-        # TODO: check if exits in DB: False - gen key, True - return it
-        if True:
-            return "", ""
+        keys = self._db.get_server_keys()
+        if keys:
+            return self._decrypt_data(keys[ServerField.PRIVATE_KEY.value]), keys[ServerField.PUBLIC_KEY.value]
 
-        private_key = self._run_terminal_cmd(["wg", "genkey"], capture_output=True)
-        public_key =  self._run_terminal_cmd(["wg", "pubkey"], capture_output=True, input=private_key)
+        private_key = self._run_terminal_cmd(["wg", "genkey"], capture_output=True).strip()
+        public_key =  self._run_terminal_cmd(["wg", "pubkey"], capture_output=True, input=private_key).strip()
 
-        # TODO: add keys to DB
+        self._db.set_server_keys(ServerRecord(self._encrypt_data(private_key), public_key))
 
         return private_key, public_key
 
-    def add_peer(self, client_public_key: str) -> tuple:  # TODO: fix func
-        # TODO: fix: check if the key already associated with an ip (db use)
-        # TODO: fix: check if the ip in-use before adding it also if exists in db
+    def add_peer(self, client_public_key: str, client_pc_data: dict[str, str]) -> tuple:  # TODO: check validation of public key
+        if self._db.is_client_exists_by_public_key(client_public_key):
+            client_data = self._db.get_client_by_public_key(client_public_key)[ClientField.IP_PREF.value]
+            client_vpn_ip = client_data[ClientField.IP_PREF.value]
 
-        # TODO: db condition - client exists? - client_ip = IP_PREF
-        client_ip = self._get_random_ip()
-        self._add_client_to_db(client_public_key, client_ip)
+            self._db.update_client_fields_by_public_key(client_public_key,
+                {
+                    ClientField.VPN_IP: client_data[ClientField.VPN_IP.value],
+                    ClientField.MAC: client_data[ClientField.MAC.value],
+                    ClientField.HOST: client_data[ClientField.HOST.value],
+                    ClientField.HOSTNAME: client_data[ClientField.HOSTNAME.value],
+                    ClientField.STATUS: "CONNECTED",
+                    ClientField.IP_PREF: client_vpn_ip
+                })
+
+            if self._db.is_vpn_ip_in_current_use(client_vpn_ip):
+                client_vpn_ip = self._get_random_vpn_ip()
+        else:
+            client_vpn_ip = self._get_random_vpn_ip()
+
+        client = ClientRecord(
+            public_key=client_public_key,
+            vpn_ip=client_vpn_ip,
+            mac=client_pc_data[ClientField.MAC.value],
+            host=client_pc_data[ClientField.HOST.value],
+            hostname=client_pc_data[ClientField.HOSTNAME.value],
+            status="CONNECTED",
+            ip_preference=client_vpn_ip
+        )
+        self._db.add_client(client)
 
         self._run_terminal_cmd(["wg", "set", self.WG_INTERFACE, "peer", client_public_key,
-                                "allowed-ips", f"{client_ip}/32"])
+                                "allowed-ips", f"{client_vpn_ip}/32"])
 
-        # mark client as active in db
-        return self._public_key, client_ip
+        return self._public_key, client_vpn_ip
 
-    def change_peer_ip(self, client_public_key: str, requested_ip: str) -> None:
+    def change_peer_ip(self, client_vpn_ip: str, requested_ip: str) -> tuple[bool, str]:
+        client_public_key = self._db.get_client_by_vpn_ip(client_vpn_ip)[ClientField.PUBLIC_KEY.value]
+
+        if not self._is_valid_vpn_ip(requested_ip):
+            return False, "IP is not valid!\nvalid host octet range: 2-254"  # TODO: remember to integrate in client side as pop message
+
+        if self._db.is_vpn_ip_in_current_use(requested_ip):
+            return False, "This IP is currently in use!\nPlease select another IP."
+
         self._run_terminal_cmd(["wg", "set", self.WG_INTERFACE, "peer", client_public_key,
                                 "allowed-ips", f"{requested_ip}/32"])
 
-    def remove_peer(self, client_public_key: str) -> None:
+        self._db.update_client_fields_by_vpn_ip(client_vpn_ip, {
+            ClientField.VPN_IP: requested_ip
+        })
+        return True, ""
+
+    def remove_peer(self, client_vpn_ip: str) -> None:
+        client_public_key = self._db.get_client_by_vpn_ip(client_vpn_ip)[ClientField.PUBLIC_KEY.value]
         self._run_terminal_cmd(["wg", "set", self.WG_INTERFACE, "peer", client_public_key, "remove"])
-        # TODO: clear VPN_IP from DB record
 
-    def is_ip_in_current_use(self, ip: str) -> bool:
-        pass  # TODO: db check
+        self._db.update_client_fields_by_vpn_ip(client_vpn_ip,
+            {
+                ClientField.VPN_IP: None,
+                ClientField.STATUS: "DISCONNECTED",
+                ClientField.IP_PREF: client_vpn_ip
+        })
 
-    def _add_client_to_db(self, public_key ,ip):  # TODO: maybe delete - in import db manager
-        pass  # TODO: db add
-
-    def _get_random_ip(self) -> str:
+    def _get_random_vpn_ip(self) -> str:
         while True:
-            random_host_ip = str(randint(2, 254))
-            new_ip = f"{self.VPN_IP_PREFIX}.{random_host_ip}"
+            random_host_octet = str(randint(2, 254))
+            new_ip = f"{self.VPN_IP_PREFIX}.{random_host_octet}"
 
-            if not self.is_ip_in_current_use(new_ip):
+            if not self._db.is_vpn_ip_in_current_use(new_ip):
                 break
 
         return new_ip
@@ -181,6 +224,18 @@ class VPNManager:
             return len(decoded) == 32
         except Exception:
             return False
+
+    @staticmethod
+    def _is_valid_vpn_ip(vpn_ip: str) -> bool:
+        pass
+
+    @staticmethod
+    def _encrypt_data(data: str) -> str:
+        pass
+
+    @staticmethod
+    def _decrypt_data(data: str) -> str:
+        pass
 
 
 # TODO: add to client (download button): subprocess.run('winget install --id WireGuard.WireGuard -e --source winget', shell=True)
