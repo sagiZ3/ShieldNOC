@@ -135,7 +135,7 @@ class VPNManager:
         return private_key, public_key
 
     def add_peer(self, client_initial_data: dict[ClientField, str]) -> tuple:
-        client_public_key = client_initial_data[ClientField.PUBLIC_KEY.value]
+        client_public_key = client_initial_data[ClientField.PUBLIC_KEY]
 
         if not self._is_valid_wg_public_key(client_public_key):
             return None, None
@@ -149,10 +149,10 @@ class VPNManager:
 
             self._db.update_client_fields_by_public_key(client_public_key,
                 {
-                    ClientField.VPN_IP: client_initial_data[ClientField.VPN_IP.value],
-                    ClientField.MAC: client_initial_data[ClientField.MAC.value],
-                    ClientField.HOST: client_initial_data[ClientField.HOST.value],
-                    ClientField.HOSTNAME: client_initial_data[ClientField.HOSTNAME.value],
+                    ClientField.VPN_IP: client_initial_data[ClientField.VPN_IP],
+                    ClientField.MAC: client_initial_data[ClientField.MAC],
+                    ClientField.HOST: client_initial_data[ClientField.HOST],
+                    ClientField.HOSTNAME: client_initial_data[ClientField.HOSTNAME],
                     ClientField.STATUS: "CONNECTED",
                     ClientField.IP_PREF: client_vpn_ip
                 })
@@ -165,9 +165,9 @@ class VPNManager:
         client = ClientRecord(
             public_key=client_public_key,
             vpn_ip=client_vpn_ip,
-            mac=client_initial_data[ClientField.MAC.value],
-            host=client_initial_data[ClientField.HOST.value],
-            hostname=client_initial_data[ClientField.HOSTNAME.value],
+            mac=client_initial_data[ClientField.MAC],
+            host=client_initial_data[ClientField.HOST],
+            hostname=client_initial_data[ClientField.HOSTNAME],
             status="CONNECTED",
             ip_preference=client_vpn_ip
         )
