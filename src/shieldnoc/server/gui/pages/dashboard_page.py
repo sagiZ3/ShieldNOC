@@ -1,4 +1,3 @@
-# TODO: add Hostname column to clients information table
 # TODO: add buttons for removing or waring a client with a specific message
 from datetime import datetime
 import random
@@ -13,6 +12,9 @@ from PySide6.QtWidgets import (
 )
 from PySide6.QtCharts import QChart, QChartView, QLineSeries, QValueAxis
 
+from shieldnoc.server.core.db.enums import ClientField
+from shieldnoc.server.core.db.queries import DatabaseQueries
+from shieldnoc.server.core.system import metrics
 from shieldnoc.server.gui.widgets.card_frame import CardFrame
 from shieldnoc.server.gui.widgets.topology_view import TopologyView
 from shieldnoc.server.gui.enums import ImagesPaths, TrafficChart
@@ -21,7 +23,7 @@ from shieldnoc.server.core.db.models import ClientInfo
 
 
 class ServerDashboardPage(QWidget):
-    def __init__(self, chat_manager: ChatManager, parent=None):
+    def __init__(self, db: DatabaseQueries, chat_manager: ChatManager, parent=None):
         super().__init__(parent)
 
         self.setLayoutDirection(Qt.LeftToRight)
@@ -135,10 +137,11 @@ class ServerDashboardPage(QWidget):
 
         right_col.addLayout(topo_logo_row)
 
+        self.db = db
         self.clients_card = CardFrame("Clients")
-        self.clients_table = QTableWidget(0, 5)
+        self.clients_table = QTableWidget(0, 6)
         self.clients_table.setLayoutDirection(Qt.LeftToRight)
-        self.clients_table.setHorizontalHeaderLabels(["VPN IP", "MAC", "Host", "Last Seen", "Status"])
+        self.clients_table.setHorizontalHeaderLabels(["VPN IP", "MAC", "Host", "Hostname", "Last Seen", "Status"])
         self.clients_table.horizontalHeader().setStretchLastSection(True)
         self.clients_table.horizontalHeader().setSectionResizeMode(QHeaderView.ResizeToContents)
 
@@ -173,7 +176,7 @@ class ServerDashboardPage(QWidget):
         scaled = pix.scaled(300, 300, Qt.KeepAspectRatio, Qt.SmoothTransformation)
         self.logo_label.setPixmap(scaled)
 
-    def set_clients(self, clients: list[ClientInfo]):  # TODO: remember that's the client logic gateway
+    def set_clients(self, clients: list[ClientInfo]):
         self._clients = clients
 
         self.card_clients.value_label.setText(str(len(clients)))
@@ -228,6 +231,10 @@ class ServerDashboardPage(QWidget):
         view.setContentsMargins(0, 0, 0, 0)
         return view
 
+    def update_metrics(self):
+        self.card_cpu.value_label.setText(metrics.get_cpu_usage())
+        self.card_ram.value_label.setText(metrics.get_ram_usage())
+
     @staticmethod
     def _metric_card_small(title: str, value: str) -> QWidget:
         card = CardFrame(title)
@@ -272,13 +279,14 @@ class ServerDashboardPage(QWidget):
     # ─────────────────────────────────────────────────────────────
     def _update_clients_table_from_clients(self, clients: list[ClientInfo]):  # TODO: add arguments in the real func
         rows = []
-        for c in clients:
-            vpn_ip = c.vpn_ip
-            mac = "AA:BB:CC:00:00:00"
-            host = c.host or "CLIENT"
-            last = self._timestamp()
-            status = "OK"
-            rows.append((vpn_ip, mac, host, last, status))
+        for client in clients:
+            vpn_ip = client.vpn_ip
+            mac = client.mac
+            host = client.host
+            hostname = client.hostname
+            last = client.last_seen  # TODO: deside what to do with that parameter
+            status = client.status
+            rows.append((vpn_ip, mac, host, hostname, last, status))
 
         self.clients_table.setRowCount(len(rows))
         for r, row in enumerate(rows):
@@ -286,10 +294,6 @@ class ServerDashboardPage(QWidget):
                 it = QTableWidgetItem(val)
                 it.setTextAlignment(Qt.AlignLeft | Qt.AlignVCenter)
                 self.clients_table.setItem(r, c, it)
-
-        # Demo CPU/RAM - TODO: add set_metrics(cpu, ram)
-        self.card_cpu.value_label.setText(str(random.randint(5, 35)))
-        self.card_ram.value_label.setText(str(random.randint(20, 70)))
 
     @staticmethod
     def _timestamp() -> str:
@@ -299,23 +303,15 @@ class ServerDashboardPage(QWidget):
     # tick - refresh
     # ─────────────────────────────────────────────────────────────
     def _start_tick_iterations(self):
-        self._seed_demo_clients()
         self.tick_timer = QTimer(self)
         self.tick_timer.setInterval(1000)
         self.tick_timer.timeout.connect(self._tick)
         self.tick_timer.start()
 
-    def _seed_demo_clients(self):  # TODO: remove ? use differently
-        demo = [
-            ClientInfo(vpn_ip="10.0.0.101", host="WIN11"),  # TODO: see if needed ClientInfo & change label name
-            ClientInfo(vpn_ip="10.0.0.102", host="KALI"),
-            ClientInfo(vpn_ip="10.0.0.103", host="DESKTOP"),
-        ]
-        self.set_clients(demo)
-
     def _tick(self):
-                           # TODO: add add_traffic_point(ts: int, packets_per_sec: int) (seperate)
-                           # TODO: implement concept shown as below
+                           # TODO: add add_traffic_point(ts: int, packets_per_sec: int) (separate)
+
+        self.update_metrics()
 
         chart = self.traffic_chart.chart()
         chart.setAnimationOptions(QChart.AnimationOption.NoAnimation)
@@ -331,23 +327,17 @@ class ServerDashboardPage(QWidget):
         if self.series.count()-1 > TrafficChart.TIME_WINDOW_SECONDS.value:
             self.series.removePoints(0, self.series.count()-1 - TrafficChart.TIME_WINDOW_SECONDS.value)
 
-        cur = list(self._clients)
-        if random.random() < 0.35 and len(cur) < 12:
-            last_octet = 100 + len(cur) + 1
-            cur.append(ClientInfo(vpn_ip=f"10.0.0.{last_octet}", host="CLIENT"))
-        elif random.random() < 0.25 and len(cur) > 1:
-            cur.pop(random.randrange(0, len(cur)))
-
-        self.set_clients(cur)
+        self.set_clients([ClientInfo(
+            vpn_ip=client[ClientField.VPN_IP.value],
+            mac=client[ClientField.MAC.value],
+            host=client[ClientField.HOST.value],
+            hostname=client[ClientField.HOSTNAME.value],
+            last_seen=client[ClientField.LAST_SEEN.value],
+            status=client[ClientField.STATUS.value]
+        )
+            for client in self.db.get_all_clients()
+        ])
 
         self._pull_to_chat()
 
         self._time += 1
-
-            # concept:
-            # def _refresh_data(self):
-            #     data = self.data_manager.get_snapshot()
-            #
-            #     self.set_clients(data.clients)
-            #     self.add_traffic_point(data.traffic)
-            #     self.append_chat(...)

@@ -6,6 +6,7 @@ from PySide6.QtWidgets import (
 )
 from PySide6.QtCore import Qt
 
+from shieldnoc.server.core.db.queries import DatabaseQueries
 from shieldnoc.server.gui.ui.background import BackgroundLayer
 from shieldnoc.server.gui.ui.style import SERVER_STYLE_SHEET
 from shieldnoc.server.gui.pages.dashboard_page import ServerDashboardPage
@@ -13,10 +14,8 @@ from shieldnoc.server.core.connection.chat_manager import ChatManager
 
 
 class MainWindow(QMainWindow):
-    def __init__(self, chat_manager: ChatManager):
+    def __init__(self, db: DatabaseQueries, chat_manager: ChatManager):
         super().__init__()
-
-        self.chat_manager = chat_manager
 
         self.setWindowTitle("ShieldNOC Server")
         self.resize(1400, 820)
@@ -46,7 +45,7 @@ class MainWindow(QMainWindow):
         root.addLayout(top)
 
         # dashboard page
-        self.page = ServerDashboardPage(self.chat_manager)
+        self.page = ServerDashboardPage(db, chat_manager)
         root.addWidget(self.page, 1)
 
         # Background layer
@@ -61,9 +60,9 @@ class MainWindow(QMainWindow):
         self.bg_layer.resize(self.size())
 
 
-def gui_main(chat_manager: ChatManager):
+def gui_main(db: DatabaseQueries, chat_manager: ChatManager):
     app = QApplication(sys.argv)
-    w = MainWindow(chat_manager)
+    w = MainWindow(db, chat_manager)
     w.show()
 
     app.aboutToQuit.connect(chat_manager.end_chat_session)

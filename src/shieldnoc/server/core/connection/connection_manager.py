@@ -16,8 +16,8 @@ class ConnectionManager:
     CHAT_PREFIX = "0"
     VPN_PREFIX = "3"
 
-    def __init__(self):
-        self._db = DatabaseQueries()
+    def __init__(self, db: DatabaseQueries):
+        self._db = db
         self.chat_manager = ChatManager(self.broadcast_msg)
         self._vpn_manager = VPNManager(self._db)
 
