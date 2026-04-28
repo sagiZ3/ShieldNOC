@@ -16,8 +16,8 @@ class VPNManager:
     VPN_IP_PREFIX = "10.33.33"
     VPN_LISTEN_PORT = "12345"
 
-    def __init__(self):
-        self._db = DatabaseQueries()
+    def __init__(self, db: DatabaseQueries):
+        self._db = db
 
         self._lan_interface = self._get_lan_interface()
         self._private_key, self._public_key = self._get_wg_keys()
