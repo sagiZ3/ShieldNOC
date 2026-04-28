@@ -29,16 +29,16 @@ class DatabaseQueries:
     @auto_commit
     def add_client(self, client: ClientRecord) -> None:
         self._conn.execute(
-            """
+            f"""
             INSERT INTO clients (
-                public_key,
-                vpn_ip,
-                mac,
-                host,
-                hostname,
-                last_seen,
-                status,
-                ip_preference
+                {ClientField.PUBLIC_KEY.value},
+                {ClientField.VPN_IP.value},
+                {ClientField.MAC.value},
+                {ClientField.HOST.value},
+                {ClientField.HOSTNAME.value},
+                {ClientField.LAST_SEEN.value},
+                {ClientField.STATUS.value},
+                {ClientField.IP_PREF.value}
             )
             VALUES (?, ?, ?, ?, ?, ?, ?, ?)
             """,
@@ -50,8 +50,8 @@ class DatabaseQueries:
                 client.hostname,
                 client.last_seen,
                 client.status,
-                client.ip_preference,
-            ),
+                client.ip_preference
+            )
         )
 
     def get_all_clients(self) -> list[sqlite3.Row]:
@@ -67,7 +67,7 @@ class DatabaseQueries:
             f"""
             SELECT *
             FROM clients
-            WHERE {ClientField.PUB_KEY.value} = ?
+            WHERE {ClientField.PUBLIC_KEY.value} = ?
             """,
             (public_key,)
         ).fetchone()
@@ -104,7 +104,7 @@ class DatabaseQueries:
         )
 
     def update_client_fields_by_public_key(self, public_key: str, fields: dict[ClientField, str]) -> None:
-        self._update_client_fields(ClientField.PUB_KEY, public_key, fields)
+        self._update_client_fields(ClientField.PUBLIC_KEY, public_key, fields)
 
     def update_client_fields_by_vpn_ip(self, vpn_ip: str, fields: dict[ClientField, str]) -> None:
         self._update_client_fields(ClientField.VPN_IP, vpn_ip, fields)
@@ -114,7 +114,7 @@ class DatabaseQueries:
             f"""
             SELECT 1
             FROM clients
-            WHERE {ClientField.PUB_KEY.value} = ?
+            WHERE {ClientField.PUBLIC_KEY.value} = ?
             LIMIT 1
             """,
             (public_key,)
@@ -140,7 +140,7 @@ class DatabaseQueries:
         self._conn.execute(
             f"""
             DELETE FROM clients
-            WHERE {ClientField.PUB_KEY.value} = ?
+            WHERE {ClientField.PUBLIC_KEY.value} = ?
             """,
             (public_key,)
         )
