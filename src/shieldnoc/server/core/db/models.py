@@ -22,5 +22,5 @@ class ClientInfo:
 
 @dataclass(frozen=True)
 class ServerRecord:
-    public_key: str
     private_key: str
+    public_key: str
