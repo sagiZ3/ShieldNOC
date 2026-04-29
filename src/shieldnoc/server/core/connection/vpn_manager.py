@@ -10,9 +10,9 @@ from shieldnoc.server.core.db.models import ServerRecord, ClientRecord
 from shieldnoc.server.core.db.queries import DatabaseQueries
 
 
-class VPNManager:
-    WG_INTERFACE = "ShieldNOC"
-    CONF_FILE_PATH = WG_INTERFACE + ".conf"
+class VPNManager:  # TODO: check the need of sudo permission for commands & checking files in the current directory
+    WG_INTERFACE = "shieldnoc"
+    CONF_FILE_PATH = "./" + WG_INTERFACE + ".conf"
     VPN_IP_PREFIX = "10.33.33"
     VPN_LISTEN_PORT = "12345"
 
@@ -120,7 +120,7 @@ class VPNManager:
         self._run_terminal_cmd(["wg-quick", "up", self.CONF_FILE_PATH])
 
     def _stop_wg_interface(self):
-        self._run_terminal_cmd(["wg-quick", "down", self.WG_INTERFACE])
+        self._run_terminal_cmd(["wg-quick", "down", self.CONF_FILE_PATH])
 
     def _get_wg_keys(self) -> tuple:
         keys = self._db.get_server_keys()
