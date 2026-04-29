@@ -169,7 +169,7 @@ class DatabaseQueries:
             """,
             (
                 server.private_key,
-                server.private_key
+                server.public_key
             )
         )
 
