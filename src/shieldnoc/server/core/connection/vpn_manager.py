@@ -249,11 +249,11 @@ class VPNManager:
 
     @staticmethod
     def _encrypt_data(data: str) -> str:
-        pass
+        return data
 
     @staticmethod
     def _decrypt_data(data: str) -> str:
-        pass
+        return data
 
 
 # TODO: add to client (download button): subprocess.run('winget install --id WireGuard.WireGuard -e --source winget', shell=True)
