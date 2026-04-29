@@ -1,11 +1,9 @@
 
-def get_cpu_usage(self):
-    pass
+def get_cpu_usage():
+    return "1"
 
+def get_ram_usage():
+   return "1"
 
-def get_ram_usage(self):
-    pass
-
-
-def get_packets_per_second(self):
-    pass
+def get_packets_per_second():
+    return 2
