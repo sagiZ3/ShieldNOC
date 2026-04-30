@@ -47,6 +47,8 @@ class ConnectionManager:
         logger.info("===== ShieldNOC is ready for accepting clients =====")
 
     def _clients_acceptor(self) -> None:
+        self.chat_manager.handle_system_msg("~ShieldNOC chat system is up and running~")
+
         while not self._stop_connection_event.is_set():
             try:
                 client_sock, client_addr = self._listen_sock.accept()
