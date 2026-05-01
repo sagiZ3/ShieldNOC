@@ -148,7 +148,7 @@ class VPNManager:  # TODO: check the need of sudo permission for commands & chec
 
             self._db.update_client_fields_by_public_key(client_public_key,
                 {
-                    ClientField.VPN_IP: client_initial_data[ClientField.VPN_IP],
+                    ClientField.VPN_IP: client_vpn_ip,
                     ClientField.MAC: client_initial_data[ClientField.MAC],
                     ClientField.HOST: client_initial_data[ClientField.HOST],
                     ClientField.HOSTNAME: client_initial_data[ClientField.HOSTNAME],
