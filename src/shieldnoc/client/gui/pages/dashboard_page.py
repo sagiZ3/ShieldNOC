@@ -12,7 +12,7 @@ from PySide6.QtWidgets import ( QWidget, QVBoxLayout, QHBoxLayout, QLabel, QText
 from shieldnoc.client.gui.enums import General, TrafficChart
 from shieldnoc.client.gui.widgets.card_frame import CardFrame
 from shieldnoc.client.gui.widgets.top_processes_chart import TopProcessesChart
-from shieldnoc.client.managers.chat import ChatManager
+from shieldnoc.client.core.connection.chat_manager import ChatManager
 
 
 class DashboardPage(QWidget):

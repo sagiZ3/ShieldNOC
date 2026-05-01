@@ -1,6 +1,5 @@
 from shieldnoc.client.gui.main import gui_main
-from shieldnoc.client.managers.chat import ChatManager
-from shieldnoc.client.managers.vpn import VPNManager
+from shieldnoc.client.core.connection.chat_manager import ChatManager
 
 
 def main():
