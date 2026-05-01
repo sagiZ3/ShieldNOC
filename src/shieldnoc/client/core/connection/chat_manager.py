@@ -1,4 +1,5 @@
 # TODO: add exit when client closes the dashboard
+import json
 import socket
 from datetime import datetime
 
@@ -7,6 +8,8 @@ import shieldnoc.protocol as protocol
 from threading import Thread, Event
 from select import select
 from shieldnoc.logging_config import logger
+from shieldnoc.server.core.db.enums import ClientField
+
 
 class ChatManager:
     def __init__(self):
@@ -28,6 +31,16 @@ class ChatManager:
     def start_chat(self):
         thread = Thread(target=self._receive_messages)
         thread.start()
+
+        c = {
+            ClientField.PUBLIC_KEY: "noFUKlkloUkVbO9uJlPbakeM1Dm3dOMrk2v4j8f57xo=",
+            ClientField.MAC: "AA:CC:BB:CC:DD:EE",
+            ClientField.HOST: "Windows",
+            ClientField.HOSTNAME: "sagi"}
+        data = {field.value: value for field, value in c.items()}
+        json_str = json.dumps(data)
+        self.send_msg(f"3{json_str}")
+
         logger.info("===== Chat is up! You can chat now =====")
 
     def _receive_messages(self) -> None:
@@ -36,10 +49,6 @@ class ChatManager:
                 valid_msg, msg = protocol.get_payload(self._conn_sock)
             except socket.timeout:
                 continue
-
-            except ConnectionResetError:
-                logger.warning("Server unexpectedly closed the connection")
-                break
 
             except Exception as e:
                 logger.warning(f"Unexpected Error occurred: {e}")
