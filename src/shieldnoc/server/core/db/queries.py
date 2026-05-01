@@ -21,7 +21,7 @@ def auto_commit(func):
 # noinspection PyTypeChecker
 class DatabaseQueries:
     def __init__(self, db_path="shieldnoc.db"):
-        self._conn = sqlite3.connect(db_path)
+        self._conn = sqlite3.connect(db_path, check_same_thread=False)  # TODO: decide if keep the default argument or change architecture
         self._conn.row_factory = sqlite3.Row
 
         initializer.init_schema(self._conn)
