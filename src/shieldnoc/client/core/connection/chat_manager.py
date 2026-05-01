@@ -8,7 +8,7 @@ import shieldnoc.protocol as protocol
 from threading import Thread, Event
 from select import select
 from shieldnoc.logging_config import logger
-from shieldnoc.server.core.db.enums import ClientField
+from shieldnoc.client.core.data.enums import ClientField
 
 
 class ChatManager:
