@@ -8,5 +8,5 @@ class VPNManager:
         pass
 
     @staticmethod
-    def _run_cmd_cmd(cmd: list[str]) -> None:
+    def _run_cmd(cmd: list[str]) -> None:
         subprocess.run(cmd, check=True)
