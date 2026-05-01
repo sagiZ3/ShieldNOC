@@ -195,7 +195,7 @@ class VPNManager:  # TODO: check the need of sudo permission for commands & chec
         })
         return True, ""
 
-    def remove_peer(self, client_vpn_ip: str) -> None:
+    def remove_peer(self, client_vpn_ip: str) -> None:  # TODO: use also when server end session
         client_public_key = self._db.get_client_by_vpn_ip(client_vpn_ip)[ClientField.PUBLIC_KEY.value]
         self._run_terminal_cmd(["wg", "set", self.WG_INTERFACE, "peer", client_public_key, "remove"])
 
