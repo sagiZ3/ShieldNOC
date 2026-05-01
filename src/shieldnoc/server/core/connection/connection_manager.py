@@ -85,7 +85,7 @@ class ConnectionManager:
                 #  data = {field.value: value for field, value in fields.items()}
                 #  json_str = json.dumps(data) -> send socket
                 content = json.loads(client_msg[1:])  # ClientField
-                initial_data = {ClientField(key): value for key, value in content}  # convert ClientField values back
+                initial_data = {ClientField(key): value for key, value in content.items()}  # converts ClientField values back
 
                 server_public_key, client_assigned_vpn_ip = self._vpn_manager.add_peer(initial_data)
 
