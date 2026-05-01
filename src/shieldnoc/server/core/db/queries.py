@@ -60,6 +60,15 @@ class DatabaseQueries:
             """
         ).fetchall()
 
+    def get_all_connected_clients(self) -> list[sqlite3.Row]:
+        return self._conn.execute(
+            f"""
+            SELECT *
+            FROM {ClientField.TABLE_NAME.value}
+            WHERE {ClientField.STATUS.value} = "CONNECTED"
+            """
+        ).fetchall()
+
     def get_client_by_public_key(self, public_key: str) -> sqlite3.Row | None:
         return self._conn.execute(
             f"""

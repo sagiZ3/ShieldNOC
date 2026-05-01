@@ -335,7 +335,7 @@ class ServerDashboardPage(QWidget):
             last_seen=client[ClientField.LAST_SEEN.value],
             status=client[ClientField.STATUS.value]
         )
-            for client in self.db.get_all_clients()
+            for client in self.db.get_all_connected_clients()
         ])
 
         self._pull_to_chat()
