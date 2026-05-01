@@ -92,7 +92,7 @@ class ConnectionManager:
                 if server_public_key is None:
                     logger.warning(f"client {client_addr} tries to connect ShieldNOC using invalid pubic key")
                     response = "Invalid Public Key!\nPlease try again later."
-                    protocol.send_segment(client_sock, self.VPN_PREFIX + response)
+                    protocol.send_segment(client_sock, f"{self.VPN_PREFIX}{response}")
                     return
 
                 vpn_conf_data = {
@@ -100,7 +100,7 @@ class ConnectionManager:
                     "assigned_vpn_ip": client_assigned_vpn_ip
                 }
                 data = self._encrypt_data(json.dumps(vpn_conf_data))
-                protocol.send_segment(client_sock, self.VPN_PREFIX + data)
+                protocol.send_segment(client_sock, f"{self.VPN_PREFIX}{data}")
 
             else:
                 logger.error(f"Error with sending the content: {client_msg}")
@@ -173,7 +173,7 @@ class ConnectionManager:
 
     def broadcast_msg(self, msg) -> None:
         for client_sock in self._clients:
-            protocol.send_segment(client_sock, self.CHAT_PREFIX + msg)
+            protocol.send_segment(client_sock, f"{self.CHAT_PREFIX}{msg}")
 
     @staticmethod
     def _encrypt_data(data: str) -> str:  # TODO: revive func
