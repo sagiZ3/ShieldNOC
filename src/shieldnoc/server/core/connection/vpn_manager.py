@@ -71,37 +71,36 @@ class VPNManager:  # TODO: check the need of sudo permission for commands & chec
         )
         return f"-o {self._lan_interface} -j MASQUERADE" in result
 
-    def start_vpn(self) -> bool:
+    def start_vpn(self) -> None:  # TODO: handle because last run crash crash - use stop_vpn and then start_vpn
         self._enable_ip_forwarding()
         self._enable_forwarding_and_nat_rules()
         self._start_wg_interface()
 
         if not self.is_ip_forwarding_enabled():
             logger.error("IP forwarding is not enabled!")
-            return False
 
         if not self.is_nat_enabled():
             logger.error("NAT is not enabled!")
-            return False
 
         logger.info("~ Server networking configured successfully! ~")
-        return True
 
-    def stop_vpn(self) -> bool:
+    def stop_vpn(self) -> None:
         self._disable_forwarding_and_nat_rules()
         self._disable_ip_forwarding()
         self._stop_wg_interface()
 
-        if self.is_ip_forwarding_enabled():
+        is_ip_forwarding_disabled = not self.is_ip_forwarding_enabled()
+        is_nat_disabled = not self.is_nat_enabled()
+
+        if is_ip_forwarding_disabled and is_nat_disabled:
+            logger.info("~ Server networking teardown successfully! ~")
+            return
+
+        if not is_ip_forwarding_disabled:
             logger.error("Problem with disable IP forwarding!")
-            return False
 
-        if self.is_nat_enabled():
+        if not is_nat_disabled:
             logger.error("Problem with disable NAT!")
-            return False
-
-        logger.info("~ Server networking teardown successfully! ~")
-        return True
 
     def _create_config(self) -> None:
         config_content = f"""[Interface]
