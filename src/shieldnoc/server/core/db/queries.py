@@ -39,7 +39,7 @@ class DatabaseQueries:
                 {ClientField.STATUS.value},
                 {ClientField.IP_PREF.value}
             )
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+            VALUES (?, ?, ?, ?, ?, ?, ?)
             """,
             (
                 client.public_key,
