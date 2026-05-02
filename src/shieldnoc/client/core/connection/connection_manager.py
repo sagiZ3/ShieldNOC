@@ -133,7 +133,7 @@ class ConnectionManager:
         logger.info(">>> ShieldNOC's Session Ended - Connection Closed <<<")
 
     def send_msg(self, msg) -> None:
-        protocol.send_segment(self._conn_sock, msg)
+        protocol.send_segment(self._conn_sock, f"{protocol.MessageType.CHAT.value}{msg}")
 
     @staticmethod
     def _send_vpn_data(sock, data) -> None:
