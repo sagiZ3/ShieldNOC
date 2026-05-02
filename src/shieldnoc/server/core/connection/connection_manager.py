@@ -13,9 +13,6 @@ from shieldnoc.server.core.db.queries import DatabaseQueries
 
 
 class ConnectionManager:
-    CHAT_PREFIX = "0"
-    VPN_PREFIX = "3"
-
     def __init__(self, db: DatabaseQueries):
         self._db = db
         self.chat_manager = ChatManager(self.broadcast_msg)
@@ -72,27 +69,24 @@ class ConnectionManager:
         logger.info(f"{client_addr} starts the connection process to ShieldNOC System")
 
         try:
-            valid_msg, client_msg = protocol.get_payload(client_sock)
+            valid_payload, client_payload = protocol.get_payload(client_sock)
 
-            if valid_msg:
-                prefix = client_msg[0]
+            if valid_payload:
+                prefix = client_payload[0]
 
-                if prefix != self.VPN_PREFIX:
-                    protocol.send_segment(client_sock, "Initial connection must start with VPN request")
+                if prefix != protocol.MessageType.VPN.value:
+                    self.send_vpn_data(client_sock, "Initial connection must start with VPN request")
                     return
 
-                # client side implement:
-                #  data = {field.value: value for field, value in fields.items()}
-                #  json_str = json.dumps(data) -> send socket
-                content = json.loads(client_msg[1:])  # ClientField
-                initial_data = {ClientField(key): value for key, value in content.items()}  # converts ClientField values back
+                decrypted_content: dict = self._decrypt_data(json.loads(client_payload[1:]))  # ClientField
+                initial_data = {ClientField(field): value for field, value in decrypted_content.items()}  # converts ClientField values back
 
                 server_public_key, client_assigned_vpn_ip = self._vpn_manager.add_peer(initial_data)
 
                 if server_public_key is None:
                     logger.warning(f"client {client_addr} tries to connect ShieldNOC using invalid pubic key")
                     response = "Invalid Public Key!\nPlease try again later."
-                    protocol.send_segment(client_sock, f"{self.VPN_PREFIX}{response}")
+                    self.send_vpn_data(client_sock, response)
                     return
 
                 vpn_conf_data = {
@@ -100,11 +94,11 @@ class ConnectionManager:
                     "assigned_vpn_ip": client_assigned_vpn_ip
                 }
                 data = self._encrypt_data(json.dumps(vpn_conf_data))
-                protocol.send_segment(client_sock, f"{self.VPN_PREFIX}{data}")
+                self.send_vpn_data(client_sock, data)
 
             else:
-                logger.error(f"Error with sending the content: {client_msg}")
-                if client_msg in (ConnectionResetError.__name__, ConnectionAbortedError.__name__):
+                logger.error(f"Error with sending the content: {client_payload}")
+                if client_payload in (ConnectionResetError.__name__, ConnectionAbortedError.__name__):
                     return
 
         except Exception as e:
@@ -122,7 +116,7 @@ class ConnectionManager:
 
         while not self._stop_connection_event.is_set():
             try:
-                valid_msg, client_msg = protocol.get_payload(client_sock)
+                valid_payload, client_payload = protocol.get_payload(client_sock)
             except socket.timeout:
                 continue
 
@@ -130,21 +124,23 @@ class ConnectionManager:
                 logger.warning(f"Unexpected Error occurred: {e}")
                 break
 
-            if valid_msg:
-                prefix = client_msg[0]
-                content = client_msg[1:]
+            if valid_payload:
+                prefix = client_payload[0]
+                content = client_payload[1:]
 
-                if prefix == self.CHAT_PREFIX:
+                if prefix == protocol.MessageType.CHAT.value:
                     self.chat_manager.handle_client_msg(client_ip, content)
-                elif prefix == self.VPN_PREFIX:
-                    self._vpn_manager.change_peer_ip(client_ip, content)
+                elif prefix == protocol.MessageType.VPN.value:
+                    is_ip_changed, response = self._vpn_manager.change_peer_ip(client_ip, content)
+                    response = str(int(is_ip_changed)) + response
+                    self.send_vpn_data(client_sock, response)
                 else:
-                    logger.warning("Got a valid client msg with invalid prefix")
+                    logger.warning("Got a valid client payload with invalid prefix")
 
             else:
-                logger.error(f"Error with sending the content: {client_msg}")
+                logger.error(f"Error with sending the content: {client_payload}")
 
-                if client_msg in (ConnectionResetError.__name__, ConnectionAbortedError.__name__):
+                if client_payload in (ConnectionResetError.__name__, ConnectionAbortedError.__name__):
                     break
 
                 try:
@@ -173,12 +169,16 @@ class ConnectionManager:
 
     def broadcast_msg(self, msg) -> None:
         for client_sock in self._clients:
-            protocol.send_segment(client_sock, f"{self.CHAT_PREFIX}{msg}")
+            protocol.send_segment(client_sock, f"{protocol.MessageType.CHAT.value}{msg}")
+
+    @staticmethod
+    def send_vpn_data(client_sock, data) -> None:
+        protocol.send_segment(client_sock, f"{protocol.MessageType.VPN.value}{data}")
 
     @staticmethod
     def _encrypt_data(data: str) -> str:  # TODO: revive func
-        pass
+        return data
 
     @staticmethod
     def _decrypt_data(data: str) -> str:  # TODO: revive func
-        pass
+        return data
