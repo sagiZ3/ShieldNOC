@@ -3,17 +3,13 @@ import subprocess
 from dataclasses import dataclass
 
 
-@dataclass(frozen=True)
-class ClientInfo:
-    vpn_ip: str
-    mac: str
-    host: str
-    hostname: str
-    last_seen: str
-    status: str
+def get_mac_addr() -> str:
+    pass
 
+def get_host() -> str:
+    pass
 
-def get_mac_addr():
+def get_hostname() -> str:
     pass
 
 def _run_cmd(cmd: list[str]) -> None:
