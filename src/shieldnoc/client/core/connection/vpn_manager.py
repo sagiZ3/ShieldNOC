@@ -49,8 +49,12 @@ class VPNManager:
     def connect_vpn(self, assigned_vpn_ip, server_public_key=None) -> None:
         self._create_config(assigned_vpn_ip, server_public_key)
 
+        from pathlib import Path
+
+        conf_path = Path(self.CONF_FILE_PATH).resolve()
+
         self._run_cmd(["powershell", "-Command",
-            f'Start-Process wireguard -ArgumentList "/installtunnelservice {self.CONF_FILE_PATH}" -Verb RunAs'
+            f'Start-Process wireguard -ArgumentList "/installtunnelservice {conf_path}" -Verb RunAs'
         ])
 
     def _create_config(self, assigned_vpn_ip, server_public_key=None) -> None:
@@ -73,7 +77,7 @@ class VPNManager:
 
     def disconnect_vpn(self) -> None:
         self._run_cmd(["powershell", "-Command",
-            f'Start-Process wireguard -ArgumentList "/uninstalltunnelservice {self.CONF_FILE_PATH}" -Verb RunAs'
+            f'Start-Process wireguard -ArgumentList "/uninstalltunnelservice {self.WG_INTERFACE}" -Verb RunAs'
         ])
 
     def change_ip(self, new_ip) -> tuple[bool, str]:  # TODO: thing about a way to integrate with GUI
@@ -86,7 +90,13 @@ class VPNManager:
 
     @staticmethod
     def _run_cmd(cmd: list[str], capture_output=False, **kwargs) -> str | None:
-        result = subprocess.run(cmd, check=True, text=True, capture_output=capture_output, **kwargs)
+        try:
+            result = subprocess.run(cmd, check=True, text=True, capture_output=capture_output, **kwargs)
+
+        except Exception as e:
+            logger.error(f"error with running the following command: '{cmd}':\n\t- {e}")
+            return None
+
         return result.stdout.strip() if capture_output else None
 
     @staticmethod
