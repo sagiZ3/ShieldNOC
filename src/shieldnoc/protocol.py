@@ -1,3 +1,5 @@
+from enum import Enum
+
 import requests
 import select, socket
 
@@ -7,11 +9,18 @@ from shieldnoc.logging_config import logger
 LENGTH_FIELD_SIZE = 4
 
 SERVER_ADDRESS = requests.get('https://did.li/get-ShieldNOC-server-ip').text.split(':')
-SERVER_IP = SERVER_ADDRESS[0]
+SERVER_IP = "192.168.1.203"
 CONNECTION_PORT = int(SERVER_ADDRESS[1])
 
 LISTEN_PORT = CONNECTION_PORT
 LISTEN_EVERYONE_IP = '0.0.0.0'
+
+VPN_LISTEN_PORT = "3030"
+
+
+class MessageType(Enum):
+    CHAT = "0"
+    VPN = "3"
 
 
 def garbage_cleaner(my_socket: socket.socket, timeout=0.01) -> None:
