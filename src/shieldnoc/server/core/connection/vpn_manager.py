@@ -4,6 +4,7 @@ import base64
 from pathlib import Path
 from random import randint
 
+from shieldnoc import protocol
 from shieldnoc.logging_config import logger
 from shieldnoc.server.core.db.enums import ServerField, ClientField
 from shieldnoc.server.core.db.models import ServerRecord, ClientRecord
@@ -14,7 +15,6 @@ class VPNManager:  # TODO: check the need of sudo permission for commands & chec
     WG_INTERFACE = "shieldnoc"
     CONF_FILE_PATH = "./" + WG_INTERFACE + ".conf"
     VPN_IP_PREFIX = "10.33.33"
-    VPN_LISTEN_PORT = "12345"
 
     def __init__(self, db: DatabaseQueries):
         self._db = db
@@ -106,7 +106,7 @@ class VPNManager:  # TODO: check the need of sudo permission for commands & chec
         config_content = f"""[Interface]
         PrivateKey = {self._private_key}
         Address = {self.VPN_IP_PREFIX}.1/24
-        ListenPort = {self.VPN_LISTEN_PORT}
+        ListenPort = {protocol.VPN_LISTEN_PORT}
         """
 
         with open(self.CONF_FILE_PATH, "w") as conf_file:
@@ -126,11 +126,14 @@ class VPNManager:  # TODO: check the need of sudo permission for commands & chec
         if keys:
             return self._decrypt_data(keys[ServerField.PRIVATE_KEY.value]), keys[ServerField.PUBLIC_KEY.value]
 
-        private_key = self._run_terminal_cmd(["wg", "genkey"], capture_output=True).strip()
-        public_key =  self._run_terminal_cmd(["wg", "pubkey"], capture_output=True, input=private_key).strip()
-
+        private_key, public_key = self.generate_keys()
         self._db.set_server_keys(ServerRecord(self._encrypt_data(private_key), public_key))
 
+        return private_key, public_key
+
+    def generate_keys(self) -> tuple[str, str]:
+        private_key = self._run_terminal_cmd(["wg", "genkey"], capture_output=True).strip()
+        public_key =  self._run_terminal_cmd(["wg", "pubkey"], capture_output=True, input=private_key).strip()
         return private_key, public_key
 
     def add_peer(self, client_initial_data: dict[ClientField, str]) -> tuple:
@@ -192,7 +195,7 @@ class VPNManager:  # TODO: check the need of sudo permission for commands & chec
         self._db.update_client_fields_by_vpn_ip(client_vpn_ip, {
             ClientField.VPN_IP: requested_ip
         })
-        return True, ""
+        return True, requested_ip
 
     def remove_peer(self, client_vpn_ip: str) -> None:  # TODO: use also when server end session
         client_public_key = self._db.get_client_by_vpn_ip(client_vpn_ip)[ClientField.PUBLIC_KEY.value]
