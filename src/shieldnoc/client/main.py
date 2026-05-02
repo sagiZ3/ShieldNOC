@@ -1,13 +1,11 @@
 from shieldnoc.client.gui.main import gui_main
-from shieldnoc.client.core.connection.chat_manager import ChatManager
+from shieldnoc.client.core.connection.connection_manager import ConnectionManager
 
 
 def main():
-    chat_manager = ChatManager()
-    chat_manager.start_chat()
-    gui_main(chat_manager)  # add a thread! it stuck after
-    # vpn_manager = VPNManager()
-    # remember to run the vpn model BEFORE the chat model because differently it can cause socket problems
+    connection_manager = ConnectionManager()
+    connection_manager.start_connection()
+    gui_main(connection_manager.chat_manager)  # have to run on the main thread
 
 
 if __name__ == '__main__':
