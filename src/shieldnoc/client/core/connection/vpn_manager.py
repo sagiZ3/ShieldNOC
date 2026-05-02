@@ -29,6 +29,7 @@ class VPNManager:
         return private_key, public_key
 
     def _load_keys(self) -> tuple[str | None, str | None]:
+        logger.info("Use WireGuard Existing Keys")
         try:
             with open(self.KEYS_FILE_PATH, 'r') as keys_file:
                 private_key, public_key = keys_file.readline().strip().split(':')
