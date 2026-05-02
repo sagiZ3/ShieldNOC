@@ -234,7 +234,13 @@ class VPNManager:  # TODO: check the need of sudo permission for commands & chec
 
     @staticmethod
     def _run_terminal_cmd(cmd: list[str], capture_output=False, **kwargs) -> str | None:
-        result = subprocess.run(cmd, check=True, text=True, capture_output=capture_output, **kwargs)
+        try:
+            result = subprocess.run(cmd, check=True, text=True, capture_output=capture_output, **kwargs)
+
+        except Exception as e:
+            logger.error(f"error with running the following command: '{cmd}':\n\t- {e}")
+            return None
+
         return result.stdout.strip() if capture_output else None
 
     @staticmethod
