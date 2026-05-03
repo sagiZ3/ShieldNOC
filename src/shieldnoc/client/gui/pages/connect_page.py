@@ -9,6 +9,7 @@ from PySide6.QtWidgets import (
     QLineEdit,
 )
 
+from shieldnoc.client.core.connection.connection_manager import ConnectionManager
 from shieldnoc.client.gui.widgets.card_frame import CardFrame
 from shieldnoc import protocol
 
@@ -18,8 +19,10 @@ class ConnectPage(QWidget):
     vpn_ip_changed = Signal(str)
     bg_change_requested = Signal()
 
-    def __init__(self, parent=None):
+    def __init__(self, connection_manager: ConnectionManager,parent=None):
         super().__init__(parent)
+
+        self.connection_manager = connection_manager
 
         # Root layout
         root = QVBoxLayout(self)
@@ -62,12 +65,12 @@ class ConnectPage(QWidget):
         client_form.setHorizontalSpacing(12)
         client_form.setVerticalSpacing(10)
 
-        self.vpn_ip_edit = QLineEdit("10.0.0.100")
+        self.vpn_ip_edit = QLineEdit("10.33.33.100")  # TODO: edit this
         self.vpn_ip_edit.setLayoutDirection(Qt.LeftToRight)
 
         self.btn_apply_vpn = QPushButton("Apply Client VPN IP")
         self.btn_apply_vpn.setObjectName("secondaryButton")
-        self.btn_apply_vpn.clicked.connect(self._apply_vpn_ip)
+        self.btn_apply_vpn.clicked.connect(self._request_new_vpn_ip)
 
         self.client_action_badge = QLabel("Idle")
         self.client_action_badge.setObjectName("badgeInfo")
@@ -76,6 +79,8 @@ class ConnectPage(QWidget):
         client_form.addWidget(self.vpn_ip_edit, 0, 1)
         client_form.addWidget(self.client_action_badge, 1, 0)
         client_form.addWidget(self.btn_apply_vpn, 1, 1)
+
+        self.connection_manager.vpn_ip_change.connect(self.handle_ip_change)
 
         client_card.content_layout.addLayout(client_form)
         root.addWidget(client_card)
@@ -126,17 +131,21 @@ class ConnectPage(QWidget):
             self._set_connect_status("לא מחובר", "connectStatusDisconnected")
             return
 
+        self.connect_btn.setEnabled(False)
+        self.ip_edit.setEnabled(False)
+        self.port_edit.setEnabled(False)
+
         self._set_connect_status("מתחבר...", "connectStatusConnecting")
         self.connect_requested.emit(ip, port)
 
-    def _pop_msg(self):  # TODO: edit and integrate
-        label = QLabel("Error!\nYou can't do that", self)
+    def _pop_alert(self, alert):
+        label = QLabel(alert, self)
         label.setStyleSheet("""
-            background-color: #1f2933;      /* dark modern background */
-            color: #f9fafb;                 /* soft white text */
+            background-color: #1f2933;
+            color: #f9fafb;
             padding: 20px;
             border-radius: 10px;
-            border: 1px solid #ef4444;      /* red accent */
+            border: 1px solid #ef4444;
             font-size: 14px;
         """)
         label.adjustSize()
@@ -145,15 +154,21 @@ class ConnectPage(QWidget):
 
         QTimer.singleShot(1500, label.deleteLater)
 
-    def _apply_vpn_ip(self):
+    def _request_new_vpn_ip(self):
         ip = self.vpn_ip_edit.text().strip()
         if not ip:
             return
 
-        self.vpn_ip_changed.emit(ip)
+        self.connection_manager.request_new_vpn_ip(ip)  # send request to server
 
         self._set_badge(self.client_action_badge, "Applied", "badgeOk")
         QTimer.singleShot(1600, lambda: self._set_badge(self.client_action_badge, "Idle", "badgeInfo"))
+
+    def handle_ip_change(self, is_ip_changed, response) -> None:
+        if is_ip_changed:
+            self.vpn_ip_changed.emit(response)  # gui display dashboard change
+        else:
+            self._pop_alert(response)
 
     def _change_bg_clicked(self):
         self.bg_change_requested.emit()
