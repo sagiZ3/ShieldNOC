@@ -2,9 +2,9 @@
 import json
 import socket
 
-import shieldnoc.protocol as protocol
-
-from threading import Thread
+from time import sleep
+from PySide6.QtCore import Signal
+from threading import Thread, Event
 from select import select
 
 from shieldnoc.client.core.connection.chat_manager import ChatManager
