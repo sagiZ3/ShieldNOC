@@ -1,7 +1,6 @@
 import subprocess
 import base64
 
-from pathlib import Path
 from random import randint
 
 from shieldnoc import protocol
@@ -113,8 +112,7 @@ class VPNManager:  # TODO: check the need of sudo permission for commands & chec
             conf_file.write(config_content)
 
     def _start_wg_interface(self) -> None:
-        if not Path(self.CONF_FILE_PATH).exists():
-            self._create_config()
+        self._create_config()
 
         self._run_terminal_cmd(["wg-quick", "up", self.CONF_FILE_PATH])
 
