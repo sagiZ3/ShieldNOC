@@ -1,6 +1,7 @@
 import subprocess
 
 from pathlib import Path
+from time import sleep
 
 from shieldnoc import protocol
 from shieldnoc.logging_config import logger
@@ -66,9 +67,9 @@ class VPNManager:
         [Peer]
         PublicKey = {self._server_public_key}
         Endpoint = {protocol.SERVER_IP}:{protocol.VPN_LISTEN_PORT}
-        AllowedIPs = 0.0.0.0/0
+        AllowedIPs = 0.0.0.0/1, 128.0.0.0/1, 10.120.137.0/24
         PersistentKeepalive = 25
-        """
+        """  # TODO: edit AllowedIPs - last one - needs to find the subnet automatically
 
         with open(self.CONF_FILE_PATH, "w") as conf_file:
             conf_file.write(config_content)
@@ -79,12 +80,13 @@ class VPNManager:
         ])
 
     def change_ip(self, new_ip) -> tuple[bool, str]:  # TODO: thing about a way to integrate with GUI
-        if new_ip[0] == str(int(True)):
-            self.disconnect_vpn()
-            self.connect_vpn(new_ip[1:])
-            return True, ""
+        if new_ip[0] == str(int(False)):
+            return False, new_ip[1:]
 
-        return False, new_ip[1:]
+        self.disconnect_vpn()
+        sleep(4)
+        self.connect_vpn(new_ip[1:])
+        return True, ""
 
     @staticmethod
     def _run_cmd(cmd: list[str], capture_output=False, **kwargs) -> str | None:
