@@ -75,13 +75,18 @@ class VPNManager:  # TODO: check the need of sudo permission for commands & chec
         self._enable_forwarding_and_nat_rules()
         self._start_wg_interface()
 
-        if not self.is_ip_forwarding_enabled():
-            logger.error("IP forwarding is not enabled!")
+        is_ip_forwarding_enabled = not self.is_ip_forwarding_enabled()
+        is_nat_enabled = not self.is_nat_enabled()
 
-        if not self.is_nat_enabled():
-            logger.error("NAT is not enabled!")
+        if is_ip_forwarding_enabled and is_nat_enabled:
+            logger.info("~ Server networking configured successfully! ~")
+            return
 
-        logger.info("~ Server networking configured successfully! ~")
+        if not is_ip_forwarding_enabled:
+            logger.error("Problem with enable IP forwarding!")
+
+        if not is_nat_enabled:
+            logger.error("Problem with enable NAT!")
 
     def stop_vpn(self) -> None:
         self._disable_forwarding_and_nat_rules()
