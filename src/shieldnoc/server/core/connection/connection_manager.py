@@ -135,8 +135,8 @@ class ConnectionManager:
                     response = f"{str(int(is_ip_changed))}{response}"
                     self.send_vpn_data(client_sock, response)
 
-                    if is_ip_changed:
-                        break
+                    # if is_ip_changed:
+                    #     break
                 else:
                     logger.warning("Got a valid client payload with invalid prefix")
 
