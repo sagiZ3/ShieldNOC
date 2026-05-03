@@ -3,7 +3,7 @@ import json
 import socket
 
 from time import sleep
-from PySide6.QtCore import Signal
+from PySide6.QtCore import Signal, QObject
 from threading import Thread, Event
 from select import select
 
@@ -16,32 +16,34 @@ from shieldnoc.logging_config import logger
 from shieldnoc.client.core.data.enums import ClientField
 
 
-class ConnectionManager:
+class ConnectionManager(QObject):
+    connect_process_end = Signal(bool)
+    vpn_ip_change = Signal(bool, str)
+
     def __init__(self):
+        super().__init__()
+
         self.chat_manager = ChatManager(self.send_msg)
         self._vpn_manager = VPNManager()
 
-        self._stop_connection_event = self.chat_manager.stop_connection_event
+        self._stop_connection_event = Event()
 
         self._initial_conn_sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self._initial_conn_sock.settimeout(1.0)
 
-        try:
-            self._initial_conn_sock.connect((protocol.SERVER_IP, protocol.CONNECTION_PORT))
-        except Exception as e:
-            logger.error("Encountered with a problem trying to connect server's chat")
-            logger.error("Failed to connect socket: " + str(e))
-            exit()
-
-        self._conn_sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        self._conn_sock.settimeout(1.0)
-
-    def start_connection(self) -> None:
+    def start_connection_process(self) -> None:
         thread = Thread(target=self._initial_connection_handler)
         thread.start()
         logger.info("===== Initial Connection Started With The Server =====")
 
     def _initial_connection_handler(self) -> None:
+        try:
+            self._initial_conn_sock.connect((protocol.SERVER_IP, protocol.CONNECTION_PORT))
+        except Exception as e:
+            logger.error("Encountered with a problem trying to connect the server")
+            logger.error("Failed to connect socket:", e)
+            exit()
+
         initial_data = {
             ClientField.PUBLIC_KEY: self._vpn_manager.public_key,
             ClientField.MAC: system_metrics.get_mac_addr(),
@@ -75,9 +77,9 @@ class ConnectionManager:
                 self._handle_incoming_data()
 
             else:
-                logger.error(f"Error with sending the content: {server_payload}")
                 if server_payload in (ConnectionResetError.__name__, ConnectionAbortedError.__name__):
                     return
+                logger.error(f"Error with accepting the content: {server_payload}")
 
         except Exception as e:
             logger.error(f"Initial connection failed: {e}")
@@ -86,7 +88,16 @@ class ConnectionManager:
             self._initial_conn_sock.close()
 
     def _handle_incoming_data(self) -> None:
+        sleep(2)  # letting the computer time to connect the VPN
+
+        self._conn_sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        self._conn_sock.settimeout(1.0)
+        self._conn_sock.connect((protocol.SERVER_IP, protocol.CONNECTION_PORT))
+
         logger.info("===== Chat Connection Is Up and Running =====")
+        self.connect_process_end.emit(True)
+
+        is_ip_changed = False
 
         while not self._stop_connection_event.is_set():
             try:
@@ -105,15 +116,17 @@ class ConnectionManager:
                 if prefix == protocol.MessageType.CHAT.value:
                     self.chat_manager.handle_msg(content)
                 elif prefix == protocol.MessageType.VPN.value:
-                    self._vpn_manager.change_ip(content)  # TODO: integrates with GUI
+                    is_ip_changed, result = self.handle_vpn_ip_change(content)  # TODO: integrates with GUI
+                    self.vpn_ip_change.emit(is_ip_changed, result)
+                    if is_ip_changed:
+                        break
                 else:
                     logger.warning("Got a valid server payload with invalid prefix")
 
             else:
-                logger.error(f"Error with sending the content: {server_payload}")
-
                 if server_payload in (ConnectionResetError.__name__, ConnectionAbortedError.__name__):
                     break
+                logger.error(f"Error with accepting the content: {server_payload}")
 
                 try:
                     while True:
@@ -129,13 +142,28 @@ class ConnectionManager:
                 except Exception as e:
                     logger.warning(f"Unexpected Error occurred while trying of empty the socket: {e} ")
 
-        # broken | Event raised
-        self._conn_sock.close()
-        self._vpn_manager.disconnect_vpn()
-        logger.info(">>> ShieldNOC's Session Ended - Connection Closed <<<")
+        if is_ip_changed:
+            logger.warning(1111111)
+            self._conn_sock.close()
+            self._handle_incoming_data()  # TODO: see if practical use
+
+        else:
+            # broken | Event raised
+            self._conn_sock.close()
+            self._vpn_manager.disconnect_vpn()
+            logger.info(">>> ShieldNOC's Session Ended - Connection Closed <<<")
 
     def send_msg(self, msg) -> None:
         protocol.send_segment(self._conn_sock, f"{protocol.MessageType.CHAT.value}{msg}")
+
+    def request_new_vpn_ip(self, requested_ip) -> None:
+        self._send_vpn_data(self._conn_sock, requested_ip)
+
+    def handle_vpn_ip_change(self, code_and_response) -> tuple[bool, str]:
+        return self._vpn_manager.change_ip(code_and_response)
+
+    def end_session(self):
+        self._stop_connection_event.set()
 
     @staticmethod
     def _send_vpn_data(sock, data) -> None:
