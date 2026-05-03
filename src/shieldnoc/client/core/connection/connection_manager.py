@@ -7,6 +7,8 @@ from PySide6.QtCore import Signal
 from threading import Thread, Event
 from select import select
 
+import shieldnoc.protocol as protocol
+
 from shieldnoc.client.core.connection.chat_manager import ChatManager
 from shieldnoc.client.core.connection.vpn_manager import VPNManager
 from shieldnoc.client.core.data import system_metrics
