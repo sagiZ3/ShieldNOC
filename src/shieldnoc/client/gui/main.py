@@ -4,8 +4,10 @@ from PySide6.QtWidgets import (
     QApplication, QMainWindow, QWidget, QVBoxLayout, QHBoxLayout,
     QLabel, QPushButton, QStackedWidget
 )
-from PySide6.QtCore import Qt, QTimer
+from PySide6.QtCore import Qt
 
+from shieldnoc.client.core.connection.connection_manager import ConnectionManager
+from shieldnoc.client.core.connection.vpn_manager import VPNManager
 from shieldnoc.client.gui.ui.style import STYLE_SHEET
 from shieldnoc.client.gui.ui.background import BackgroundLayer
 from shieldnoc.client.gui.pages.connect_page import ConnectPage
@@ -15,10 +17,11 @@ from shieldnoc.client.gui.enums import ImagesPaths
 
 
 class MainWindow(QMainWindow):
-    def __init__(self, chat_manager: ChatManager):
+    def __init__(self, connection_manager: ConnectionManager, chat_manager: ChatManager):
         super().__init__()
 
         self.chat_manager = chat_manager
+        self.connection_manager = connection_manager
 
         self.setWindowTitle("ShieldNOC Client")
         self.resize(1200, 720)
@@ -58,7 +61,7 @@ class MainWindow(QMainWindow):
         self.stack = QStackedWidget()
         root.addWidget(self.stack)
 
-        self.page_settings = ConnectPage()
+        self.page_settings = ConnectPage(self.connection_manager)
         self.page_dash = DashboardPage(self.chat_manager)
 
         self.stack.addWidget(self.page_settings)
@@ -73,6 +76,7 @@ class MainWindow(QMainWindow):
 
         # Wiring
         self.page_settings.connect_requested.connect(self._handle_connect)
+        self.connection_manager.connect_process_end.connect(self._after_connect)
         self.page_settings.vpn_ip_changed.connect(self.page_dash.set_vpn_ip)
         self.page_settings.bg_change_requested.connect(self.bg_layer.next_background)
 
@@ -105,12 +109,11 @@ class MainWindow(QMainWindow):
             # אם לא מחובר - לא "מתחבר" סתם; תמיד נשאר "לא מחובר"
             self.page_settings.set_connected(False)
 
-    def _handle_connect(self, ip: str, port: int):
-        # שינוי: סטטוס מתעדכן מיד לדף ההגדרות וגם לדשבורד
+    def _handle_connect(self, ip: str, port: int):  # use parameters in the logic later
         self.page_settings.set_connecting()
         self.page_dash.set_connection_state("connecting")
 
-        QTimer.singleShot(450, lambda: self._after_connect(True))
+        self.connection_manager.start_connection_process()
 
     def _after_connect(self, ok: bool):
         self._is_connected = ok
@@ -126,10 +129,10 @@ class MainWindow(QMainWindow):
         super().closeEvent(event)
 
 
-def gui_main(chat_manager: ChatManager):
+def gui_main(connection_manager: ConnectionManager, chat_manager: ChatManager):
     app = QApplication(sys.argv)
-    w = MainWindow(chat_manager)
+    w = MainWindow(connection_manager, chat_manager)
     w.show()
 
-    app.aboutToQuit.connect(chat_manager.end_chat_session)
+    app.aboutToQuit.connect(connection_manager.end_session)
     sys.exit(app.exec())
