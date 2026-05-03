@@ -11,7 +11,7 @@ from shieldnoc.client.gui.ui.background import BackgroundLayer
 from shieldnoc.client.gui.pages.connect_page import ConnectPage
 from shieldnoc.client.gui.pages.dashboard_page import DashboardPage
 from shieldnoc.client.core.connection.chat_manager import ChatManager
-from shieldnoc.server.gui.enums import ImagesPaths
+from shieldnoc.client.gui.enums import ImagesPaths
 
 
 class MainWindow(QMainWindow):
