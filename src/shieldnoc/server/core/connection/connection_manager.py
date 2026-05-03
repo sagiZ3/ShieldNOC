@@ -132,7 +132,7 @@ class ConnectionManager:
                     self.chat_manager.handle_client_msg(client_ip, content)
                 elif prefix == protocol.MessageType.VPN.value:
                     is_ip_changed, response = self._vpn_manager.change_peer_ip(client_ip, content)
-                    response = str(int(is_ip_changed)) + response
+                    response = f"{str(int(is_ip_changed))}{response}"
                     self.send_vpn_data(client_sock, response)
                 else:
                     logger.warning("Got a valid client payload with invalid prefix")
