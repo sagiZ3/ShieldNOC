@@ -4,8 +4,7 @@ from shieldnoc.client.core.connection.connection_manager import ConnectionManage
 
 def main():
     connection_manager = ConnectionManager()
-    connection_manager.start_connection()
-    gui_main(connection_manager.chat_manager)  # have to run on the main thread
+    gui_main(connection_manager, connection_manager.chat_manager)  # have to run on the main thread
 
 
 if __name__ == '__main__':
