@@ -49,8 +49,6 @@ class VPNManager:
     def connect_vpn(self, assigned_vpn_ip, server_public_key=None) -> None:  # TODO: check if needs to disconnect before connecting
         self._create_config(assigned_vpn_ip, server_public_key)
 
-        from pathlib import Path
-
         conf_path = Path(self.CONF_FILE_PATH).resolve()
 
         self._run_cmd(["powershell", "-Command",
