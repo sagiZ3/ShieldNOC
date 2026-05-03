@@ -152,6 +152,9 @@ class VPNManager:  # TODO: check the need of sudo permission for commands & chec
             if self._db.is_vpn_ip_in_current_use(client_vpn_ip):
                 client_vpn_ip = self._get_random_vpn_ip()
 
+            self._run_terminal_cmd(["wg", "set", self.WG_INTERFACE, "peer", client_public_key,
+                                    "allowed-ips", f"{client_vpn_ip}/32"])
+
             self._db.update_client_fields_by_public_key(client_public_key,
                 {
                     ClientField.VPN_IP: client_vpn_ip,
