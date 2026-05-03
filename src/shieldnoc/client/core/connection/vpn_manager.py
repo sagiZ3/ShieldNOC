@@ -46,7 +46,7 @@ class VPNManager:
         public_key = self._run_cmd(["wg", "pubkey"], capture_output=True, input=private_key).strip()
         return private_key, public_key
 
-    def connect_vpn(self, assigned_vpn_ip, server_public_key=None) -> None:
+    def connect_vpn(self, assigned_vpn_ip, server_public_key=None) -> None:  # TODO: check if needs to disconnect before connecting
         self._create_config(assigned_vpn_ip, server_public_key)
 
         from pathlib import Path
