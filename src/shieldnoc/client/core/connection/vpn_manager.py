@@ -79,7 +79,7 @@ class VPNManager:
             f'Start-Process wireguard -ArgumentList "/uninstalltunnelservice {self.WG_INTERFACE}" -Verb RunAs'
         ])
 
-    def change_ip(self, new_ip) -> tuple[bool, str]:  # TODO: thing about a way to integrate with GUI
+    def change_ip(self, new_ip) -> tuple[bool, str]:
         if new_ip[0] == str(int(False)):
             return False, new_ip[1:]
 
