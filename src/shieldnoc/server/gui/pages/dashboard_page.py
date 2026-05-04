@@ -295,10 +295,6 @@ class ServerDashboardPage(QWidget):
                 it.setTextAlignment(Qt.AlignLeft | Qt.AlignVCenter)
                 self.clients_table.setItem(r, c, it)
 
-    @staticmethod
-    def _timestamp() -> str:
-        return datetime.now().strftime("%H:%M:%S")
-
     # ─────────────────────────────────────────────────────────────
     # tick - refresh
     # ─────────────────────────────────────────────────────────────
