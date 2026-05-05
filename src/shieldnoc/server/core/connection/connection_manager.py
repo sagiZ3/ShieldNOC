@@ -1,10 +1,11 @@
 import socket
 import json
 
-import shieldnoc.protocol as protocol
-
 from threading import Thread
 from select import select
+
+import shieldnoc.protocol as protocol
+
 from shieldnoc.logging_config import logger
 from shieldnoc.server.core.connection.chat_manager import ChatManager
 from shieldnoc.server.core.connection.vpn_manager import VPNManager
