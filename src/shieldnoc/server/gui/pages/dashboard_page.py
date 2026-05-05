@@ -1,5 +1,4 @@
 # TODO: add buttons for removing or waring a client with a specific message
-from datetime import datetime
 import random
 
 from PySide6.QtCore import Qt, QTimer, QMargins
