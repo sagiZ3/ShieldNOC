@@ -13,6 +13,8 @@ class VPNManager:
     KEYS_FILE_PATH = "./wg.keys"
 
     def __init__(self):
+        self.ensure_wg_installed()
+
         self._private_key, self.public_key = self._get_wg_keys()
         self._server_public_key = ""
 
@@ -87,6 +89,13 @@ class VPNManager:
         sleep(4)
         self.connect_vpn(new_ip[1:])
         return True, ""
+
+    def ensure_wg_installed(self) -> None:
+        if not self.is_wg_installed():
+            self._run_cmd(["winget", "install", "--id", "WireGuard.WireGuard", "-e", "--source", "winget"])
+
+    def is_wg_installed(self) -> bool:
+        return self._run_cmd(["winget", "list", "wireguard"], capture_output=True) is not None
 
     @staticmethod
     def _run_cmd(cmd: list[str], capture_output=False, **kwargs) -> str | None:
