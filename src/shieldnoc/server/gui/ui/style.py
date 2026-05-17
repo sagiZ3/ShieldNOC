@@ -11,13 +11,11 @@ QWidget {
     font-weight: 600;
     padding: 10px 16px;
     color: #f7c948;
-    text-shadow: 0 0 10px #f7c948;
 }
 #pageTitle {
     font-size: 18px;
     font-weight: 600;
     color: #52b6ff;
-    text-shadow: 0 0 12px #1e6fff;
 }
 #pageSubtitle {
     color: #a7b3d5;
@@ -29,7 +27,6 @@ QWidget {
     background-color: rgba(5, 10, 30, 0.92);
     border-radius: 16px;
     border: 1px solid #1b3358;
-    box-shadow: 0 0 18px rgba(0, 200, 255, 0.12);
 }
 #cardTitle {
     font-size: 14px;
@@ -47,19 +44,16 @@ QLineEdit {
 }
 QLineEdit:focus {
     border: 1px solid #52b6ff;
-    box-shadow: 0 0 12px rgba(82, 182, 255, 0.7);
 }
 
 /* Buttons */
 #primaryButton {
     background-color: #f7c948;
     color: #1e90ff;
-    text-shadow: 0 0 10px rgba(82, 182, 255, 0.8);
     border-radius: 12px;
     padding: 10px 18px;
     font-weight: 600;
     border: 1px solid #52b6ff;
-    box-shadow: 0 0 15px rgba(82, 182, 255, 0.6);
 }
 #primaryButton:hover {
     background-color: #ffe27a;
@@ -238,7 +232,6 @@ QLabel {
     font-size: 18px;
     font-weight: 700;
     color: #f7c948;
-    text-shadow: 0 0 12px #f7c948;
 }
 
 /* Alert badges */
