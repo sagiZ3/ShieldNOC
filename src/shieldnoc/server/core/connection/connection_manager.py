@@ -168,9 +168,6 @@ class ConnectionManager:
         client_sock.close()
         logger.info(f"> ShieldNOC System End Session With Client {client_addr} <")
 
-    def end_chat_session(self):
-        self._stop_connection_event.set()
-
     def broadcast_msg(self, msg) -> None:
         for client_sock in self._clients:
             protocol.send_segment(client_sock, f"{protocol.MessageType.CHAT.value}{msg}")
