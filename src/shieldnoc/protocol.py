@@ -88,7 +88,7 @@ def get_payload(my_socket: socket.socket) -> tuple[bool, str]:
             return True, payload
 
         garbage_cleaner(my_socket)
-        return False, "General Error"
+        return False, "Error With Protocol Structure"
 
     except socket.timeout:
         raise socket.timeout  # the error is capture outside for continue in the function use
