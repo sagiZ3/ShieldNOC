@@ -3,6 +3,8 @@ from PySide6.QtWidgets import QFrame, QVBoxLayout, QLabel
 
 class CardFrame(QFrame):
     def __init__(self, title: str = "", parent=None):
+        """ Initializes a styled card container widget. """
+
         super().__init__(parent)
         self.setObjectName("card")
         lay = QVBoxLayout(self)

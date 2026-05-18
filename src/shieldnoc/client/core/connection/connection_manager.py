@@ -21,6 +21,8 @@ class ConnectionManager(QObject):
     vpn_ip_change = Signal(bool, str)
 
     def __init__(self):
+        """ Initialize connection manager and communication components. """
+
         super().__init__()
 
         self.chat_manager = ChatManager(self.send_msg)
@@ -32,11 +34,15 @@ class ConnectionManager(QObject):
         self._initial_conn_sock.settimeout(1.0)
 
     def start_connection_process(self) -> None:
+        """ Start the initial connection process in a separate thread. """
+
         thread = Thread(target=self._initial_connection_handler)
         thread.start()
         logger.info("===== Initial Connection Started With The Server =====")
 
     def _initial_connection_handler(self) -> None:
+        """ Handle the initial connection and VPN setup process. """
+
         try:
             self._initial_conn_sock.connect((protocol.SERVER_IP, protocol.CONNECTION_PORT))
         except Exception as e:
@@ -88,6 +94,8 @@ class ConnectionManager(QObject):
             self._initial_conn_sock.close()
 
     def _handle_incoming_data(self) -> None:
+        """ Handle incoming data and route messages by their protocol type. """
+
         sleep(2)  # letting the computer time to connect the VPN
 
         self._conn_sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -153,26 +161,52 @@ class ConnectionManager(QObject):
             self._vpn_manager.disconnect_vpn()
             logger.info(">>> ShieldNOC's Session Ended - Connection Closed <<<")
 
-    def send_msg(self, msg) -> None:
+    def send_msg(self, msg: str) -> None:
+        """ Sends a chat message to the server. """
+
         protocol.send_segment(self._conn_sock, f"{protocol.MessageType.CHAT.value}{msg}")
 
-    def request_new_vpn_ip(self, requested_ip) -> None:
+    def request_new_vpn_ip(self, requested_ip: str) -> None:
+        """ Requests a new VPN IP address from the server. """
+
         self._send_vpn_data(self._conn_sock, requested_ip)
 
-    def handle_vpn_ip_change(self, code_and_response) -> tuple[bool, str]:
+    def handle_vpn_ip_change(self, code_and_response: str) -> tuple[bool, str]:
+        """
+        Handles VPN IP change response from the server.
+
+        :return: Tuple containing status and operation result.
+        """
+
         return self._vpn_manager.change_ip(code_and_response)
 
     def end_session(self):
+        """ Stops the current ShieldNOC session. """
+
         self._stop_connection_event.set()
 
     @staticmethod
-    def _send_vpn_data(sock, data) -> None:
+    def _send_vpn_data(sock: socket.socket, data: str) -> None:
+        """ Sends VPN-related data using the protocol format. """
+
         protocol.send_segment(sock,f"{protocol.MessageType.VPN.value}{data}")
 
     @staticmethod
     def _encrypt_data(data: str) -> str:  # TODO: revive func
+        """
+        Encrypts sensitive data before transmission.
+
+        :return: Encrypted data string.
+        """
+
         return data
 
     @staticmethod
     def _decrypt_data(data: str) -> str:  # TODO: revive func
+        """
+        Decrypt received encrypted data.
+
+        :return: Decrypted data string.
+        """
+
         return data

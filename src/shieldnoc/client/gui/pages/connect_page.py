@@ -20,6 +20,8 @@ class ConnectPage(QWidget):
     bg_change_requested = Signal()
 
     def __init__(self, connection_manager: ConnectionManager,parent=None):
+        """ Initializes the connection settings page and UI components. """
+
         super().__init__(parent)
 
         self.connection_manager = connection_manager
@@ -123,6 +125,8 @@ class ConnectPage(QWidget):
         root.addLayout(bottom)
 
     def _connect_clicked(self):
+        """ Handles the connect button click event. """
+
         ip = self.ip_edit.text().strip()
 
         try:
@@ -139,6 +143,8 @@ class ConnectPage(QWidget):
         self.connect_requested.emit(ip, port)
 
     def _pop_alert(self, alert):
+        """ Displays a temporary alert message on the screen. """
+
         label = QLabel(alert, self)
         label.setStyleSheet("""
             background-color: #1f2933;
@@ -155,6 +161,8 @@ class ConnectPage(QWidget):
         QTimer.singleShot(1500, label.deleteLater)
 
     def _request_new_vpn_ip(self):
+        """ Sends a VPN IP change request to the server. """
+
         ip = self.vpn_ip_edit.text().strip()
         if not ip:
             return
@@ -165,33 +173,45 @@ class ConnectPage(QWidget):
         QTimer.singleShot(1600, lambda: self._set_badge(self.client_action_badge, "Idle", "badgeInfo"))
 
     def handle_ip_change(self, is_ip_changed, response) -> None:
+        """ Handles the VPN IP change response from the server. """
+
         if is_ip_changed:
             self.vpn_ip_changed.emit(response)  # gui display dashboard change
         else:
             self._pop_alert(response)
 
     def _change_bg_clicked(self):
+        """ Handles the background change button click event. """
+
         self.bg_change_requested.emit()
 
         self._set_badge(self.ui_action_badge, "Background Updated", "badgeOk")
         QTimer.singleShot(1600, lambda: self._set_badge(self.ui_action_badge, "Idle", "badgeInfo"))
 
     def set_connected(self, ok: bool):
+        """ Updates the UI connection status indicator. """
+
         if ok:
             self._set_connect_status("מחובר ל-ShieldNOC", "connectStatusConnected")
         else:
             self._set_connect_status("לא מחובר", "connectStatusDisconnected")
 
     def set_connecting(self):
+        """ Updates the UI to display a connecting status. """
+
         self._set_connect_status("מתחבר...", "connectStatusConnecting")
 
     def _set_connect_status(self, text: str, object_name: str):
+        """ Updates the connection status label style and text. """
+
         self.connect_status.setText(text)
         self.connect_status.setObjectName(object_name)
         self.connect_status.style().unpolish(self.connect_status)
         self.connect_status.style().polish(self.connect_status)
 
     def _set_badge(self, label: QLabel, text: str, object_name: str):
+        """ Updates a badge label text and style. """
+
         label.setText(text)
         label.setObjectName(object_name)
         label.style().unpolish(label)

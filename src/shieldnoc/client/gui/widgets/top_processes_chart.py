@@ -1,4 +1,3 @@
-# src/shieldnoc/client/gui/widgets/top_processes_chart.py
 import random
 from collections import Counter
 
@@ -18,6 +17,8 @@ from PySide6.QtWidgets import QSizePolicy, QVBoxLayout, QWidget
 
 class TopProcessesChart(QWidget):
     def __init__(self, parent=None, use_demo: bool = True):
+        """ Initializes the top processes chart widget and update timers. """
+
         super().__init__(parent)
 
         # Config
@@ -108,6 +109,8 @@ class TopProcessesChart(QWidget):
         self.refresh_data()
 
     def refresh_data(self):
+        """ Refreshes the chart data and updates chart categories. """
+
         top_processes = self._get_top_processes()
         new_categories = [name for name, _ in top_processes]
         new_values = [count for _, count in top_processes]
@@ -127,6 +130,12 @@ class TopProcessesChart(QWidget):
         self._update_y_axis_range()
 
     def _get_top_processes(self) -> list[tuple[str, int]]:
+        """
+        Retrieves the top processes by active network connections.
+
+        :return: List of process names and connection counts.
+        """
+
         if self._use_demo:
             return self._get_demo_top_processes()
 
@@ -149,23 +158,24 @@ class TopProcessesChart(QWidget):
         return process_counter.most_common(5)
 
     def _get_demo_top_processes(self) -> list[tuple[str, int]]:
-        # יוצר דינמיות אמיתית יותר:
-        # ערכים משתנים, לפעמים תהליך חדש "פורץ" למעלה, ולפעמים שם משתנה
+        """
+        Generates simulated top process statistics for demo mode.
+
+        :return: List of simulated process names and connection counts.
+        """
+
         for name in list(self._demo_state.keys()):
             delta = random.randint(-3, 4)
             self._demo_state[name] = max(0, self._demo_state[name] + delta)
 
-        # מדי פעם תהליך כלשהו מקבל "בוסט"
         if random.random() < 0.35:
             burst_name = random.choice(self._demo_processes_pool)
             self._demo_state[burst_name] += random.randint(4, 10)
 
-        # מדי פעם תהליך נחלש משמעותית
         if random.random() < 0.20:
             drop_name = random.choice(self._demo_processes_pool)
             self._demo_state[drop_name] = max(0, self._demo_state[drop_name] - random.randint(3, 8))
 
-        # מדי פעם "מכניס" שם חדש/אחר לדינמיות ויזואלית
         if random.random() < 0.18:
             replacement_candidates = [
                 "obs64.exe",
@@ -176,7 +186,6 @@ class TopProcessesChart(QWidget):
             ]
             new_name = random.choice(replacement_candidates)
             if new_name not in self._demo_state:
-                # מחליף תהליך חלש קיים
                 weakest_name = min(self._demo_state, key=self._demo_state.get)
                 self._demo_state.pop(weakest_name, None)
                 self._demo_state[new_name] = random.randint(5, 14)
@@ -193,6 +202,8 @@ class TopProcessesChart(QWidget):
         return top
 
     def _rebuild_x_axis(self):
+        """ Rebuilds the chart X-axis with updated process categories. """
+
         try:
             self._series.detachAxis(self._axis_x)
             self._chart.removeAxis(self._axis_x)
@@ -214,11 +225,15 @@ class TopProcessesChart(QWidget):
         self._series.attachAxis(self._axis_x)
 
     def _update_y_axis_range(self):
+        """ Updates the chart Y-axis range according to current values. """
+
         max_value = max(max(self._current_values), max(self._target_values), 1)
         wanted_max = max_value + 2
         self._axis_y.setRange(0, wanted_max)
 
     def _animate_step(self):
+        """ Animates the chart values toward their target values. """
+
         changed = False
 
         for i in range(len(self._current_values)):

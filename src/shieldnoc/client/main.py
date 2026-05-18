@@ -3,6 +3,8 @@ from shieldnoc.client.core.connection.connection_manager import ConnectionManage
 
 
 def main():
+    """ Starts the ShieldNOC client application. """
+
     connection_manager = ConnectionManager()
     gui_main(connection_manager, connection_manager.chat_manager)  # have to run on the main thread
 

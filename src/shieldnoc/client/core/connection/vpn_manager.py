@@ -13,12 +13,20 @@ class VPNManager:
     KEYS_FILE_PATH = "./wg.keys"
 
     def __init__(self):
+        """ Initializes the VPN manager and WireGuard keys. """
+
         self.ensure_wg_installed()
 
         self._private_key, self.public_key = self._get_wg_keys()
         self._server_public_key = ""
 
     def _get_wg_keys(self) -> tuple[str, str]:
+        """
+        Loads existing WireGuard keys or generates new ones.
+
+        :return: Tuple containing private and public WireGuard keys.
+        """
+
         if Path(self.KEYS_FILE_PATH).exists():
             private_key, public_key = self._load_keys()
             if public_key:
@@ -32,6 +40,12 @@ class VPNManager:
         return private_key, public_key
 
     def _load_keys(self) -> tuple[str | None, str | None]:
+        """
+        Loads stored WireGuard keys from the keys file.
+
+        :return: Tuple containing private and public keys, or None values if loading fails.
+        """
+
         logger.info("Use WireGuard Existing Keys")
         try:
             with open(self.KEYS_FILE_PATH, 'r') as keys_file:
@@ -43,13 +57,21 @@ class VPNManager:
             return None, None
 
     def generate_keys(self) -> tuple[str, str]:
+        """
+        Generates a new WireGuard key pair.
+
+        :return: Tuple containing private and public WireGuard keys.
+        """
+
         logger.info("Generate new WireGuard Keys")
 
         private_key = self._run_cmd(["wg", "genkey"], capture_output=True).strip()
         public_key = self._run_cmd(["wg", "pubkey"], capture_output=True, input=private_key).strip()
         return private_key, public_key
 
-    def connect_vpn(self, assigned_vpn_ip, server_public_key=None) -> None:  # TODO: check if needs to disconnect before connecting
+    def connect_vpn(self, assigned_vpn_ip: str, server_public_key=None) -> None:  # TODO: check if needs to disconnect before connecting
+        """ Creates the VPN config file and starts the WireGuard tunnel. """
+
         self._create_config(assigned_vpn_ip, server_public_key)
 
         conf_path = Path(self.CONF_FILE_PATH).resolve()
@@ -58,7 +80,9 @@ class VPNManager:
             f'Start-Process wireguard -ArgumentList "/installtunnelservice {conf_path}" -Verb RunAs'
         ])
 
-    def _create_config(self, assigned_vpn_ip, server_public_key=None) -> None:
+    def _create_config(self, assigned_vpn_ip: str, server_public_key=None) -> None:
+        """ Creates the WireGuard configuration file for the VPN tunnel. """
+
         if server_public_key:
             self._server_public_key = server_public_key
 
@@ -77,11 +101,19 @@ class VPNManager:
             conf_file.write(config_content)
 
     def disconnect_vpn(self) -> None:
+        """ Disconnects the active WireGuard VPN tunnel. """
+
         self._run_cmd(["powershell", "-Command",
             f'Start-Process wireguard -ArgumentList "/uninstalltunnelservice {self.WG_INTERFACE}" -Verb RunAs'
         ])
 
-    def change_ip(self, new_ip) -> tuple[bool, str]:
+    def change_ip(self, new_ip: str) -> tuple[bool, str]:
+        """
+        Changes the VPN IP address according to the server response.
+
+        :return: Tuple containing status and error message.
+        """
+
         if new_ip[0] == str(int(False)):
             return False, new_ip[1:]
 
@@ -91,14 +123,28 @@ class VPNManager:
         return True, ""
 
     def ensure_wg_installed(self) -> None:
+        """ Ensures that WireGuard is installed on the system. """
+
         if not self.is_wg_installed():
             self._run_cmd(["winget", "install", "--id", "WireGuard.WireGuard", "-e", "--source", "winget"])
 
     def is_wg_installed(self) -> bool:
+        """
+        Checks whether WireGuard is installed on the system.
+
+        :return: True if WireGuard is installed, otherwise False.
+        """
+
         return self._run_cmd(["winget", "list", "wireguard"], capture_output=True) is not None
 
     @staticmethod
     def _run_cmd(cmd: list[str], capture_output=False, **kwargs) -> str | None:
+        """
+        Runs a system command and optionally captures its output.
+
+        :return: Command output if captured, otherwise None.
+        """
+
         try:
             result = subprocess.run(cmd, check=True, text=True, capture_output=capture_output, **kwargs)
 
@@ -110,8 +156,20 @@ class VPNManager:
 
     @staticmethod
     def _encrypt_data(data: str) -> str:
+        """
+        Encrypts sensitive data before storage.
+
+        :return: Encrypted data string.
+        """
+
         return data
 
     @staticmethod
     def _decrypt_data(data: str) -> str:
+        """
+        Decrypts stored encrypted data.
+
+        :return: Decrypted data string.
+        """
+
         return data

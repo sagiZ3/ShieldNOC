@@ -7,7 +7,6 @@ from PySide6.QtWidgets import (
 from PySide6.QtCore import Qt
 
 from shieldnoc.client.core.connection.connection_manager import ConnectionManager
-from shieldnoc.client.core.connection.vpn_manager import VPNManager
 from shieldnoc.client.gui.ui.style import STYLE_SHEET
 from shieldnoc.client.gui.ui.background import BackgroundLayer
 from shieldnoc.client.gui.pages.connect_page import ConnectPage
@@ -18,6 +17,8 @@ from shieldnoc.client.gui.enums import ImagesPaths
 
 class MainWindow(QMainWindow):
     def __init__(self, connection_manager: ConnectionManager, chat_manager: ChatManager):
+        """ Initializes the main window and connects all client UI pages. """
+
         super().__init__()
 
         self.chat_manager = chat_manager
@@ -26,7 +27,7 @@ class MainWindow(QMainWindow):
         self.setWindowTitle("ShieldNOC Client")
         self.resize(1200, 720)
 
-        self._is_connected = False  # שינוי: סטייט חיבור לשמירה לאורך מעבר דפים
+        self._is_connected = False
 
         central = QWidget()
         self.setCentralWidget(central)
@@ -90,32 +91,42 @@ class MainWindow(QMainWindow):
         self._sync_connect_status_label()
 
     def resizeEvent(self, event):
+        """ Resizes the background layer with the main window. """
+
         super().resizeEvent(event)
         self.bg_layer.resize(self.size())
 
     def _go_settings(self):
+        """ Switches the main view to the settings page. """
+
         self.stack.setCurrentWidget(self.page_settings)
         self._sync_connect_status_label()
 
     def _go_dashboard(self):
+        """ Switches the main view to the dashboard page. """
+
         self.stack.setCurrentWidget(self.page_dash)
         self._sync_connect_status_label()
 
     def _sync_connect_status_label(self):
-        # שינוי: כשהמשתמש חוזר לדף ההגדרות, הסטטוס נשאר נכון בהתאם לסטייט
+        """ Synchronizes the settings page connection status label. """
+
         if self._is_connected:
             self.page_settings.set_connected(True)
         else:
-            # אם לא מחובר - לא "מתחבר" סתם; תמיד נשאר "לא מחובר"
             self.page_settings.set_connected(False)
 
     def _handle_connect(self, ip: str, port: int):  # use parameters in the logic later
+        """ Starts the client connection process from the UI. """
+
         self.page_settings.set_connecting()
         self.page_dash.set_connection_state("connecting")
 
         self.connection_manager.start_connection_process()
 
     def _after_connect(self, ok: bool):
+        """ Updates the UI after the connection process finishes. """
+
         self._is_connected = ok
         self.page_settings.set_connected(ok)
 
@@ -126,10 +137,14 @@ class MainWindow(QMainWindow):
             self.page_dash.set_connection_state("disconnected")
 
     def closeEvent(self, event):
+        """ Handles the main window close event. """
+
         super().closeEvent(event)
 
 
 def gui_main(connection_manager: ConnectionManager, chat_manager: ChatManager):
+    """ Starts the ShieldNOC client GUI application. """
+
     app = QApplication(sys.argv)
     w = MainWindow(connection_manager, chat_manager)
     w.show()

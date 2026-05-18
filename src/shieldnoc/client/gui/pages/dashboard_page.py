@@ -1,4 +1,3 @@
-# src/shieldnoc/client/gui/pages/dashboard_page.py
 import random
 
 from PySide6.QtCharts import QChart, QChartView, QLineSeries, QValueAxis
@@ -17,6 +16,8 @@ from shieldnoc.client.core.connection.chat_manager import ChatManager
 
 class DashboardPage(QWidget):
     def __init__(self, chat_manager: ChatManager ,parent=None):
+        """ Initializes the dashboard page and all dashboard widgets. """
+
         super().__init__(parent)
 
         # State
@@ -229,6 +230,8 @@ class DashboardPage(QWidget):
     # Public API (unchanged)
     # -----------------------------
     def set_connection_state(self, state: str):
+        """ Updates the dashboard connection state indicators. """
+
         state = state.lower().strip()
 
         if state == "connected":
@@ -251,10 +254,14 @@ class DashboardPage(QWidget):
         self.conn_badge.style().polish(self.conn_badge)
 
     def set_vpn_ip(self, ip: str):
+        """ Updates the displayed VPN IP address. """
+
         self._vpn_ip = ip
         self.card_vpn_ip.value_label.setText(ip)
 
     def set_logo_path(self, path: str):
+        """ Updates the displayed dashboard logo image. """
+
         pix = QPixmap(path)
         if pix.isNull():
             self.logo_label.setPixmap(QPixmap())
@@ -267,6 +274,12 @@ class DashboardPage(QWidget):
     # UI helpers
     # -----------------------------
     def _metric_card(self, title: str, value: str, ltr: bool = False, min_height: int = 90) -> QWidget:
+        """
+        Creates a dashboard metric card widget.
+
+        :return: Configured metric card widget.
+        """
+
         card = CardFrame(title)
 
         value_label = QLabel(value)
@@ -284,6 +297,12 @@ class DashboardPage(QWidget):
         return card
 
     def _create_line_chart(self, y_title: str) -> QChartView:
+        """
+        Creates the network traffic line chart widget.
+
+        :return: Configured chart view widget.
+        """
+
         self.series = QLineSeries()
 
         pen = QPen(QColor("#52b6ff"))
@@ -336,6 +355,8 @@ class DashboardPage(QWidget):
     # Chat
     # -----------------------------
     def _pull_to_chat(self):
+        """ Pulls queued chat messages into the chat view. """
+
         pull = True
         while pull:
             next_chat_msg = self.chat_manager.get_next_msg()
@@ -345,6 +366,8 @@ class DashboardPage(QWidget):
                 pull = False
 
     def _send_chat_msg(self):
+        """ Sends the current chat input message. """
+
         msg = self.chat_input.text().strip()
         if not msg:
             return
@@ -354,10 +377,14 @@ class DashboardPage(QWidget):
         self.chat_manager.send_msg(msg)
 
     def _append_chat_msg(self, msg: str):
+        """ Appends a new message to the chat view. """
+
         self.chat_view.append(msg)
         self._scroll_chat_bottom()
 
     def _scroll_chat_bottom(self):
+        """ Scrolls the chat view to the latest message. """
+
         sb = self.chat_view.verticalScrollBar()
         sb.setValue(sb.maximum())
 
@@ -365,6 +392,8 @@ class DashboardPage(QWidget):
     # Table updates
     # -----------------------------
     def _update_connections(self):  # TODO: edit to real connections
+        """ Updates the displayed network connections table. """
+
         rows = []
         proto_choices = ["TCP", "UDP"]
         states_tcp = ["ESTABLISHED", "SYN_SENT", "CLOSE_WAIT", "TIME_WAIT"]
@@ -395,12 +424,16 @@ class DashboardPage(QWidget):
     # tick - refresh
     # -----------------------------
     def _start_tick_iterations(self):
+        """ Starts the periodic dashboard update timer. """
+
         self.tick_timer = QTimer(self)
         self.tick_timer.setInterval(General.TICK_PERIOD_MS.value)
         self.tick_timer.timeout.connect(self._tick)
         self.tick_timer.start()
 
     def _tick(self):
+        """ Updates dashboard statistics, charts, and chat data. """
+
         new_packet_value = random.randint(10, 90) if self._connected else random.randint(0, 5)
 
         if self._time <= 60:
