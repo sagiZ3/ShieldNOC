@@ -28,6 +28,8 @@ class ConnectionManager:
         self._listen_sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self._listen_sock.settimeout(1.0)
 
+        self._listen_sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+
         try:
             self._listen_sock.bind((protocol.LISTEN_EVERYONE_IP, protocol.LISTEN_PORT))
 
