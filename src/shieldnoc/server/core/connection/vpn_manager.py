@@ -16,12 +16,20 @@ class VPNManager:  # TODO: check the need of sudo permission for commands & chec
     VPN_IP_PREFIX = "10.33.33"
 
     def __init__(self, db: DatabaseQueries):
+        """ Initializes the VPN manager and WireGuard server configuration. """
+
         self._db = db
 
         self._lan_interface = self._get_lan_interface()
         self._private_key, self._public_key = self._get_wg_keys()
 
     def _get_lan_interface(self):
+        """
+        Retrieves the active LAN network interface.
+
+        :return: LAN interface name.
+        """
+
         result = self._run_terminal_cmd(
             ["ip", "route", "get", "8.8.8.8"],
             capture_output=True
@@ -29,12 +37,18 @@ class VPNManager:  # TODO: check the need of sudo permission for commands & chec
         return result.split("dev")[1].split()[0]
 
     def _enable_ip_forwarding(self) -> None:
+        """ Enables IPv4 packet forwarding on the server. """
+
         self._run_terminal_cmd(["sysctl", "-w", "net.ipv4.ip_forward=1"])  # kernel level
 
     def _disable_ip_forwarding(self) -> None:
+        """ Disables IPv4 packet forwarding on the server. """
+
         self._run_terminal_cmd(["sysctl", "-w", "net.ipv4.ip_forward=0"])
 
     def _set_forwarding_and_nat_rules(self, action: str) -> None:
+        """ Applies or removes forwarding and NAT firewall rules. """
+
         self._run_terminal_cmd(["iptables", action, "FORWARD", "-i", self.WG_INTERFACE, "-o", self._lan_interface,
                                 "-j", "ACCEPT"])  # firewall level
 
@@ -45,18 +59,28 @@ class VPNManager:  # TODO: check the need of sudo permission for commands & chec
                                 self._lan_interface, "-j", "MASQUERADE"])  # enable SNAT for answer to arrive
 
     def _enable_forwarding_and_nat_rules(self) -> None:
+        """ Enables forwarding and NAT firewall rules for the VPN. """
+
         try:
             self._set_forwarding_and_nat_rules("-A")
         except Exception as e:
             logger.error("Error while setting the vpn rules:", e)
 
     def _disable_forwarding_and_nat_rules(self) -> None:
+        """ Disables forwarding and NAT firewall rules for the VPN. """
+
         try:
             self._set_forwarding_and_nat_rules("-D")
         except Exception as e:
             logger.error("Error while deleting the vpn rules:", e)
 
     def is_ip_forwarding_enabled(self) -> bool:
+        """
+        Checks whether IPv4 forwarding is enabled.
+
+        :return: True if IP forwarding is enabled, otherwise False.
+        """
+
         result = self._run_terminal_cmd(
             ["sysctl", "net.ipv4.ip_forward"],
             capture_output=True
@@ -64,6 +88,12 @@ class VPNManager:  # TODO: check the need of sudo permission for commands & chec
         return " = 1" in result
 
     def is_nat_enabled(self) -> bool:
+        """
+        Checks whether NAT masquerading is enabled.
+
+        :return: True if NAT is enabled, otherwise False.
+        """
+
         result = self._run_terminal_cmd(
             ["iptables", "-t", "nat", "-S"],
             capture_output=True
@@ -71,6 +101,8 @@ class VPNManager:  # TODO: check the need of sudo permission for commands & chec
         return f"-o {self._lan_interface} -j MASQUERADE" in result
 
     def start_vpn(self) -> None:  # TODO: handle because last run crash crash - use stop_vpn and then start_vpn
+        """ Starts the VPN networking services and WireGuard interface. """
+
         self._enable_ip_forwarding()
         self._enable_forwarding_and_nat_rules()
         self._start_wg_interface()
@@ -89,6 +121,8 @@ class VPNManager:  # TODO: check the need of sudo permission for commands & chec
             logger.error("Problem with enable NAT!")
 
     def stop_vpn(self) -> None:
+        """ Stops the VPN networking services and WireGuard interface. """
+
         self._disable_forwarding_and_nat_rules()
         self._disable_ip_forwarding()
         self._stop_wg_interface()
@@ -107,6 +141,8 @@ class VPNManager:  # TODO: check the need of sudo permission for commands & chec
             logger.error("Problem with disable NAT!")
 
     def _create_config(self) -> None:
+        """ Creates the WireGuard server configuration file. """
+
         config_content = f"""[Interface]
         PrivateKey = {self._private_key}
         Address = {self.VPN_IP_PREFIX}.1/24
@@ -117,14 +153,24 @@ class VPNManager:  # TODO: check the need of sudo permission for commands & chec
             conf_file.write(config_content)
 
     def _start_wg_interface(self) -> None:
+        """ Starts the WireGuard interface using the generated configuration. """
+
         self._create_config()
 
         self._run_terminal_cmd(["wg-quick", "up", self.CONF_FILE_PATH])
 
     def _stop_wg_interface(self):
+        """ Stops the active WireGuard interface. """
+
         self._run_terminal_cmd(["wg-quick", "down", self.CONF_FILE_PATH])
 
     def _get_wg_keys(self) -> tuple:
+        """
+        Loads existing WireGuard keys or generates new ones.
+
+        :return: Tuple containing private and public WireGuard keys.
+        """
+
         keys = self._db.get_server_keys()
         if keys:
             return self._decrypt_data(keys[ServerField.PRIVATE_KEY.value]), keys[ServerField.PUBLIC_KEY.value]
@@ -135,11 +181,23 @@ class VPNManager:  # TODO: check the need of sudo permission for commands & chec
         return private_key, public_key
 
     def generate_keys(self) -> tuple[str, str]:
+        """
+        Generates a new WireGuard key pair.
+
+        :return: Tuple containing private and public WireGuard keys.
+        """
+
         private_key = self._run_terminal_cmd(["wg", "genkey"], capture_output=True).strip()
         public_key =  self._run_terminal_cmd(["wg", "pubkey"], capture_output=True, input=private_key).strip()
         return private_key, public_key
 
     def add_peer(self, client_initial_data: dict[ClientField, str]) -> tuple:
+        """
+        Adds a new WireGuard peer or reconnects an existing client.
+
+        :return: Tuple containing server public key and assigned VPN IP.
+        """
+
         client_public_key = client_initial_data[ClientField.PUBLIC_KEY]
 
         if not self._is_valid_wg_public_key(client_public_key):
@@ -187,6 +245,12 @@ class VPNManager:  # TODO: check the need of sudo permission for commands & chec
         return self._public_key, client_vpn_ip
 
     def change_peer_ip(self, client_vpn_ip: str, requested_ip: str) -> tuple[bool, str]:
+        """
+        Changes the VPN IP address of an existing peer.
+
+        :return: Tuple containing status and operation result.
+        """
+
         client_public_key = self._db.get_client_by_vpn_ip(client_vpn_ip)[ClientField.PUBLIC_KEY.value]
 
         if not self.is_valid_vpn_ip(requested_ip):
@@ -204,6 +268,8 @@ class VPNManager:  # TODO: check the need of sudo permission for commands & chec
         return True, requested_ip
 
     def remove_peer(self, client_vpn_ip: str) -> None:  # TODO: use also when server end session
+        """ Removes a WireGuard peer from the VPN server. """
+
         client_public_key = self._db.get_client_by_vpn_ip(client_vpn_ip)[ClientField.PUBLIC_KEY.value]
         self._run_terminal_cmd(["wg", "set", self.WG_INTERFACE, "peer", client_public_key, "remove"])
 
@@ -215,6 +281,12 @@ class VPNManager:  # TODO: check the need of sudo permission for commands & chec
         })
 
     def _get_random_vpn_ip(self) -> str:
+        """
+        Generates a random unused VPN IP address.
+
+        :return: Available VPN IP address.
+        """
+
         while True:
             random_host_octet = str(randint(2, 254))
             new_ip = f"{self.VPN_IP_PREFIX}.{random_host_octet}"
@@ -225,6 +297,12 @@ class VPNManager:  # TODO: check the need of sudo permission for commands & chec
         return new_ip
 
     def is_valid_vpn_ip(self, vpn_ip: str) -> bool:
+        """
+        Validates a VPN IP address format and range.
+
+        :return: True if the VPN IP is valid, otherwise False.
+        """
+
         if not vpn_ip:
             return False
 
@@ -240,6 +318,12 @@ class VPNManager:  # TODO: check the need of sudo permission for commands & chec
 
     @staticmethod
     def _run_terminal_cmd(cmd: list[str], capture_output=False, **kwargs) -> str | None:
+        """
+        Runs a terminal command and optionally captures its output.
+
+        :return: Command output if captured, otherwise None.
+        """
+
         try:
             result = subprocess.run(cmd, check=True, text=True, capture_output=capture_output, **kwargs)
 
@@ -251,6 +335,12 @@ class VPNManager:  # TODO: check the need of sudo permission for commands & chec
 
     @staticmethod
     def _is_valid_wg_public_key(key: str) -> bool:
+        """
+        Validates a WireGuard public key format.
+
+        :return: True if the public key is valid, otherwise False.
+        """
+
         """ Validate WireGuard public key (base64, 32 bytes) """
         try:
             if len(key) != 44:
@@ -263,12 +353,23 @@ class VPNManager:  # TODO: check the need of sudo permission for commands & chec
 
     @staticmethod
     def _encrypt_data(data: str) -> str:
+        """
+        Encrypts sensitive data before storage.
+
+        :return: Encrypted data string.
+        """
+
         return data
 
     @staticmethod
     def _decrypt_data(data: str) -> str:
-        return data
+        """
+        Decrypts stored encrypted data.
 
+        :return: Decrypted data string.
+        """
+
+        return data
 
 # TODO: add to client (download button): subprocess.run('winget install --id WireGuard.WireGuard -e --source winget', shell=True)
 #  prefer not for a button but just do a background download

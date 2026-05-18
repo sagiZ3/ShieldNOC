@@ -15,6 +15,8 @@ from shieldnoc.server.core.db.queries import DatabaseQueries
 
 class ConnectionManager:
     def __init__(self, db: DatabaseQueries):
+        """ Initializes the server connection manager and VPN services. """
+
         self._db = db
         self.chat_manager = ChatManager(self.broadcast_msg)
         self._vpn_manager = VPNManager(self._db)
@@ -40,11 +42,15 @@ class ConnectionManager:
         self._clients: dict[socket.socket, tuple[str, int]] = {}  # [socket: (ip, port)]
 
     def start_connection(self):
+        """ Starts the client connection acceptor thread. """
+
         thread = Thread(target=self._clients_acceptor)
         thread.start()
         logger.info("===== ShieldNOC is ready for accepting clients =====")
 
     def _clients_acceptor(self) -> None:
+        """ Accepts incoming client connections and routes them by connection type. """
+
         self.chat_manager.handle_system_msg("~ShieldNOC chat system is up and running~")
 
         while not self._stop_connection_event.is_set():
@@ -66,6 +72,8 @@ class ConnectionManager:
         logger.info(">>> ShieldNOC System Closed <<<")
 
     def _initial_connection(self, client_sock: socket.socket) -> None:
+        """ Handles the initial VPN setup connection with a client. """
+
         client_addr = client_sock.getpeername()
         logger.info(f"{client_addr} starts the connection process to ShieldNOC System")
 
@@ -109,6 +117,8 @@ class ConnectionManager:
             client_sock.close()
 
     def _handle_client(self, client_sock: socket.socket) -> None:
+        """ Handles incoming messages and requests from a connected client. """
+
         client_addr = client_sock.getpeername()
         client_ip = client_addr[0]
 
@@ -169,17 +179,33 @@ class ConnectionManager:
         logger.info(f"> ShieldNOC System End Session With Client {client_addr} <")
 
     def broadcast_msg(self, msg) -> None:
+        """ Broadcasts a chat message to all connected clients. """
+
         for client_sock in self._clients:
             protocol.send_segment(client_sock, f"{protocol.MessageType.CHAT.value}{msg}")
 
     @staticmethod
     def send_vpn_data(client_sock, data) -> None:
+        """ Sends VPN-related data using the protocol format. """
+
         protocol.send_segment(client_sock, f"{protocol.MessageType.VPN.value}{data}")
 
     @staticmethod
     def _encrypt_data(data: str) -> str:  # TODO: revive func
+        """
+        Encrypts sensitive data before transmission.
+
+        :return: Encrypted data string.
+        """
+
         return data
 
     @staticmethod
     def _decrypt_data(data: str) -> str:  # TODO: revive func
+        """
+        Decrypts received encrypted data.
+
+        :return: Decrypted data string.
+        """
+
         return data

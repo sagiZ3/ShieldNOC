@@ -15,6 +15,8 @@ from shieldnoc.server.core.connection.chat_manager import ChatManager
 
 class MainWindow(QMainWindow):
     def __init__(self, db: DatabaseQueries, chat_manager: ChatManager):
+        """ Initializes the main server window and dashboard page. """
+
         super().__init__()
 
         self.setWindowTitle("ShieldNOC Server")
@@ -56,11 +58,15 @@ class MainWindow(QMainWindow):
         self.setStyleSheet(SERVER_STYLE_SHEET)
 
     def resizeEvent(self, event):
+        """ Resizes the background layer with the main window. """
+
         super().resizeEvent(event)
         self.bg_layer.resize(self.size())
 
 
 def gui_main(db: DatabaseQueries, chat_manager: ChatManager):
+    """ Starts the ShieldNOC server GUI application. """
+
     app = QApplication(sys.argv)
     w = MainWindow(db, chat_manager)
     w.show()

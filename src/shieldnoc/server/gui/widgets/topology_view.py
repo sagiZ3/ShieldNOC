@@ -12,6 +12,8 @@ from shieldnoc.server.core.db.models import ClientInfo
 
 class TopologyView(QGraphicsView):
     def __init__(self, parent=None):
+        """ Initializes the topology view and server node graphics. """
+
         super().__init__(parent)
         
         self._server_image_path = ImagesPaths.TOPOLOGY_SERVER.value
@@ -52,6 +54,8 @@ class TopologyView(QGraphicsView):
         self._init_server()
 
     def _init_server(self):
+        """ Initializes the topology view and server node graphics. """
+
         if self._server_icon is not None:
             item = QGraphicsPixmapItem(self._server_icon.scaled(
                 72, 72, Qt.KeepAspectRatio, Qt.SmoothTransformation
@@ -70,6 +74,8 @@ class TopologyView(QGraphicsView):
         self._server_fallback_circle = circle
 
     def set_clients(self, clients: list[ClientInfo]):
+        """ Updates the topology view according to the current clients. """
+
         wanted = {c.vpn_ip for c in clients}
         existing = set(self._client_items.keys())
 
@@ -83,6 +89,8 @@ class TopologyView(QGraphicsView):
         self._reflow()
 
     def add_client(self, client: ClientInfo):
+        """ Adds a client node to the topology scene. """
+
         if client.vpn_ip in self._client_items:
             return
 
@@ -108,6 +116,8 @@ class TopologyView(QGraphicsView):
         self._reflow()
 
     def remove_client(self, key: str):
+        """ Removes a client node from the topology scene. """
+
         node = self._client_items.pop(key, None)
         if node is not None:
             self._scene.removeItem(node)
@@ -119,16 +129,22 @@ class TopologyView(QGraphicsView):
         self._reflow()
 
     def resizeEvent(self, event):
+        """ Refits the topology view after resizing. """
+
         super().resizeEvent(event)
         self._fit()
 
     def _fit(self):
+        """ Fits the topology scene inside the visible view. """
+
         rect = self._scene.itemsBoundingRect().adjusted(-60, -60, 60, 60)
         if rect.isNull():
             return
         self.fitInView(rect, Qt.KeepAspectRatio)
 
     def _reflow(self):
+        """ Rearranges client nodes around the server node. """
+
         n = len(self._client_items)
         if n == 0:
             self._fit()

@@ -23,6 +23,8 @@ from shieldnoc.server.core.db.models import ClientInfo
 
 class ServerDashboardPage(QWidget):
     def __init__(self, db: DatabaseQueries, chat_manager: ChatManager, parent=None):
+        """ Initializes the server dashboard page and all dashboard widgets. """
+
         super().__init__(parent)
 
         self.setLayoutDirection(Qt.LeftToRight)
@@ -168,6 +170,8 @@ class ServerDashboardPage(QWidget):
     # External API
     # ─────────────────────────────────────────────────────────────
     def set_logo_path(self, path: str):
+        """ Updates the displayed dashboard logo image. """
+
         pix = QPixmap(path)
         if pix.isNull():
             self.logo_label.setPixmap(QPixmap())
@@ -176,6 +180,8 @@ class ServerDashboardPage(QWidget):
         self.logo_label.setPixmap(scaled)
 
     def set_clients(self, clients: list[ClientInfo]):
+        """ Updates the displayed connected clients information. """
+
         self._clients = clients
 
         self.card_clients.value_label.setText(str(len(clients)))
@@ -186,6 +192,12 @@ class ServerDashboardPage(QWidget):
     # Helpers
     # ─────────────────────────────────────────────────────────────
     def _create_line_chart(self, y_title: str) -> QChartView:
+        """
+        Creates the network traffic line chart widget.
+
+        :return: Configured chart view widget.
+        """
+
         self.series = QLineSeries()
         pen = QPen(QColor("#52b6ff"))
         pen.setWidth(2)
@@ -231,11 +243,19 @@ class ServerDashboardPage(QWidget):
         return view
 
     def update_metrics(self):
+        """ Updates the displayed system metrics values. """
+
         self.card_cpu.value_label.setText(metrics.get_cpu_usage())
         self.card_ram.value_label.setText(metrics.get_ram_usage())
 
     @staticmethod
     def _metric_card_small(title: str, value: str) -> QWidget:
+        """
+        Creates a compact dashboard metric card widget.
+
+        :return: Configured metric card widget.
+        """
+
         card = CardFrame(title)
         v = QLabel(value)
         v.setObjectName("metricValue")
@@ -249,6 +269,8 @@ class ServerDashboardPage(QWidget):
     # Chat
     # ─────────────────────────────────────────────────────────────
     def _pull_to_chat(self):
+        """ Pulls queued chat messages into the chat view. """
+
         pull = True
         while pull:
             next_chat_msg = self.chat_manager.get_next_msg()
@@ -258,6 +280,8 @@ class ServerDashboardPage(QWidget):
                 pull = False
 
     def _send_chat_msg(self):
+        """ Sends the current server chat message. """
+
         msg = self.chat_input.text().strip()
         if not msg:
             return
@@ -266,10 +290,14 @@ class ServerDashboardPage(QWidget):
         self.chat_manager.handle_server_msg(msg)
 
     def _append_chat_msg(self, msg: str):
+        """ Appends a new message to the chat view. """
+
         self.chat_view.append(msg)
         self._scroll_chat_bottom()
 
     def _scroll_chat_bottom(self):
+        """ Scrolls the chat view to the latest message. """
+
         sb = self.chat_view.verticalScrollBar()
         sb.setValue(sb.maximum())
 
@@ -277,6 +305,8 @@ class ServerDashboardPage(QWidget):
     # Clients table
     # ─────────────────────────────────────────────────────────────
     def _update_clients_table_from_clients(self, clients: list[ClientInfo]):  # TODO: add arguments in the real func
+        """ Updates the clients table using the current clients list. """
+
         rows = []
         for client in clients:
             vpn_ip = client.vpn_ip
@@ -298,12 +328,16 @@ class ServerDashboardPage(QWidget):
     # tick - refresh
     # ─────────────────────────────────────────────────────────────
     def _start_tick_iterations(self):
+        """ Starts the periodic dashboard update timer. """
+
         self.tick_timer = QTimer(self)
         self.tick_timer.setInterval(1000)
         self.tick_timer.timeout.connect(self._tick)
         self.tick_timer.start()
 
     def _tick(self):
+        """ Updates dashboard charts, metrics, clients, and chat data. """
+
                            # TODO: add add_traffic_point(ts: int, packets_per_sec: int) (separate)
 
         self.update_metrics()

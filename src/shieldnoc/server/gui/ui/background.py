@@ -7,6 +7,8 @@ from shieldnoc.server.gui.enums import ImagesPaths
 
 class BackgroundLayer(QWidget):
     def __init__(self, parent=None):
+        """ Initializes the background layer and available background images. """
+
         super().__init__(parent)
         self.backgrounds = [
             ImagesPaths.BACKGROUND1.value,
@@ -22,6 +24,8 @@ class BackgroundLayer(QWidget):
         self.setAutoFillBackground(False)
 
     def paintEvent(self, event):
+        """ Paints the current background image with opacity. """
+
         painter = QPainter(self)
         painter.setOpacity(self.opacity)
 
@@ -38,6 +42,8 @@ class BackgroundLayer(QWidget):
         painter.end()
 
     def next_background(self):
+        """ Switches to the next available background image. """
+
         if not self.backgrounds:
             return
         self.index = (self.index + 1) % len(self.backgrounds)

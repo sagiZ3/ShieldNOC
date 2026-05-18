@@ -4,6 +4,8 @@ from shieldnoc.server.core.db.enums import ClientField, ServerField
 
 
 def init_schema(conn: sqlite3.Connection) -> None:
+    """ Initializes the ShieldNOC database schema and tables. """
+
     conn.execute(
         f"""
         CREATE TABLE IF NOT EXISTS {ClientField.TABLE_NAME.value} (

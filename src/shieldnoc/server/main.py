@@ -4,6 +4,8 @@ from shieldnoc.server.core.connection.connection_manager import ConnectionManage
 
 
 def main():
+    """ Starts the ShieldNOC server application. """
+
     db = DatabaseQueries()
     connection_manager = ConnectionManager(db)
     connection_manager.start_connection()
