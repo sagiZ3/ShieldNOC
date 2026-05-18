@@ -9,6 +9,12 @@ GREEN = "\033[92m"
 
 class ColorFormatter(logging.Formatter):
     def format(self, record):
+        """
+        Formats log messages with colors according to log level.
+
+        :return: Colored formatted log message.
+        """
+
         log_msg = super().format(record)
         if record.levelno == logging.ERROR:
             return RED + log_msg + RESET

@@ -50,8 +50,6 @@ def send_segment(my_socket: socket.socket, payload: str) -> None:
 
     Ensures all bytes of the segment (built from payload) are sent, retrying
     until done. Handles connection reset or unexpected errors gracefully.
-
-    :return: None
     """
 
     data = build_segment(payload)
