@@ -364,7 +364,7 @@ class DashboardPage(QWidget):
     # -----------------------------
     # Table updates
     # -----------------------------
-    def _update_connections(self):
+    def _update_connections(self):  # TODO: edit to real connections
         rows = []
         proto_choices = ["TCP", "UDP"]
         states_tcp = ["ESTABLISHED", "SYN_SENT", "CLOSE_WAIT", "TIME_WAIT"]

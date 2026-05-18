@@ -86,7 +86,7 @@ class VPNManager:
             return False, new_ip[1:]
 
         self.disconnect_vpn()
-        sleep(4)
+        sleep(3)
         self.connect_vpn(new_ip[1:])
         return True, ""
 

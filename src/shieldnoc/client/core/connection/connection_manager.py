@@ -143,7 +143,7 @@ class ConnectionManager(QObject):
                     logger.warning(f"Unexpected Error occurred while trying of empty the socket: {e} ")
 
         if is_ip_changed:
-            logger.warning(1111111)
+            logger.warning(1111111)  # TODO: remove
             self._conn_sock.close()
             self._handle_incoming_data()  # TODO: see if practical use
 
