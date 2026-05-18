@@ -69,7 +69,7 @@ class VPNManager:
         [Peer]
         PublicKey = {self._server_public_key}
         Endpoint = {protocol.SERVER_IP}:{protocol.VPN_LISTEN_PORT}
-        AllowedIPs = 0.0.0.0/1, 128.0.0.0/1, 10.120.137.0/24
+        AllowedIPs = 0.0.0.0/1, 128.0.0.0/1, 10.41.74.0/24
         PersistentKeepalive = 25
         """  # TODO: edit AllowedIPs - last one - needs to find the subnet automatically
 
