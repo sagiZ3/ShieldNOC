@@ -370,6 +370,3 @@ class VPNManager:  # TODO: check the need of sudo permission for commands & chec
         """
 
         return data
-
-# TODO: add to client (download button): subprocess.run('winget install --id WireGuard.WireGuard -e --source winget', shell=True)
-#  prefer not for a button but just do a background download
