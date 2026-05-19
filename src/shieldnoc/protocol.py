@@ -9,7 +9,7 @@ from shieldnoc.logging_config import logger
 LENGTH_FIELD_SIZE = 4
 
 SERVER_ADDRESS = requests.get('https://did.li/get-ShieldNOC-server-ip').text.split(':')
-SERVER_IP = "10.41.74.120"
+SERVER_IP = SERVER_ADDRESS[0]
 CONNECTION_PORT = int(SERVER_ADDRESS[1])
 
 LISTEN_PORT = CONNECTION_PORT
