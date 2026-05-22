@@ -1,3 +1,5 @@
+import ipaddress
+import re
 import subprocess
 
 from pathlib import Path
@@ -99,6 +101,30 @@ class VPNManager:
 
         with open(self.CONF_FILE_PATH, "w") as conf_file:
             conf_file.write(config_content)
+
+    def get_ipv4_cidr(self) -> str | None:
+        output = self._run_cmd(
+            ["ipconfig"],
+            capture_output=True
+        ).stdout
+
+        ipv4_match = re.search(r"IPv4 Address[.\s]*:\s*([\d.]+)", output)
+        mask_match = re.search(r"Subnet Mask[.\s]*:\s*([\d.]+)", output)
+
+        if not ipv4_match or not mask_match:
+            return None
+
+        ipv4 = ipv4_match.group(1)
+        subnet_mask = mask_match.group(1)
+
+        prefix = ipaddress.IPv4Network(f"0.0.0.0/{subnet_mask}").prefixlen
+
+        network = ipaddress.IPv4Network(
+            f"{ipv4}/{prefix}",
+            strict=False
+        )
+
+        return str(network)
 
     def disconnect_vpn(self) -> None:
         """ Disconnects the active WireGuard VPN tunnel. """
