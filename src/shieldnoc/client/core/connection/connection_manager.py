@@ -154,7 +154,7 @@ class ConnectionManager(QObject):
         if is_ip_changed:
             logger.warning(1111111)  # TODO: remove
             self._conn_sock.close()
-            self._handle_incoming_data()  # TODO: see if practical use
+            self._handle_incoming_data()
 
         else:
             self._conn_sock.close()
