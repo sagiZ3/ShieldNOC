@@ -1,4 +1,3 @@
-# TODO: add exit when client closes the dashboard
 import json
 import socket
 
