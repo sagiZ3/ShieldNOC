@@ -3,6 +3,7 @@ import json
 
 from threading import Thread
 from select import select
+from time import sleep
 
 import shieldnoc.protocol as protocol
 
@@ -146,7 +147,7 @@ class ConnectionManager:
                 if prefix == protocol.MessageType.CHAT.value:
                     self.chat_manager.handle_client_msg(client_ip, content)
                 elif prefix == protocol.MessageType.VPN.value:
-                    is_ip_changed, response = self._vpn_manager.change_peer_ip(client_ip, content)
+                    is_ip_changed, response = self._vpn_manager.handle_peer_ip_change(content)
                     formatted_response = f"{str(int(is_ip_changed))}{response}"
                     self.send_vpn_data(client_sock, formatted_response)
 
@@ -177,14 +178,16 @@ class ConnectionManager:
 
         # broken | Event raised
         self._clients.pop(client_sock)
+        client_sock.close()
+        sleep(2)  # let client previous ip interface to response and close properly
 
         if is_ip_changed:
+            self._vpn_manager.change_peer_ip(client_ip, response)
             self.chat_manager.handle_system_msg(f"~{client_ip} changed his IP to {response}~")
         else:
             self._vpn_manager.remove_peer(client_ip)
             self.chat_manager.handle_system_msg(f"~{client_ip} left the ShieldNOC System~")
 
-        client_sock.close()
         logger.info(f"> ShieldNOC System End Session With Client {client_addr} <")
 
     def broadcast_msg(self, msg) -> None:
