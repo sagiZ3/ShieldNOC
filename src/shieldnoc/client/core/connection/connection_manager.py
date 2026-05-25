@@ -150,13 +150,13 @@ class ConnectionManager(QObject):
                 except Exception as e:
                     logger.warning(f"Unexpected Error occurred while trying of empty the socket: {e} ")
 
+        # broken | Event raised
         if is_ip_changed:
             logger.warning(1111111)  # TODO: remove
             self._conn_sock.close()
             self._handle_incoming_data()  # TODO: see if practical use
 
         else:
-            # broken | Event raised
             self._conn_sock.close()
             self._vpn_manager.disconnect_vpn()
             logger.info(">>> ShieldNOC's Session Ended - Connection Closed <<<")
