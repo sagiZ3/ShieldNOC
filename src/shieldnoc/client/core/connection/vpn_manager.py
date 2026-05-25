@@ -106,7 +106,7 @@ class VPNManager:
         output = self._run_cmd(
             ["ipconfig"],
             capture_output=True
-        ).stdout
+        )
 
         ipv4_match = re.search(r"IPv4 Address[.\s]*:\s*([\d.]+)", output)
         mask_match = re.search(r"Subnet Mask[.\s]*:\s*([\d.]+)", output)
