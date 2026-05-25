@@ -10,7 +10,7 @@ from shieldnoc.server.core.db.models import ServerRecord, ClientRecord
 from shieldnoc.server.core.db.queries import DatabaseQueries
 
 
-class VPNManager:  # TODO: check the need of sudo permission for commands & checking files in the current directory
+class VPNManager:
     WG_INTERFACE = "shieldnoc"
     CONF_FILE_PATH = "./" + WG_INTERFACE + ".conf"
     VPN_IP_PREFIX = "10.33.33"
