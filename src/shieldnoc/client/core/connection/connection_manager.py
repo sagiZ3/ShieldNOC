@@ -168,7 +168,7 @@ class ConnectionManager(QObject):
 
     def request_new_vpn_ip(self, requested_ip: str) -> None:
         """ Requests a new VPN IP address from the server. """
-
+        logger.info(f"Requesting new VPN IP: {requested_ip}")
         self._send_vpn_data(self._conn_sock, requested_ip)
 
     def handle_vpn_ip_change(self, code_and_response: str) -> tuple[bool, str]:
