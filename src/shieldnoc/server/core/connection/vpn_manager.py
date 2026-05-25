@@ -254,7 +254,7 @@ class VPNManager:  # TODO: check the need of sudo permission for commands & chec
         client_public_key = self._db.get_client_by_vpn_ip(client_vpn_ip)[ClientField.PUBLIC_KEY.value]
 
         if not self.is_valid_vpn_ip(requested_ip):
-            return False, "IP is not valid!\nvalid host octet range: 2-254"  # TODO: remember to integrate in client side as pop message
+            return False, "IP is not valid!\nvalid host octet range: 2-254"
 
         if self._db.is_vpn_ip_in_current_use(requested_ip):
             return False, "This IP is currently in use!\nPlease select another IP."
