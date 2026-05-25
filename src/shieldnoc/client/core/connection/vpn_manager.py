@@ -97,7 +97,7 @@ class VPNManager:
         Endpoint = {protocol.SERVER_IP}:{protocol.VPN_LISTEN_PORT}
         AllowedIPs = 0.0.0.0/1, 128.0.0.0/1, {self.get_ipv4_cidrs()}
         PersistentKeepalive = 25
-        """  # TODO: edit AllowedIPs - last one - needs to find the subnet automatically
+        """
 
         with open(self.CONF_FILE_PATH, "w") as conf_file:
             conf_file.write(config_content)
