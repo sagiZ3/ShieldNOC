@@ -123,7 +123,7 @@ class ConnectionManager(QObject):
                 if prefix == protocol.MessageType.CHAT.value:
                     self.chat_manager.handle_msg(content)
                 elif prefix == protocol.MessageType.VPN.value:
-                    is_ip_changed, result = self.handle_vpn_ip_change(content)  # TODO: integrates with GUI
+                    is_ip_changed, result = self.handle_vpn_ip_change(content)  # TODO: integrates with GUI (client side)
                     self.vpn_ip_change.emit(is_ip_changed, result)
                     if is_ip_changed:
                         break
@@ -151,7 +151,6 @@ class ConnectionManager(QObject):
 
         # broken | Event raised
         if is_ip_changed:
-            logger.warning(1111111)  # TODO: remove
             self._conn_sock.close()
             self._handle_incoming_data()
 
