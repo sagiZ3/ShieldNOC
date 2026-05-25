@@ -95,36 +95,31 @@ class VPNManager:
         [Peer]
         PublicKey = {self._server_public_key}
         Endpoint = {protocol.SERVER_IP}:{protocol.VPN_LISTEN_PORT}
-        AllowedIPs = 0.0.0.0/1, 128.0.0.0/1, 10.41.74.0/24
+        AllowedIPs = 0.0.0.0/1, 128.0.0.0/1, {self.get_ipv4_cidrs()}
         PersistentKeepalive = 25
         """  # TODO: edit AllowedIPs - last one - needs to find the subnet automatically
 
         with open(self.CONF_FILE_PATH, "w") as conf_file:
             conf_file.write(config_content)
 
-    def get_ipv4_cidr(self) -> str | None:
-        output = self._run_cmd(
-            ["ipconfig"],
-            capture_output=True
+    def get_ipv4_cidrs(self) -> str | None:
+        output = self._run_cmd(["ipconfig"], capture_output=True)
+
+        pattern = (
+            r"IPv4 Address[.\s]*:\s*([\d.]+).*?"
+            r"Subnet Mask[.\s]*:\s*([\d.]+)"
         )
 
-        ipv4_match = re.search(r"IPv4 Address[.\s]*:\s*([\d.]+)", output)
-        mask_match = re.search(r"Subnet Mask[.\s]*:\s*([\d.]+)", output)
+        cidrs = []
+        for ipv4, subnet_mask in re.findall(pattern, output, re.DOTALL):
+            prefix = ipaddress.IPv4Network(f"0.0.0.0/{subnet_mask}").prefixlen
+            network = ipaddress.IPv4Network(f"{ipv4}/{prefix}", strict=False)
+            cidrs.append(str(network))
 
-        if not ipv4_match or not mask_match:
+        if not cidrs:
             return None
 
-        ipv4 = ipv4_match.group(1)
-        subnet_mask = mask_match.group(1)
-
-        prefix = ipaddress.IPv4Network(f"0.0.0.0/{subnet_mask}").prefixlen
-
-        network = ipaddress.IPv4Network(
-            f"{ipv4}/{prefix}",
-            strict=False
-        )
-
-        return str(network)
+        return ", ".join(cidrs)
 
     def disconnect_vpn(self) -> None:
         """ Disconnects the active WireGuard VPN tunnel. """
