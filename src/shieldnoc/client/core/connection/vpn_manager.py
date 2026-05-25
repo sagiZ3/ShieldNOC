@@ -147,7 +147,9 @@ class VPNManager:
         """ Ensures that WireGuard is installed on the system. """
 
         if not self.is_wg_installed():
+            logger.info("Installing WireGuard...")
             self._run_cmd(["winget", "install", "--id", "WireGuard.WireGuard", "-e", "--source", "winget"])
+            logger.info("WireGuard installed successfully")
 
     def is_wg_installed(self) -> bool:
         """
