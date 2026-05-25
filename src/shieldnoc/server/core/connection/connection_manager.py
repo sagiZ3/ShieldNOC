@@ -177,11 +177,11 @@ class ConnectionManager:
 
         # broken | Event raised
         self._clients.pop(client_sock)
-        self._vpn_manager.remove_peer(client_ip)
 
         if is_ip_changed:
             self.chat_manager.handle_system_msg(f"~{client_ip} changed his IP to {response}~")
         else:
+            self._vpn_manager.remove_peer(client_ip)
             self.chat_manager.handle_system_msg(f"~{client_ip} left the ShieldNOC System~")
 
         client_sock.close()
