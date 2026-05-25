@@ -127,6 +127,8 @@ class ConnectionManager:
         logger.info(f"{client_addr} has connected to ShieldNOC System")
         self.chat_manager.handle_system_msg(f"~{client_ip} joined the ShieldNOC System~")
 
+        is_ip_changed = False
+
         while not self._stop_connection_event.is_set():
             try:
                 valid_payload, client_payload = protocol.get_payload(client_sock)
@@ -145,11 +147,11 @@ class ConnectionManager:
                     self.chat_manager.handle_client_msg(client_ip, content)
                 elif prefix == protocol.MessageType.VPN.value:
                     is_ip_changed, response = self._vpn_manager.change_peer_ip(client_ip, content)
-                    response = f"{str(int(is_ip_changed))}{response}"
-                    self.send_vpn_data(client_sock, response)
+                    formatted_response = f"{str(int(is_ip_changed))}{response}"
+                    self.send_vpn_data(client_sock, formatted_response)
 
-                    # if is_ip_changed:  # TODO: uncomment after handle problem client side
-                    #     break
+                    if is_ip_changed:
+                        break
                 else:
                     logger.warning("Got a valid client payload with invalid prefix")
 
@@ -177,7 +179,10 @@ class ConnectionManager:
         self._clients.pop(client_sock)
         self._vpn_manager.remove_peer(client_ip)
 
-        self.chat_manager.handle_system_msg(f"~{client_ip} left the ShieldNOC System~")
+        if is_ip_changed:
+            self.chat_manager.handle_system_msg(f"~{client_ip} changed his IP to {response}~")
+        else:
+            self.chat_manager.handle_system_msg(f"~{client_ip} left the ShieldNOC System~")
 
         client_sock.close()
         logger.info(f"> ShieldNOC System End Session With Client {client_addr} <")
