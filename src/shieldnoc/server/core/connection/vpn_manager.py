@@ -244,14 +244,12 @@ class VPNManager:
 
         return self._public_key, client_vpn_ip
 
-    def change_peer_ip(self, client_vpn_ip: str, requested_ip: str) -> tuple[bool, str]:
+    def handle_peer_ip_change(self, requested_ip: str) -> tuple[bool, str]:
         """
-        Changes the VPN IP address of an existing peer.
+        Validates a requested VPN IP address change.
 
-        :return: Tuple containing status and operation result.
+        :return: Tuple containing validation status and response message.
         """
-
-        client_public_key = self._db.get_client_by_vpn_ip(client_vpn_ip)[ClientField.PUBLIC_KEY.value]
 
         if not self.is_valid_vpn_ip(requested_ip):
             return False, "IP is not valid!\nvalid host octet range: 2-254"
@@ -259,13 +257,19 @@ class VPNManager:
         if self._db.is_vpn_ip_in_current_use(requested_ip):
             return False, "This IP is currently in use!\nPlease select another IP."
 
-        self._run_terminal_cmd(["wg", "set", self.WG_INTERFACE, "peer", client_public_key,
-                                "allowed-ips", f"{requested_ip}/32"])
+        return True, requested_ip
+
+    def change_peer_ip(self, client_vpn_ip, new_vpn_ip: str) -> None:
+        """ Changes the VPN IP address of an existing WireGuard peer. """
+
+        client_public_key = self._db.get_client_by_vpn_ip(client_vpn_ip)[ClientField.PUBLIC_KEY.value]
 
         self._db.update_client_fields_by_vpn_ip(client_vpn_ip, {
-            ClientField.VPN_IP: requested_ip
+            ClientField.VPN_IP: new_vpn_ip
         })
-        return True, requested_ip
+
+        self._run_terminal_cmd(["wg", "set", self.WG_INTERFACE, "peer", client_public_key,
+                                "allowed-ips", f"{new_vpn_ip}/32"])
 
     def remove_peer(self, client_vpn_ip: str) -> None:  # TODO: use also when server end session
         """ Removes a WireGuard peer from the VPN server. """
