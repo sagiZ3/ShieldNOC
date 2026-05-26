@@ -128,20 +128,23 @@ class VPNManager:
             f'Start-Process wireguard -ArgumentList "/uninstalltunnelservice {self.WG_INTERFACE}" -Verb RunAs'
         ])
 
-    def change_ip(self, new_ip: str) -> tuple[bool, str]:
+    def change_ip(self, code_and_response: str) -> tuple[bool, str]:
         """
         Changes the VPN IP address according to the server response.
 
         :return: Tuple containing status and error message.
         """
 
-        if new_ip[0] == str(int(False)):
+        is_ip_changed = code_and_response[0]
+        new_ip = code_and_response[1:]
+
+        if is_ip_changed == str(int(False)):
             return False, new_ip[1:]
 
         self.disconnect_vpn()
         sleep(3)
         self.connect_vpn(new_ip[1:])
-        return True, ""
+        return True, new_ip[1:]
 
     def ensure_wg_installed(self) -> None:
         """ Ensures that WireGuard is installed on the system. """
