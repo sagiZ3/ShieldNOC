@@ -1,3 +1,5 @@
+import psutil
+
 def get_cpu_usage():
     """
     Retrieves the current CPU usage.
@@ -5,7 +7,7 @@ def get_cpu_usage():
     :return: Current CPU usage value.
     """
 
-    return "1"
+    return psutil.cpu_percent()
 
 def get_ram_usage():
     """
@@ -14,7 +16,7 @@ def get_ram_usage():
     :return: Current RAM usage value.
     """
 
-    return "1"
+    return psutil.virtual_memory().percent
 
 def get_packets_per_second():
     """
