@@ -12,7 +12,7 @@ def init_schema(conn: sqlite3.Connection) -> None:
             {ClientField.PUBLIC_KEY.value} TEXT PRIMARY KEY,
             {ClientField.VPN_IP.value} TEXT NULL UNIQUE,
             {ClientField.MAC.value} TEXT DEFAULT '',
-            {ClientField.HOST.value} TEXT DEFAULT '',
+            {ClientField.OS.value} TEXT DEFAULT '',
             {ClientField.HOSTNAME.value} TEXT DEFAULT '',
             {ClientField.LAST_SEEN.value} TEXT DEFAULT CURRENT_TIMESTAMP,
             {ClientField.STATUS.value} TEXT DEFAULT '',

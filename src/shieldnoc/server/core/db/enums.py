@@ -5,7 +5,7 @@ class ClientField(Enum):
     PUBLIC_KEY = "public_key"
     VPN_IP = "vpn_ip"
     MAC = "mac"
-    HOST = "host"
+    OS = "os"
     HOSTNAME = "hostname"
     LAST_SEEN = "last_seen"
     STATUS = "status"

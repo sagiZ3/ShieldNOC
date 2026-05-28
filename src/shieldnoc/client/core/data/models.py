@@ -4,7 +4,7 @@ from dataclasses import dataclass
 class ClientInfo:
     vpn_ip: str
     mac: str
-    host: str
+    os: str
     hostname: str
     last_seen: str
     status: str

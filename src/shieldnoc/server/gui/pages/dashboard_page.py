@@ -142,7 +142,7 @@ class ServerDashboardPage(QWidget):
         self.clients_card = CardFrame("Clients")
         self.clients_table = QTableWidget(0, 6)
         self.clients_table.setLayoutDirection(Qt.LeftToRight)
-        self.clients_table.setHorizontalHeaderLabels(["VPN IP", "MAC", "Host", "Hostname", "Last Seen", "Status"])
+        self.clients_table.setHorizontalHeaderLabels(["VPN IP", "MAC", "OS", "Hostname", "Last Seen", "Status"])
         self.clients_table.horizontalHeader().setStretchLastSection(True)
         self.clients_table.horizontalHeader().setSectionResizeMode(QHeaderView.ResizeToContents)
 
@@ -337,8 +337,7 @@ class ServerDashboardPage(QWidget):
 
     def _tick(self):
         """ Updates dashboard charts, metrics, clients, and chat data. """
-
-                           # TODO: add add_traffic_point(ts: int, packets_per_sec: int) (separate)
+        # TODO: add add_traffic_point(ts: int, packets_per_sec: int) (separate)
 
         self.update_metrics()
 
@@ -359,7 +358,7 @@ class ServerDashboardPage(QWidget):
         self.set_clients([ClientInfo(
             vpn_ip=client[ClientField.VPN_IP.value],
             mac=client[ClientField.MAC.value],
-            host=client[ClientField.HOST.value],
+            os=client[ClientField.OS.value],
             hostname=client[ClientField.HOSTNAME.value],
             last_seen=client[ClientField.LAST_SEEN.value],
             status=client[ClientField.STATUS.value]

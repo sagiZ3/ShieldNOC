@@ -52,7 +52,7 @@ class ConnectionManager(QObject):
         initial_data = {
             ClientField.PUBLIC_KEY: self._vpn_manager.public_key,
             ClientField.MAC: system_metrics.get_mac_addr(),
-            ClientField.HOST: system_metrics.get_host(),
+            ClientField.OS: system_metrics.get_os(),
             ClientField.HOSTNAME: system_metrics.get_hostname()
         }
 

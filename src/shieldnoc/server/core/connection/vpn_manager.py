@@ -217,7 +217,7 @@ class VPNManager:
                 {
                     ClientField.VPN_IP: client_vpn_ip,
                     ClientField.MAC: client_initial_data[ClientField.MAC],
-                    ClientField.HOST: client_initial_data[ClientField.HOST],
+                    ClientField.OS: client_initial_data[ClientField.OS],
                     ClientField.HOSTNAME: client_initial_data[ClientField.HOSTNAME],
                     ClientField.STATUS: "CONNECTED",
                     ClientField.IP_PREF: client_vpn_ip
@@ -232,7 +232,7 @@ class VPNManager:
             public_key=client_public_key,
             vpn_ip=client_vpn_ip,
             mac=client_initial_data[ClientField.MAC],
-            host=client_initial_data[ClientField.HOST],
+            os=client_initial_data[ClientField.OS],
             hostname=client_initial_data[ClientField.HOSTNAME],
             status="CONNECTED",
             ip_preference=client_vpn_ip

@@ -40,7 +40,7 @@ class DatabaseQueries:
                 {ClientField.PUBLIC_KEY.value},
                 {ClientField.VPN_IP.value},
                 {ClientField.MAC.value},
-                {ClientField.HOST.value},
+                {ClientField.OS.value},
                 {ClientField.HOSTNAME.value},
                 {ClientField.STATUS.value},
                 {ClientField.IP_PREF.value}
@@ -51,7 +51,7 @@ class DatabaseQueries:
                 client.public_key,
                 client.vpn_ip,
                 client.mac,
-                client.host,
+                client.os,
                 client.hostname,
                 client.status,
                 client.ip_preference

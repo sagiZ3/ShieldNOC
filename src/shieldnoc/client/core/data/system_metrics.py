@@ -12,7 +12,7 @@ def get_mac_addr() -> str:  # TODO: edit to make a real function use
 
     return "B8:1E:A4:D2:3D:51"
 
-def get_host() -> str:  # TODO: edit to make a real function use
+def get_os() -> str:  # TODO: edit to make a real function use
     """
     Retrieves the operating system name.
 
