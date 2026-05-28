@@ -136,15 +136,15 @@ class VPNManager:
         """
 
         is_ip_changed = code_and_response[0]
-        new_ip = code_and_response[1:]
+        response = code_and_response[1:]
 
         if is_ip_changed == str(int(False)):
-            return False, new_ip
+            return False, response
 
         self.disconnect_vpn()
         sleep(1)
-        self.connect_vpn(new_ip)
-        return True, new_ip
+        self.connect_vpn(response)
+        return True, response
 
     def ensure_wg_installed(self) -> None:
         """ Ensures that WireGuard is installed on the system. """
