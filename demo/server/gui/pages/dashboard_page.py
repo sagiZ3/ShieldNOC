@@ -100,7 +100,6 @@ class ServerDashboardPage(QWidget):
         self.chat_card.content_layout.addWidget(self.chat_view, 1)
         self.chat_card.content_layout.addWidget(chat_input_row)
 
-        # ✅ חצי-חצי גובה
         left_col.addWidget(self.traffic_card, 1)
         left_col.addWidget(self.chat_card, 1)
 
@@ -134,11 +133,10 @@ class ServerDashboardPage(QWidget):
 
         right_col.addLayout(topo_logo_row)
 
-        # ✅ טבלת Clients נמצאת רק מתחת ל-Topology+Logo, ברוחב של העמודה הימנית
         self.clients_card = CardFrame("Clients")
         self.clients_table = QTableWidget(0, 5)
         self.clients_table.setLayoutDirection(Qt.LeftToRight)
-        self.clients_table.setHorizontalHeaderLabels(["VPN IP", "MAC", "Host", "Last Seen", "Status"])
+        self.clients_table.setHorizontalHeaderLabels([ClientInfo.vpn_ip, "MAC", "Host", "Last Seen", "Status"])
         self.clients_table.horizontalHeader().setStretchLastSection(True)
         self.clients_table.horizontalHeader().setSectionResizeMode(QHeaderView.ResizeToContents)
 
@@ -154,7 +152,6 @@ class ServerDashboardPage(QWidget):
         right_wrap.setLayout(right_col)
         right_wrap.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
 
-        # ✅ חלוקת רוחב: שמאל (Traffic+Chat), ימין (Topology+Logo+Clients table)
         body.addWidget(left_wrap, 2)
         body.addWidget(right_wrap, 2)
 
