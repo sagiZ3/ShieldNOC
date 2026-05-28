@@ -311,11 +311,11 @@ class ServerDashboardPage(QWidget):
         for client in clients:
             vpn_ip = client.vpn_ip
             mac = client.mac
-            host = client.host
+            os = client.os
             hostname = client.hostname
             last = client.last_seen  # TODO: deside what to do with that parameter
             status = client.status
-            rows.append((vpn_ip, mac, host, hostname, last, status))
+            rows.append((vpn_ip, mac, os, hostname, last, status))
 
         self.clients_table.setRowCount(len(rows))
         for r, row in enumerate(rows):
