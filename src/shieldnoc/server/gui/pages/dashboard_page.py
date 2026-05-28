@@ -304,7 +304,7 @@ class ServerDashboardPage(QWidget):
     # ─────────────────────────────────────────────────────────────
     # Clients table
     # ─────────────────────────────────────────────────────────────
-    def _update_clients_table_from_clients(self, clients: list[ClientInfo]):  # TODO: add arguments in the real func
+    def _update_clients_table_from_clients(self, clients: list[ClientInfo]):
         """ Updates the clients table using the current clients list. """
 
         rows = []
