@@ -101,7 +101,7 @@ class ConnectionManager(QObject):
         self._conn_sock.settimeout(1.0)
         self._conn_sock.connect((protocol.SERVER_IP, protocol.CONNECTION_PORT))
 
-        logger.info("===== Chat Connection Is Up and Running =====")
+        logger.info("===== ShieldNOC Connection Is Up and Running =====")
         self.connect_process_end.emit(True)
 
         is_ip_changed = False
