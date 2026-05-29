@@ -125,6 +125,7 @@ class VPNManager:
 
         self._disable_forwarding_and_nat_rules()
         self._disable_ip_forwarding()
+        self.remove_all_connected_peers()
         self._stop_wg_interface()
 
         is_ip_forwarding_disabled = not self.is_ip_forwarding_enabled()
@@ -271,7 +272,7 @@ class VPNManager:
         self._run_terminal_cmd(["wg", "set", self.WG_INTERFACE, "peer", client_public_key,
                                 "allowed-ips", f"{new_vpn_ip}/32"])
 
-    def remove_peer(self, client_vpn_ip: str) -> None:  # TODO: use also when server end session
+    def remove_peer(self, client_vpn_ip: str) -> None:
         """ Removes a WireGuard peer from the VPN server. """
 
         client_public_key = self._db.get_client_by_vpn_ip(client_vpn_ip)[ClientField.PUBLIC_KEY.value]
@@ -283,6 +284,11 @@ class VPNManager:
                 ClientField.STATUS: "DISCONNECTED",
                 ClientField.IP_PREF: client_vpn_ip
         })
+
+    def remove_all_connected_peers(self) -> None:
+        for client in self._db.get_all_connected_clients():
+            self._run_terminal_cmd(["wg", "set", self.WG_INTERFACE, "peer", client[ClientField.PUBLIC_KEY.value], "remove"])
+
 
     def _get_random_vpn_ip(self) -> str:
         """
