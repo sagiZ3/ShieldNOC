@@ -184,7 +184,7 @@ class ConnectionManager:
         if is_ip_changed:
             self._vpn_manager.change_peer_ip(client_ip, response)
             self.chat_manager.handle_system_msg(f"~{client_ip} changed his IP to {response}~")
-        else:
+        elif not self._stop_connection_event.is_set():
             self._vpn_manager.remove_peer(client_ip)
             self.chat_manager.handle_system_msg(f"~{client_ip} left the ShieldNOC System~")
 
