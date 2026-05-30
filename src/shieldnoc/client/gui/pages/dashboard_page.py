@@ -423,7 +423,7 @@ class DashboardPage(QWidget):
     def _tick(self):
         """ Updates dashboard statistics, charts, and chat data. """
 
-        new_packet_value = random.randint(10, 90) if self._connected else random.randint(0, 5)
+        new_packet_value = random.randint(10, 90)
 
         if self._time <= 60:
             if not self._chart_animation_enabled:
