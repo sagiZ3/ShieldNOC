@@ -109,9 +109,9 @@ class ConnectionManager:
                 self.send_vpn_data(client_sock, data)
 
             else:
-                logger.error(f"Error with sending the content: {client_payload}")
                 if client_payload in (ConnectionResetError.__name__, ConnectionAbortedError.__name__):
                     return
+                logger.error(f"Error with sending the content: {client_payload}")
 
         except Exception as e:
             logger.error(f"Initial connection failed: {e}")
