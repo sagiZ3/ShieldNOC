@@ -84,6 +84,7 @@ class ConnectionManager(QObject):
             else:
                 if server_payload in (ConnectionResetError.__name__, ConnectionAbortedError.__name__):
                     return
+
                 logger.error(f"Error with accepting the content: {server_payload}")
 
         except Exception as e:
@@ -133,6 +134,7 @@ class ConnectionManager(QObject):
             else:
                 if server_payload in (ConnectionResetError.__name__, ConnectionAbortedError.__name__):
                     break
+
                 logger.error(f"Error with accepting the content: {server_payload}")
 
                 try:
