@@ -22,7 +22,7 @@ class DashboardPage(QWidget):
 
         # State
         self._connected = True
-        self._vpn_ip = "10.33.33.100"  # TODO: edit
+        self._vpn_ip = ""
         self._connected_users = 1
 
         self._time = 0
