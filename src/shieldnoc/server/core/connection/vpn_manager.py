@@ -272,11 +272,10 @@ class VPNManager:
         self._run_terminal_cmd(["wg", "set", self.WG_INTERFACE, "peer", client_public_key,
                                 "allowed-ips", f"{new_vpn_ip}/32"])
 
-    def remove_peer(self, client_vpn_ip=None, client_public_key=None) -> None:
+    def remove_peer(self, client_vpn_ip) -> None:
         """ Removes a WireGuard peer from the VPN server. """
 
-        if not client_public_key:
-            client_public_key = self._db.get_client_by_vpn_ip(client_vpn_ip)[ClientField.PUBLIC_KEY.value]
+        client_public_key = self._db.get_client_by_vpn_ip(client_vpn_ip)[ClientField.PUBLIC_KEY.value]
 
         self._run_terminal_cmd(["wg", "set", self.WG_INTERFACE, "peer", client_public_key, "remove"])
 
@@ -289,7 +288,7 @@ class VPNManager:
 
     def remove_all_connected_peers(self) -> None:
         for client in self._db.get_all_connected_clients():
-            self.remove_peer(client_public_key=client[ClientField.PUBLIC_KEY.value])
+            self.remove_peer(client[ClientField.VPN_IP.value])
 
     def _get_random_vpn_ip(self) -> str:
         """
