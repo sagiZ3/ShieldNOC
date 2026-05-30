@@ -82,6 +82,17 @@ class VPNManager:
             f'Start-Process wireguard -ArgumentList "/installtunnelservice {conf_path}" -Verb RunAs'
         ])
 
+    def is_vpn_up(self) -> bool:
+        """
+        Checks if the VPN tunnel is up.
+
+        :return: True if VPN tunnel is up, False otherwise.
+        """
+
+        if self._run_cmd(["wg", "show"], capture_output=True):
+            return True
+        return False
+
     def _create_config(self, assigned_vpn_ip: str, server_public_key=None) -> None:
         """ Creates the WireGuard configuration file for the VPN tunnel. """
 
