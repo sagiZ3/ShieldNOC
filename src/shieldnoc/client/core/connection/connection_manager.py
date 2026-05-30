@@ -72,7 +72,7 @@ class ConnectionManager(QObject):
                     logger.error("Problem with accepting the server's initial connection data")
                     return
 
-                decrypted_content: dict = self._decrypt_data(json.loads(server_payload[1:]))
+                decrypted_content: dict = json.loads(self._decrypt_data(server_payload[1:]))
                 server_public_key = decrypted_content["server_public_key"]
                 assigned_vpn_ip = decrypted_content["assigned_vpn_ip"]
 
