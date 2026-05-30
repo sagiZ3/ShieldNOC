@@ -171,6 +171,7 @@ class ConnectPage(QWidget):
         """ Handles the VPN IP change response from the server. """
 
         if is_ip_changed:
+            self._set_connect_status("מתחבר...", "connectStatusConnecting")
             self.connecting_requested.emit("connecting")
             self.vpn_ip_changed.emit(response)  # gui display dashboard change
         else:
