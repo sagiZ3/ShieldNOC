@@ -33,32 +33,32 @@ class ChatManager:
         self._add_msg_to_queue(wrapped)
         self._broadcast(wrapped)
 
-    def _wrap_system_msg(self, msg) -> str:
+    def _wrap_system_msg(self, msg: str) -> str:
         """
         Wraps a system message with timestamp and HTML styling.
 
         :return: Formatted system message.
         """
 
-        return f"[{self._timestamp()}] <span style='color:#00e5ff'>System:</span> {msg}"
+        return f"<span style='color:#00e5ff'>[{self._timestamp()}] System:</span> {msg}"
 
-    def _wrap_server_manager_msg(self, msg) -> str:
+    def _wrap_server_manager_msg(self, msg: str) -> str:
         """
         Wraps a server manager message with timestamp and HTML styling.
 
         :return: Formatted server manager message.
         """
 
-        return f"[{self._timestamp()}] <span style='color:#ffe100'>Server Manager:</span> {msg}"
+        return f"<span style='color:#ffe100'>[{self._timestamp()}] Server Manager:</span> {msg}"
 
-    def _wrap_client_msg(self, msg, ip: str) -> str:
+    def _wrap_client_msg(self, msg: str, ip: str) -> str:
         """
         Wraps a client message with timestamp and client IP.
 
         :return: Formatted client message.
         """
 
-        return f"[{self._timestamp()}] {ip}: {msg}"
+        return f"<span style='color:#66f2ac'>[{self._timestamp()}] {ip}:</span> {msg}"
 
     def _add_msg_to_queue(self, msg: str):
         """ Adds a new message to the queue. """
