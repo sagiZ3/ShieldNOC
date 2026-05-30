@@ -17,6 +17,7 @@ from shieldnoc import protocol
 class ConnectPage(QWidget):
     connect_requested = Signal()
     vpn_ip_changed = Signal(str)
+    connecting_requested = Signal(str)
     bg_change_requested = Signal()
 
     def __init__(self, connection_manager: ConnectionManager,parent=None):
@@ -170,6 +171,7 @@ class ConnectPage(QWidget):
         """ Handles the VPN IP change response from the server. """
 
         if is_ip_changed:
+            self.connecting_requested.emit("connecting")
             self.vpn_ip_changed.emit(response)  # gui display dashboard change
         else:
             self._pop_alert(response)

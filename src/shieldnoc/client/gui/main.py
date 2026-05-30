@@ -79,6 +79,7 @@ class MainWindow(QMainWindow):
         self.page_settings.connect_requested.connect(self._handle_connect)
         self.connection_manager.connect_process_end.connect(self._after_connect)
         self.page_settings.vpn_ip_changed.connect(self.page_dash.set_vpn_ip)
+        self.page_settings.connecting_requested.connect(self.page_dash.set_connection_state)
         self.page_settings.bg_change_requested.connect(self.bg_layer.next_background)
 
         # Logo path placeholder

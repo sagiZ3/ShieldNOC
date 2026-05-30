@@ -227,7 +227,7 @@ class DashboardPage(QWidget):
     # -----------------------------
     # Public API (unchanged)
     # -----------------------------
-    def set_connection_state(self, state: str):  # TODO: use when changing the VPN IP
+    def set_connection_state(self, state: str):
         """ Updates the dashboard connection state indicators. """
 
         state = state.lower().strip()
