@@ -132,7 +132,7 @@ class ConnectPage(QWidget):
         self.port_edit.setEnabled(False)
 
         self._set_connect_status("מתחבר...", "connectStatusConnecting")
-        self.connect_requested.emit(self.connection_manager.get_vpn_ip())
+        self.connect_requested.emit()
 
     def _pop_alert(self, alert):
         """ Displays a temporary alert message on the screen. """

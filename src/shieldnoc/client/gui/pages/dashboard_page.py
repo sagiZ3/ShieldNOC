@@ -57,7 +57,7 @@ class DashboardPage(QWidget):
         header_layout.addWidget(title)
 
         # Create the three metric cards (no fixed width, they will stretch)
-        self.card_status = self._metric_card("Connection Status", "Connected", min_height=80)
+        self.card_status = self._metric_card("Connection Status", "Disconnected", min_height=80)
         self.card_vpn_ip = self._metric_card("Assigned VPN IP", self._vpn_ip, ltr=True, min_height=80)
         self.card_users = self._metric_card("Connected VPN Users", str(self._connected_users), min_height=80)
 
@@ -72,8 +72,8 @@ class DashboardPage(QWidget):
 
         header_layout.addStretch(1)
 
-        self.conn_badge = QLabel("Connected")
-        self.conn_badge.setObjectName("badgeConnected")
+        self.conn_badge = QLabel("Disconnected")
+        self.conn_badge.setObjectName("badgeDisconnected")
         header_layout.addWidget(self.conn_badge)
 
         container_layout.addLayout(header_layout)

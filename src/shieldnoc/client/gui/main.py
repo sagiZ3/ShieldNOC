@@ -116,11 +116,10 @@ class MainWindow(QMainWindow):
         else:
             self.page_settings.set_connected(False)
 
-    def _handle_connect(self, ip: str):
+    def _handle_connect(self):
         """ Starts the client connection process from the UI. """
 
         self.page_settings.set_connecting()
-        self.page_dash.set_vpn_ip(ip)
         self.page_dash.set_connection_state("connecting")
 
         self.connection_manager.start_connection_process()
@@ -134,6 +133,7 @@ class MainWindow(QMainWindow):
         if ok:
             self.page_dash.set_connection_state("connected")
             self.stack.setCurrentWidget(self.page_dash)
+            self.page_dash.set_vpn_ip(self.connection_manager.get_vpn_ip())
         else:
             self.page_dash.set_connection_state("disconnected")
 
