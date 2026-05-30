@@ -127,12 +127,6 @@ class ConnectPage(QWidget):
     def _connect_clicked(self):
         """ Handles the connect button click event. """
 
-        try:
-            port = int(self.port_edit.text().strip())
-        except ValueError:
-            self._set_connect_status("לא מחובר", "connectStatusDisconnected")
-            return
-
         self.connect_btn.setEnabled(False)
         self.ip_edit.setEnabled(False)
         self.port_edit.setEnabled(False)
