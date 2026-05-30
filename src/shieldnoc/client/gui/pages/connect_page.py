@@ -32,7 +32,7 @@ class ConnectPage(QWidget):
         root.setSpacing(16)
 
         # Header
-        title = QLabel("Settings — Client")
+        title = QLabel("Settings")
         title.setObjectName("pageTitle")
 
         subtitle = QLabel("Configure server address, client settings, and UI preferences.")

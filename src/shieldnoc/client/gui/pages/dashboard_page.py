@@ -52,7 +52,7 @@ class DashboardPage(QWidget):
         header_layout = QHBoxLayout()
         header_layout.setSpacing(16)
 
-        title = QLabel("Dashboard — VPN Client")
+        title = QLabel("Dashboard")
         title.setObjectName("pageTitle")
         header_layout.addWidget(title)
 
