@@ -67,7 +67,7 @@ class ConnectPage(QWidget):
         client_form.setHorizontalSpacing(12)
         client_form.setVerticalSpacing(10)
 
-        self.vpn_ip_edit = QLineEdit("10.33.33.100")  # TODO: edit this
+        self.vpn_ip_edit = QLineEdit("10.33.33.")
         self.vpn_ip_edit.setLayoutDirection(Qt.LeftToRight)
 
         self.btn_apply_vpn = QPushButton("Apply Client VPN IP")
@@ -127,8 +127,6 @@ class ConnectPage(QWidget):
     def _connect_clicked(self):
         """ Handles the connect button click event. """
 
-        ip = self.ip_edit.text().strip()
-
         try:
             port = int(self.port_edit.text().strip())
         except ValueError:
@@ -140,7 +138,7 @@ class ConnectPage(QWidget):
         self.port_edit.setEnabled(False)
 
         self._set_connect_status("מתחבר...", "connectStatusConnecting")
-        self.connect_requested.emit(ip, port)
+        self.connect_requested.emit(self.connection_manager.get_vpn_ip())
 
     def _pop_alert(self, alert):
         """ Displays a temporary alert message on the screen. """
@@ -164,6 +162,8 @@ class ConnectPage(QWidget):
         """ Sends a VPN IP change request to the server. """
 
         ip = self.vpn_ip_edit.text().strip()
+        self.vpn_ip_edit.setText("10.33.33.")
+
         if not ip:
             return
 

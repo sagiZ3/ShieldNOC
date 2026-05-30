@@ -164,6 +164,15 @@ class ConnectionManager(QObject):
 
         protocol.send_segment(self._conn_sock, f"{protocol.MessageType.CHAT.value}{msg}")
 
+    def get_vpn_ip(self) -> str:
+        """
+        Returns the VPN IP address.
+
+        :return: VPN IP address
+        """
+
+        return self._conn_sock.getsockname()[0]
+
     def request_new_vpn_ip(self, requested_ip: str) -> None:
         """ Requests a new VPN IP address from the server. """
         logger.info(f"Requesting new VPN IP: {requested_ip}")
