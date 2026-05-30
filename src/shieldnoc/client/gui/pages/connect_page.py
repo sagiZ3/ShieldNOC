@@ -15,7 +15,7 @@ from shieldnoc import protocol
 
 
 class ConnectPage(QWidget):
-    connect_requested = Signal(str, int)
+    connect_requested = Signal()
     vpn_ip_changed = Signal(str)
     bg_change_requested = Signal()
 
