@@ -100,32 +100,6 @@ QLineEdit:focus {
     border-radius: 8px;
 }
 
-/* Connection badge (Dashboard) */
-#badgeConnected {
-    background-color: #00d1a3;
-    color: #050814;
-    padding: 4px 10px;
-    border-radius: 999px;
-    font-size: 12px;
-    font-weight: 700;
-}
-#badgeConnecting {
-    background-color: #ffeaa7;
-    color: #050814;
-    padding: 4px 10px;
-    border-radius: 999px;
-    font-size: 12px;
-    font-weight: 700;
-}
-#badgeDisconnected {
-    background-color: #ff7675;
-    color: #050814;
-    padding: 4px 10px;
-    border-radius: 999px;
-    font-size: 12px;
-    font-weight: 700;
-}
-
 /* Settings: connect status text (requested Hebrew + persistent) */
 #connectStatusDisconnected {
     color: #ff3b3b;

@@ -72,10 +72,6 @@ class DashboardPage(QWidget):
 
         header_layout.addStretch(1)
 
-        self.conn_badge = QLabel("Disconnected")
-        self.conn_badge.setObjectName("badgeDisconnected")
-        header_layout.addWidget(self.conn_badge)
-
         container_layout.addLayout(header_layout)
 
         # ========================
@@ -229,29 +225,20 @@ class DashboardPage(QWidget):
     # -----------------------------
     # Public API (unchanged)
     # -----------------------------
-    def set_connection_state(self, state: str):
+    def set_connection_state(self, state: str):  # TODO: use when changing the VPN IP
         """ Updates the dashboard connection state indicators. """
 
         state = state.lower().strip()
 
         if state == "connected":
-            self.conn_badge.setText("Connected")
-            self.conn_badge.setObjectName("badgeConnected")
             self._connected = True
             self.card_status.value_label.setText("Connected")
         elif state == "connecting":
-            self.conn_badge.setText("Connecting…")
-            self.conn_badge.setObjectName("badgeConnecting")
             self._connected = False
             self.card_status.value_label.setText("Connecting…")
         else:
-            self.conn_badge.setText("Disconnected")
-            self.conn_badge.setObjectName("badgeDisconnected")
             self._connected = False
             self.card_status.value_label.setText("Disconnected")
-
-        self.conn_badge.style().unpolish(self.conn_badge)
-        self.conn_badge.style().polish(self.conn_badge)
 
     def set_vpn_ip(self, ip: str):
         """ Updates the displayed VPN IP address. """
