@@ -90,7 +90,7 @@ class ConnectionManager:
                     self.send_vpn_data(client_sock, "Initial connection must start with VPN request")
                     return
 
-                decrypted_content: dict = self._decrypt_data(json.loads(client_payload[1:]))  # ClientField
+                decrypted_content: dict = json.loads(self._decrypt_data(client_payload[1:]))  # ClientField
                 initial_data = {ClientField(field): value for field, value in decrypted_content.items()}  # converts ClientField values back
 
                 server_public_key, client_assigned_vpn_ip = self._vpn_manager.add_peer(initial_data)
