@@ -111,6 +111,7 @@ class ConnectionManager:
             else:
                 if client_payload in (ConnectionResetError.__name__, ConnectionAbortedError.__name__):
                     return
+
                 logger.error(f"Error with sending the content: {client_payload}")
 
         except Exception as e:
@@ -157,10 +158,10 @@ class ConnectionManager:
                     logger.warning("Got a valid client payload with invalid prefix")
 
             else:
-                logger.error(f"Error with sending the content: {client_payload}")
-
                 if client_payload in (ConnectionResetError.__name__, ConnectionAbortedError.__name__):
                     break
+
+                logger.error(f"Error with sending the content: {client_payload}")
 
                 try:
                     while True:
