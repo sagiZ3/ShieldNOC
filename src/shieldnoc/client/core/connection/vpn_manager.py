@@ -183,7 +183,10 @@ class VPNManager:
         """
 
         try:
-            result = subprocess.run(cmd, check=True, text=True, capture_output=capture_output, **kwargs)
+            result = subprocess.run(
+                cmd, check=True, text=True, capture_output=capture_output,
+                encoding="utf-8", errors="replace", **kwargs
+            )
 
         except Exception as e:
             logger.error(f"error with running the following command: '{cmd}':\n\t- {e}")
