@@ -1,6 +1,7 @@
 import ipaddress
 import re
 import subprocess
+import sys
 
 from pathlib import Path
 from time import sleep
@@ -163,7 +164,12 @@ class VPNManager:
         if not self.is_wg_installed():
             logger.info("Installing WireGuard...")
             self._run_cmd(["winget", "install", "--id", "WireGuard.WireGuard", "-e", "--source", "winget"])
-            logger.info("WireGuard installed successfully")
+
+            if self.is_wg_installed():
+                logger.info("WireGuard installed successfully")
+            else:
+                logger.warning("WireGuard could not be installed.\nPlease try again or install WireGuard manually.")
+                sys.exit(2)
 
     def is_wg_installed(self) -> bool:
         """
