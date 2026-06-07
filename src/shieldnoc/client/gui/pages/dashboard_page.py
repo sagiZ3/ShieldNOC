@@ -12,6 +12,7 @@ from shieldnoc.client.gui.enums import General, TrafficChart
 from shieldnoc.client.gui.widgets.card_frame import CardFrame
 from shieldnoc.client.gui.widgets.top_processes_chart import TopProcessesChart
 from shieldnoc.client.core.connection.chat_manager import ChatManager
+from shieldnoc.client.core.data import system_metrics
 
 
 class DashboardPage(QWidget):
@@ -26,8 +27,8 @@ class DashboardPage(QWidget):
         self._connected_users = 1
 
         self._time = 0
-        self._tcp_conns = 3
-        self._udp_conns = 2
+        self._tcp_conns = 0
+        self._udp_conns = 0
 
         self._chart_animation_enabled = True
 
@@ -445,8 +446,8 @@ class DashboardPage(QWidget):
             self._connected_users = max(1, self._connected_users + random.randint(-1, 2))
             self.card_users.value_label.setText(str(self._connected_users))
 
-        self._tcp_conns = max(0, self._tcp_conns + random.randint(-1, 2))
-        self._udp_conns = max(0, self._udp_conns + random.randint(-1, 2))
+        self._tcp_conns = system_metrics.get_tcp_connections_amount()
+        self._udp_conns = system_metrics.get_udp_connections_amount()
 
         self.card_tcp.value_label.setText(str(self._tcp_conns))
         self.card_udp.value_label.setText(str(self._udp_conns))

@@ -1,5 +1,8 @@
 import subprocess
 
+import psutil
+import platform
+
 from shieldnoc.logging_config import logger
 
 
@@ -10,7 +13,7 @@ def get_mac_addr() -> str:  # TODO: edit to make a real function use
     :return: Device MAC address.
     """
 
-    return "B8:1E:A4:D2:3D:51"
+    return "AA:BB:CC:DD:EE:FF"
 
 def get_os() -> str:  # TODO: edit to make a real function use
     """
@@ -19,7 +22,10 @@ def get_os() -> str:  # TODO: edit to make a real function use
     :return: Operating system name.
     """
 
-    return "WINDOWS 11"
+    system = platform.system()
+    release = platform.release()
+
+    return f"{system} {release}"
 
 def get_hostname() -> str:
     """
@@ -29,6 +35,26 @@ def get_hostname() -> str:
     """
 
     return _run_cmd(["hostname"], capture_output=True)
+
+def get_tcp_connections_amount() -> int:
+    """
+    Retrieves the amount of TCP connections.
+
+    :return: Amount of TCP connections.
+    """
+
+    connections = psutil.net_connections()
+    return sum(1 for c in connections if c.type == 1)
+
+def get_udp_connections_amount() -> int:
+    """
+    Retrieves the amount of UDP connections.
+
+    :return: Amount of UDP connections.
+    """
+
+    connections = psutil.net_connections()
+    return sum(1 for c in connections if c.type == 2)
 
 def _run_cmd(cmd: list[str], capture_output=False, **kwargs) -> str | None:
     """
