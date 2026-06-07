@@ -1,4 +1,4 @@
-# TODO: add buttons for removing or waring a client with a specific message
+# TODO: add buttons for removing or warning a client with a specific message
 import random
 
 from PySide6.QtCore import Qt, QTimer, QMargins
@@ -30,7 +30,7 @@ class ServerDashboardPage(QWidget):
         self.setLayoutDirection(Qt.LeftToRight)
 
         self._time = 0
-        self._clients: list[ClientInfo] = []  # TODO: remember import for logic use
+        self._clients: list[ClientInfo] = []
 
         root = QVBoxLayout(self)
         root.setContentsMargins(16, 16, 16, 16)
