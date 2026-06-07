@@ -5,6 +5,7 @@ import sys
 
 from pathlib import Path
 from time import sleep
+from cryptography.fernet import Fernet
 
 from shieldnoc import protocol
 from shieldnoc.logging_config import logger
@@ -14,6 +15,8 @@ class VPNManager:
     WG_INTERFACE = "shieldnoc"
     CONF_FILE_PATH = "./" + WG_INTERFACE + ".conf"
     KEYS_FILE_PATH = "./wg.keys"
+    FERNET_KEY = "9abCR4sczWxWhR89OwOMXLXN9VQKjZuW5lUINGR_KPQ=="
+    CIPHER = Fernet(FERNET_KEY)
 
     def __init__(self):
         """ Initializes the VPN manager and WireGuard keys. """
@@ -180,6 +183,24 @@ class VPNManager:
 
         return self._run_cmd(["winget", "list", "wireguard"], capture_output=True) is not None
 
+    def _encrypt_data(self, data: str) -> str:
+        """
+        Encrypts sensitive data before storage.
+
+        :return: Encrypted data string.
+        """
+
+        return self.CIPHER.encrypt(data.encode()).decode()
+
+    def _decrypt_data(self, data: str) -> str:
+        """
+        Decrypts stored encrypted data.
+
+        :return: Decrypted data string.
+        """
+
+        return self.CIPHER.decrypt(data.encode()).decode()
+
     @staticmethod
     def _run_cmd(cmd: list[str], capture_output=False, **kwargs) -> str | None:
         """
@@ -199,23 +220,3 @@ class VPNManager:
             return None
 
         return result.stdout.strip() if capture_output else None
-
-    @staticmethod
-    def _encrypt_data(data: str) -> str:
-        """
-        Encrypts sensitive data before storage.
-
-        :return: Encrypted data string.
-        """
-
-        return data
-
-    @staticmethod
-    def _decrypt_data(data: str) -> str:
-        """
-        Decrypts stored encrypted data.
-
-        :return: Decrypted data string.
-        """
-
-        return data

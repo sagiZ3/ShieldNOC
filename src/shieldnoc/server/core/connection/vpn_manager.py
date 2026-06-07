@@ -2,6 +2,7 @@ import subprocess
 import base64
 
 from random import randint
+from cryptography.fernet import Fernet
 
 from shieldnoc import protocol
 from shieldnoc.logging_config import logger
@@ -14,6 +15,8 @@ class VPNManager:
     WG_INTERFACE = "shieldnoc"
     CONF_FILE_PATH = "./" + WG_INTERFACE + ".conf"
     VPN_IP_PREFIX = "10.33.33"
+    FERNET_KEY = "3NP2Wa_ezV7XsSl1JXkzgy0wqfh4zLaj4PK4MwVVO2g="
+    CIPHER = Fernet(FERNET_KEY)
 
     def __init__(self, db: DatabaseQueries):
         """ Initializes the VPN manager and WireGuard server configuration. """
@@ -346,6 +349,24 @@ class VPNManager:
 
         return result.stdout.strip() if capture_output else None
 
+    def _encrypt_data(self, data: str) -> str:
+        """
+        Encrypts sensitive data before storage.
+
+        :return: Encrypted data string.
+        """
+
+        return self.CIPHER.encrypt(data.encode()).decode()
+
+    def _decrypt_data(self, data: str) -> str:
+        """
+        Decrypts stored encrypted data.
+
+        :return: Decrypted data string.
+        """
+
+        return self.CIPHER.decrypt(data.encode()).decode()
+
     @staticmethod
     def _is_valid_wg_public_key(key: str) -> bool:
         """
@@ -363,23 +384,3 @@ class VPNManager:
             return len(decoded) == 32
         except Exception:
             return False
-
-    @staticmethod
-    def _encrypt_data(data: str) -> str:
-        """
-        Encrypts sensitive data before storage.
-
-        :return: Encrypted data string.
-        """
-
-        return data
-
-    @staticmethod
-    def _decrypt_data(data: str) -> str:
-        """
-        Decrypts stored encrypted data.
-
-        :return: Decrypted data string.
-        """
-
-        return data
