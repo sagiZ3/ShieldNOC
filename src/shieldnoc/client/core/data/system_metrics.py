@@ -43,18 +43,18 @@ def get_tcp_connections_amount() -> int:
     :return: Amount of TCP connections.
     """
 
-    connections = psutil.net_connections()
-    return sum(1 for c in connections if c.type == 1)
+    connections = psutil.net_connections(kind="tcp")
+    return sum(1 for c in connections if c.status == psutil.CONN_ESTABLISHED)
 
-def get_udp_connections_amount() -> int:
+def get_udp_sockets_amount() -> int:
     """
     Retrieves the amount of UDP connections.
 
     :return: Amount of UDP connections.
     """
 
-    connections = psutil.net_connections()
-    return sum(1 for c in connections if c.type == 2)
+    connections = psutil.net_connections(kind="udp")
+    return sum(1 for _ in connections)
 
 def _run_cmd(cmd: list[str], capture_output=False, **kwargs) -> str | None:
     """

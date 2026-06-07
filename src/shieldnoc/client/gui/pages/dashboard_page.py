@@ -447,7 +447,7 @@ class DashboardPage(QWidget):
             self.card_users.value_label.setText(str(self._connected_users))
 
         self._tcp_conns = system_metrics.get_tcp_connections_amount()
-        self._udp_conns = system_metrics.get_udp_connections_amount()
+        self._udp_conns = system_metrics.get_udp_sockets_amount()
 
         self.card_tcp.value_label.setText(str(self._tcp_conns))
         self.card_udp.value_label.setText(str(self._udp_conns))
